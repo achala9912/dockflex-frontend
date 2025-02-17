@@ -13,7 +13,7 @@ const TopNavbar = () => {
     return (
         <div className="w-full bg-white shadow-md px-6 py-3 flex items-center justify-between rounded-lg">
             {/* Left Side - Home & Fullscreen Buttons */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 ml-80">
                 <button className="text-gray-600 hover:text-gray-900 transition">
                     <GoHome size={22} />
                 </button>
@@ -23,7 +23,7 @@ const TopNavbar = () => {
             </div>
 
             {/* Center - Page Title */}
-            <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
+            {/* <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2> */}
 
             {/* Right Side - User Profile */}
             <div className="flex items-center gap-3">

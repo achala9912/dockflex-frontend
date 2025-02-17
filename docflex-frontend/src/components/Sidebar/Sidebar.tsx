@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link"; // Next.js link
-import Image from "next/image"; // Next.js optimized image
+import Link from "next/link"; 
+import Image from "next/image"; 
 import { AiFillCaretDown } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
 import { sidebarItems } from "./SidebarData";
@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     };
   }, []);
 
-  const sidebarContainerClasses = `fixed h-screen z-10 text-white bg-[#113962] transition-all duration-500 ease-in-out ${
+  const sidebarContainerClasses = `fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
   } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
@@ -161,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
       {isCollapsed ? (
         <div className="absolute z-50 flex items-center p-1 cursor-pointer bg-blue-500 sm:bg-transparent w-[200px] sm:w-[60px]"
              onClick={toggleSidebarCollapse}>
-          <Image src="/docflex-col.png" alt="Logo" width={120} height={100} priority />
+          <Image src="/docflex-col.png" alt="Logo" width={100} height={20} priority className="ml-2" />
         </div>
       ) : (
         <button onClick={toggleSidebarCollapse} className="absolute z-50 p-2 text-white bg-transparent rounded-md top-4 left-4 hover:text-blue-300">
@@ -171,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
 
       <div className={sidebarContainerClasses}>
         <div className="flex items-center justify-center p-4 h-20 border-blue-600">
-          {!isCollapsed &&  <Image src="/docflexLogo.png" alt="Expanded Logo" width={150} height={40} priority />}
+          {!isCollapsed &&  <Image src="/docflexLogo.png" alt="Expanded Logo" width={100} height={20} priority />}
         </div>
 
         <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto">
