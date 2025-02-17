@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link"; 
-import Image from "next/image"; 
+import Link from "next/link";
+import Image from "next/image";
 import { AiFillCaretDown } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
 import { sidebarItems } from "./SidebarData";
@@ -87,19 +87,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     };
   }, []);
 
-  const sidebarContainerClasses = `fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
-    isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-  } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
+  const sidebarContainerClasses = `fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${isSidebarVisible ? "translate-x-0" : "-translate-x-full"
+    } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
   const renderSidebarItem = (item: SidebarItem) => (
     <li key={item.title} onMouseEnter={() => isCollapsed && item.dropdown && setHoveredItem(item.title)}
-        onMouseLeave={() => isCollapsed && setHoveredItem(null)}>
+      onMouseLeave={() => isCollapsed && setHoveredItem(null)}>
       {item.dropdown ? (
         <div>
           <button
-            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${
-              activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
-            } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
+              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
             onClick={() => toggleDropdown(item.title)}
           >
             {item.icon && <item.icon className="text-lg" />}
@@ -112,8 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         </div>
       ) : (
         item.path && (
-          <Link href={item.path} className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${
-              activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
+          <Link href={item.path} className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
             } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
             onClick={() => handleTabClick(item.title)}
           >
@@ -129,8 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     <ul className="overflow-hidden transition-all duration-500">
       {item.subItems?.map((subItem) => subItem.path && (
         <li key={subItem.title}>
-          <Link href={subItem.path} className={`block pl-10 p-3 transition-colors ${
-              activeTab === subItem.title ? "bg-blue-600" : "hover:bg-blue-700"
+          <Link href={subItem.path} className={`block pl-10 p-3 transition-colors ${activeTab === subItem.title ? "bg-blue-600" : "hover:bg-blue-700"
             }`} onClick={() => handleSubItemClick(item.title, subItem.title)}>
             {subItem.title}
           </Link>
@@ -146,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
           {item.subItems?.map((subItem) => subItem.path && (
             <li key={subItem.title}>
               <Link href={subItem.path} className="block p-2 hover:bg-blue-700"
-                    onClick={() => { setHoveredItem(null); handleSubItemClick(item.title, subItem.title); }}>
+                onClick={() => { setHoveredItem(null); handleSubItemClick(item.title, subItem.title); }}>
                 {subItem.title}
               </Link>
             </li>
@@ -159,9 +155,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   return (
     <div className="z-50">
       {isCollapsed ? (
-        <div className="absolute z-50 flex items-center p-1 cursor-pointer bg-blue-500 sm:bg-transparent w-[200px] sm:w-[60px]"
-             onClick={toggleSidebarCollapse}>
-          <Image src="/docflex-col.png" alt="Logo" width={100} height={20} priority className="ml-2" />
+        <div className="absolute z-50 flex items-center justify-center w-16 h-16 p-2 ml-2 cursor-pointer bg-[#0d4c73] sm:bg-transparent rounded-full sm:rounded-none mt-2"
+          onClick={toggleSidebarCollapse}>
+          <Image src="/docflex-col.png" alt="Logo" width={100} height={20} priority className="" />
         </div>
       ) : (
         <button onClick={toggleSidebarCollapse} className="absolute z-50 p-2 text-white bg-transparent rounded-md top-4 left-4 hover:text-blue-300">
@@ -171,10 +167,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
 
       <div className={sidebarContainerClasses}>
         <div className="flex items-center justify-center p-4 h-20 border-blue-600">
-          {!isCollapsed &&  <Image src="/docflexLogo.png" alt="Expanded Logo" width={100} height={20} priority />}
+          {!isCollapsed && <Image src="/docflexLogo.png" alt="Expanded Logo" width={100} height={20} priority />}
         </div>
 
-        <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto">
+        <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-transparent">
           <ul className="space-y-1">{sidebarItems.map(renderSidebarItem)}</ul>
         </div>
       </div>
