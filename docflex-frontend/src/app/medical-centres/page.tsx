@@ -1,39 +1,39 @@
 "use client";
-import RoundButton from '@/components/Buttons/RoundButton'
-import CentreCard from '@/components/Cards/CentreCard'
-import InputField from '@/components/InputField/InputField'
+
+import RoundButton from '@/components/Buttons/RoundButton';
+import CentreCard from '@/components/Cards/CentreCard';
+import InputField from '@/components/InputField/InputField';
 import { Tooltip } from '@/components/ui/tooltip';
-import React from 'react'
-import { FiSearch } from 'react-icons/fi'
-
+import React from 'react';
+import { FiSearch } from 'react-icons/fi';
 import { IoMdAdd } from 'react-icons/io';
+import jsonData from '@/data/data.json';
 
+function Page() {
 
-
-function page() {
     const newCentre = () => {
-        console.log('New Centre')
-    }
+        console.log('New Centre');
+    };
+
     return (
         <>
             <div className="flex justify-between mb-3">
-                <h3 className="flex items-center font-semibold font-inter">Registered Medical Centres</h3>
-
+                <h3 className="flex items-center font-semibold font-inter text-lg">Registered Medical Centres</h3>
             </div>
 
             <div className="flex flex-col ">
-                <div className="flex justify-between mb-4 bg-white p-4 rounded-lg shadow-sm">
-                    <div className="flex gap-4">
+                <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
+                    <div className="flex gap-4 w-full sm:w-auto">
                         <InputField
-                            id="searchNameOrId"
-                            width="w-96"
+                            id="centre-search"
+                            width="w-full sm:w-96"
                             icon={<FiSearch />}
                             type="text"
                             value={''}
                             placeholder="Search Centre ID / Name"
-                            // onChange={onSearch}
+                            onChange={() => { }}
                             label={true}
-                            labelName='Centre ID / Name'
+                            labelName="Centre ID / Name"
                         />
                     </div>
                     <Tooltip content="Add New Centre" side="top">
@@ -43,14 +43,23 @@ function page() {
                             onClick={newCentre}
                         />
                     </Tooltip>
-
                 </div>
             </div>
-
-
-            <CentreCard />
+            <div className="flex flex-wrap gap-6">
+                {jsonData.centreData.map(centre => (
+                    <CentreCard
+                        key={centre.id}
+                        topName={centre.id}
+                        middleName={centre.name}
+                        bottomName={centre.address}
+                        handleEdit={() => console.log('Edit Centre', centre.id)}
+                        handleDelete={() => console.log('Delete Centre', centre.id)}
+                        handleView={() => console.log('View Centre', centre.id)}
+                    />
+                ))}
+            </div>
         </>
-    )
+    );
 }
 
-export default page
+export default Page;
