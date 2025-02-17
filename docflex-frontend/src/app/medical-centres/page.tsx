@@ -26,14 +26,14 @@ function page() {
                     <div className="flex gap-4">
                         <InputField
                             id="searchNameOrId"
-                            width="w-400"
+                            width="w-96"
                             icon={<FiSearch />}
                             type="text"
                             value={''}
-                            placeholder="Search Category ID / Name"
+                            placeholder="Search Centre ID / Name"
                             // onChange={onSearch}
                             label={true}
-                            labelName='Category ID / Name'
+                            labelName='Centre ID / Name'
                         />
                     </div>
                     <Tooltip content="Add New Centre" side="top">

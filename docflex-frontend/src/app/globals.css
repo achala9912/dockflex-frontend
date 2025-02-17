@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure the scrollbar is styled */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+
 body {
   font-family: 'Inter', Arial, Helvetica, sans-serif;
 

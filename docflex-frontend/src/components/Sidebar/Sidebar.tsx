@@ -96,7 +96,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
       {item.dropdown ? (
         <div>
           <button
-            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
+            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out  (activeTab === item.title && !item.dropdown && !isCollapsed)
+                ? 'bg-gradient-to-r from-blue_dark_hover_1 to-blue_dark_hover_2'
+                : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
+              }
               } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
             onClick={() => toggleDropdown(item.title)}
           >
@@ -110,7 +113,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         </div>
       ) : (
         item.path && (
-          <Link href={item.path} className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${activeTab === item.title ? "bg-blue-600" : "hover:bg-blue-700"
+          <Link href={item.path} className={`flex items-center w-full py-3 px-4 transition-colors duration-300  ${activeTab === item.title
+            ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
+            : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
+            }
             } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
             onClick={() => handleTabClick(item.title)}
           >
@@ -126,7 +132,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     <ul className="overflow-hidden transition-all duration-500">
       {item.subItems?.map((subItem) => subItem.path && (
         <li key={subItem.title}>
-          <Link href={subItem.path} className={`block pl-10 p-3 transition-colors ${activeTab === subItem.title ? "bg-blue-600" : "hover:bg-blue-700"
+          <Link href={subItem.path} className={`block pl-20 p-3 transition-colors ${activeTab === item.title
+            ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
+            : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
             }`} onClick={() => handleSubItemClick(item.title, subItem.title)}>
             {subItem.title}
           </Link>
@@ -137,7 +145,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
 
   const renderHoverMenu = (item: SidebarItem) => (
     <div className="fixed left-[80px] z-50 w-48 p-1">
-      <div className="relative bottom-12 w-48 p-1 bg-blue-800 rounded-md shadow-lg">
+      <div className="relative bottom-12 w-48 p-1 bg-red-800 rounded-md shadow-lg">
         <ul>
           {item.subItems?.map((subItem) => subItem.path && (
             <li key={subItem.title}>
@@ -170,7 +178,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
           {!isCollapsed && <Image src="/docflexLogo.png" alt="Expanded Logo" width={100} height={20} priority />}
         </div>
 
-        <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-transparent">
+        <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto scrollbar-thin scrollbar-thumb-scroll_blue scrollbar-track-transparent">
           <ul className="space-y-1">{sidebarItems.map(renderSidebarItem)}</ul>
         </div>
       </div>
