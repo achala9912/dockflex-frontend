@@ -1,21 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginSchema, LoginFormData } from "@/schemas/Login/LoginSchema"; 
 import InputField from "@/components/InputField/InputField";
 import PasswordField from "@/components/InputField/PasswordField";
 import { Button } from "@/components/ui/button";
 import { FaArrowRightLong, FaRegUser } from "react-icons/fa6";
 
 const LoginForm = () => {
-    const [userName, setUserName] = useState("");
-    const [password, setPassword] = useState("");
-    const router = useRouter(); 
+    const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Logging in with:", { userName, password });
-        // Add authentication logic here
+    //Initialize react-hook-form with Zod validation
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(LoginSchema),
+    });
+
+    // Form Submission Handler
+    const handleLogin = (data: LoginFormData) => {
+        console.log("Logging in with:", data);
+     
     };
 
     return (
@@ -26,7 +36,7 @@ const LoginForm = () => {
             </h2>
 
             {/* Form */}
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleSubmit(handleLogin)} className="space-y-5">
                 {/* User Name Field */}
                 <div className="flex flex-col gap-2">
                     <label htmlFor="userName" className="text-sm font-medium text-gray-700">
@@ -35,12 +45,12 @@ const LoginForm = () => {
                     <InputField
                         id="userName"
                         type="text"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
                         placeholder="Enter user name"
                         className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         icon={<FaRegUser className="text-gray-400" />}
+                        {...register("userName")}
                     />
+                    {errors.userName && <p className="text-red-500 text-xs">{errors.userName.message}</p>}
                 </div>
 
                 {/* Password Field */}
@@ -50,11 +60,11 @@ const LoginForm = () => {
                     </label>
                     <PasswordField
                         id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="Enter password"
                         className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        {...register("password")}
                     />
+                    {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
                 </div>
 
                 {/* Sign In Button */}

@@ -30,7 +30,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     <div className="flex w-full justify-center">
       <div className="flex h-screen max-w-[2000px] w-full">
         {showLayout && <Sidebar onCollapseChange={handleSidebarCollapseChange} />}
-        <div className="flex flex-col items-end flex-1 min-w-0 mr-2">
+        <div className="flex flex-col items-end flex-1 min-w-0">
           {showLayout && <TopNavbar />}
           <div
             className={`${

@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState, FormEvent } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ForgotPasswordSchema, ForgotPasswordFormData } from "@/schemas/Login/ForgotPassSchema";
 import InputField from "@/components/InputField/InputField";
 import { Button } from "@/components/ui/button";
 import { FaRegUser, FaEnvelope } from "react-icons/fa6";
@@ -9,13 +12,20 @@ import { IoChevronBackSharp } from "react-icons/io5";
 import { Tooltip } from "@/components/ui/tooltip";
 
 const ForgotPasswordForm = () => {
-    const [userName, setUserName] = useState("");
-    const [email, setEmail] = useState("");
     const router = useRouter();
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        console.log("Reset password request for:", { userName, email });
+    // Use React Hook Form with Zod validation
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ForgotPasswordFormData>({
+        resolver: zodResolver(ForgotPasswordSchema),
+    });
+
+    // Handle form submission
+    const onSubmit = (data: ForgotPasswordFormData) => {
+        console.log("Reset password request for:", data);
         // Implement API call or form submission logic here
     };
 
@@ -36,7 +46,7 @@ const ForgotPasswordForm = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 {/* User Name Field */}
                 <div className="flex flex-col gap-2">
                     <label htmlFor="userName" className="text-sm font-medium text-gray-700">
@@ -45,12 +55,14 @@ const ForgotPasswordForm = () => {
                     <InputField
                         id="userName"
                         type="text"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
                         placeholder="Enter your username"
                         className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         icon={<FaRegUser className="text-gray-400" />}
+                        {...register("userName")}
                     />
+                    {errors.userName && (
+                        <p className="text-red-500 text-xs">{errors.userName.message}</p>
+                    )}
                 </div>
 
                 {/* Email Field */}
@@ -61,12 +73,14 @@ const ForgotPasswordForm = () => {
                     <InputField
                         id="email"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your email"
                         className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
                         icon={<FaEnvelope className="text-gray-400" />}
+                        {...register("email")}
                     />
+                    {errors.email && (
+                        <p className="text-red-500 text-xs">{errors.email.message}</p>
+                    )}
                 </div>
 
                 {/* Submit Button */}
