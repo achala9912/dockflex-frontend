@@ -8,12 +8,18 @@ import React from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { IoMdAdd } from 'react-icons/io';
 import jsonData from '@/data/data.json';
+import { useRouter } from 'next/navigation';
 
 function Page() {
 
+    const router = useRouter();
     const newCentre = () => {
         console.log('New Centre');
     };
+
+    const handleView = (centre: { id: string }): void => {
+        router.push(`/medical-centres/view/${centre.id}`);
+    }
 
     return (
         <>
@@ -54,7 +60,7 @@ function Page() {
                         bottomName={centre.address}
                         handleEdit={() => console.log('Edit Centre', centre.id)}
                         handleDelete={() => console.log('Delete Centre', centre.id)}
-                        handleView={() => console.log('View Centre', centre.id)}
+                        handleView={() => handleView(centre)}
                     />
                 ))}
             </div>
