@@ -87,12 +87,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     };
   }, []);
 
-  const sidebarContainerClasses = `fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-    } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
+  const sidebarContainerClasses = `m-2 rounded-2xl fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
+    isSidebarVisible ? "translate-x-0" : "-translate-x-full"
+  } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
+  //parent menu
   const renderSidebarItem = (item: SidebarItem) => (
-    <li key={item.title} onMouseEnter={() => isCollapsed && item.dropdown && setHoveredItem(item.title)}
-      onMouseLeave={() => isCollapsed && setHoveredItem(null)}>
+    <li
+      key={item.title}
+      onMouseEnter={() =>
+        isCollapsed && item.dropdown && setHoveredItem(item.title)
+      }
+      onMouseLeave={() => isCollapsed && setHoveredItem(null)}
+    >
       {item.dropdown ? (
         <div>
           <button
@@ -100,12 +107,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 ? 'bg-gradient-to-r from-blue_dark_hover_1 to-blue_dark_hover_2'
                 : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
               }
-              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+              } focus:outline-none ${
+                isCollapsed ? "justify-center" : "justify-start"
+              }`}
             onClick={() => toggleDropdown(item.title)}
           >
             {item.icon && <item.icon className="text-lg" />}
-            {!isCollapsed && <span className="ml-4">{item.title}</span>}
-            {!isCollapsed && <AiFillCaretDown className={`ml-auto transition-transform ${openDropdown === item.title ? "rotate-180" : ""}`} />}
+            {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
+            {!isCollapsed && (
+              <AiFillCaretDown
+                className={`ml-auto transition-transform ${
+                  openDropdown === item.title ? "rotate-180" : ""
+                }`}
+              />
+            )}
           </button>
 
           {hoveredItem === item.title && isCollapsed && renderHoverMenu(item)}
@@ -113,48 +128,72 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         </div>
       ) : (
         item.path && (
-          <Link href={item.path} className={`flex items-center w-full py-3 px-4 transition-colors duration-300  ${activeTab === item.title
-            ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
-            : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
+          <Link
+            href={item.path}
+            className={`flex items-center w-full py-3 px-4 transition-colors duration-300  ${
+              activeTab === item.title
+                ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
             }
-            } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+            } focus:outline-none ${
+              isCollapsed ? "justify-center" : "justify-start"
+            }`}
             onClick={() => handleTabClick(item.title)}
           >
             {item.icon && <item.icon className="text-lg" />}
-            {!isCollapsed && <span className="ml-4">{item.title}</span>}
+            {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
           </Link>
         )
       )}
     </li>
   );
 
+  //submenu
   const renderSubMenu = (item: SidebarItem) => (
-    <ul className="overflow-hidden transition-all duration-500">
-      {item.subItems?.map((subItem) => subItem.path && (
-        <li key={subItem.title}>
-          <Link href={subItem.path} className={`block pl-20 p-3 transition-colors ${activeTab === item.title
-            ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
-            : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
-            }`} onClick={() => handleSubItemClick(item.title, subItem.title)}>
-            {subItem.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-
-  const renderHoverMenu = (item: SidebarItem) => (
-    <div className="fixed left-[80px] z-50 w-48 p-1">
-      <div className="relative bottom-12 w-48 p-1 bg-red-800 rounded-md shadow-lg">
-        <ul>
-          {item.subItems?.map((subItem) => subItem.path && (
+    <ul className="overflow-hidden transition-all duration-500 text-md">
+      {item.subItems?.map(
+        (subItem) =>
+          subItem.path && (
             <li key={subItem.title}>
-              <Link href={subItem.path} className="block p-2 hover:bg-blue-700"
-                onClick={() => { setHoveredItem(null); handleSubItemClick(item.title, subItem.title); }}>
+              <Link
+                href={subItem.path}
+                className={`block pl-20 p-3 transition-colors ${
+                  activeTab === item.title
+                    ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                    : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+                }`}
+                onClick={() => handleSubItemClick(item.title, subItem.title)}
+              >
                 {subItem.title}
               </Link>
             </li>
-          ))}
+          )
+      )}
+    </ul>
+  );
+
+  //collapse mode
+  const renderHoverMenu = (item: SidebarItem) => (
+    <div className="fixed left-[80px] z-50 w-48 p-1">
+      <div className="relative bottom-12 w-48 p-1 bg-blue-900 rounded-md shadow-lg text-md">
+        <ul>
+          {item.subItems?.map(
+            (subItem) =>
+              subItem.path && (
+                <li key={subItem.title}>
+                  <Link
+                    href={subItem.path}
+                    className="block p-2 hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+                    onClick={() => {
+                      setHoveredItem(null);
+                      handleSubItemClick(item.title, subItem.title);
+                    }}
+                  >
+                    {subItem.title}
+                  </Link>
+                </li>
+              )
+          )}
         </ul>
       </div>
     </div>
@@ -163,19 +202,39 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   return (
     <div className="z-50">
       {isCollapsed ? (
-        <div className="absolute z-50 flex items-center justify-center w-16 h-16 p-2 ml-2 cursor-pointer bg-[#0d4c73] sm:bg-transparent rounded-full sm:rounded-none mt-2"
-          onClick={toggleSidebarCollapse}>
-          <Image src="/docflex-col.png" alt="Logo" width={100} height={20} priority className="" />
+        <div
+          className="absolute z-50 flex items-center justify-center w-16 h-16 p-3 ml-3  sm:p-2 sm:ml-3 shadow-lg sm:shadow-none cursor-pointer bg-[#0d4c73] sm:bg-transparent rounded-full sm:rounded-none mt-2"
+          onClick={toggleSidebarCollapse}
+        >
+          <Image
+            src="/docflex-col.png"
+            alt="Logo"
+            width={100}
+            height={20}
+            priority
+            className=""
+          />
         </div>
       ) : (
-        <button onClick={toggleSidebarCollapse} className="absolute z-50 p-2 text-white bg-transparent rounded-md top-4 left-4 hover:text-blue-300">
+        <button
+          onClick={toggleSidebarCollapse}
+          className="absolute z-50 p-2 text-white bg-transparent rounded-md top-4 left-4 hover:text-blue-300"
+        >
           <MdMenuOpen size="1.625rem" />
         </button>
       )}
 
       <div className={sidebarContainerClasses}>
         <div className="flex items-center justify-center p-4 h-20 border-blue-600">
-          {!isCollapsed && <Image src="/docflexLogo.png" alt="Expanded Logo" width={100} height={20} priority />}
+          {!isCollapsed && (
+            <Image
+              src="/docflexLogo.png"
+              alt="Expanded Logo"
+              width={100}
+              height={20}
+              priority
+            />
+          )}
         </div>
 
         <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto scrollbar-thin scrollbar-thumb-scroll_blue scrollbar-track-transparent">
