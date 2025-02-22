@@ -46,7 +46,7 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`rounded-2xl bg-white shadow-md px-6 py-3 flex items-center justify-between m-2 mb-0 ml-0 ${
+      className={`rounded-2xl bg-white shadow-sm border border-gary-50 px-6 py-3 flex items-center justify-between m-2 mb-0 ml-0 h-14 ${
         isCollapsed ? "lg:w-[calc(100%-110px)]" : "lg:w-[calc(100%-285px)]"
       } w-[calc(100%-100px)] sm:w-[calc(100%-110px)]`}
     >
@@ -71,7 +71,7 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
             <AvatarFallback>AI</AvatarFallback>
           </Avatar>
 
-          <div className="text-right">
+          <div className="text-right hidden sm:block">
             <p className="text-sm font-semibold text-gray-900">Achala Imesh</p>
             <p className="text-xs text-gray-500 text-left">AcHa@99</p>
           </div>
