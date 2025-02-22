@@ -29,6 +29,20 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
   const handleNo = () => {
     setLogoutPopupOpen(false);
   };
+  // Function to toggle full screen
+  const handleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        alert(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+        );
+      });
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
 
   return (
     <div
@@ -41,7 +55,10 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
         <button className="text-gray-600 hover:text-gray-900 transition">
           <GoHome size={22} />
         </button>
-        <button className="text-gray-600 hover:text-gray-900 transition">
+        <button
+          className="text-gray-600 hover:text-gray-900 transition"
+          onClick={handleFullScreen}
+        >
           <GoScreenFull size={22} />
         </button>
       </div>

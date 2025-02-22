@@ -24,6 +24,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 }) => {
     const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     
     useEffect(() => {
         if (value) {
@@ -42,11 +43,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     const handleAddImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
+            setIsLoading(true);
             const file = event.target.files[0];
             const uploadedImage: UploadedImage = await uploadImage(file);
-
-            setSelectedImage(uploadedImage); // Replace the previous image
+            setSelectedImage(uploadedImage);
             onChange?.(uploadedImage.url);
+            setIsLoading(false);
         }
     };
 
@@ -56,15 +58,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     };
 
     const uploadImage = async (file: File): Promise<UploadedImage> => {
-        const previewUrl = URL.createObjectURL(file);
-        return { preview: previewUrl, url: previewUrl };
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const previewUrl = URL.createObjectURL(file);
+                resolve({ preview: previewUrl, url: previewUrl });
+            }, 1500); // Simulate upload delay
+        });
     };
 
     return (
         <div>
             {/* Large Image Preview */}
-            <div className="rounded-md w-full h-[22rem] p-2 mb-4 border border-gray-300 relative flex justify-center items-center">
-                {selectedImage ? (
+            <div className="min-h-20 rounded-md w-full h-fit p-2 mb-4 border border-gray-400 relative flex justify-center items-center bg-white">
+                {isLoading ? (
+                    <div className="flex items-center justify-center w-full h-full">
+                        <p className="text-sm text-gray-500 font-semibold">Uploading...</p>
+                    </div>
+                ) : selectedImage ? (
                     <Image
                         src={selectedImage.preview}
                         alt="Selected Preview"
@@ -74,7 +84,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                         className="rounded-lg"
                     />
                 ) : (
-                    <div className="flex items-center justify-center w-full rounded-lg h-80 bg-gray-100">
+                    <div className="flex items-center justify-center w-full rounded-lg h-auto ">
                         <p className="text-sm text-gray-500">No Image Selected</p>
                     </div>
                 )}
