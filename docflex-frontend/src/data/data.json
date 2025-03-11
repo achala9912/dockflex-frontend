@@ -1,0 +1,22 @@
+{
+  "centreData": [
+    {
+      "id": "MC001",
+      "regNo": "123456",
+      "name": "Medicare Pvt Ltd",
+      "address": "Pannipitiya",
+      "town": "Pannipitiya",
+      "phone": "011-1234567",
+      "email": "medicare@gmail.com"
+    },
+    {
+      "id": "MC002",
+      "regNo": "123457",
+      "name": "Chapa Medical Centre",
+      "address": "Nugegoda",
+      "town": "Nugegoda",
+      "phone": "011-1234567",
+      "email": "chapa@gmail.com"
+    }
+  ]
+}
