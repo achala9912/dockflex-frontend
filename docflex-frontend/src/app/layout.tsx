@@ -29,7 +29,7 @@ import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
   title: "DocFlex Pro",
-  description: "Discover amazing products at Cripsy.",
+  description: "Discover amazing .",
   icons: {
     icon: "/favicon.ico",
   },

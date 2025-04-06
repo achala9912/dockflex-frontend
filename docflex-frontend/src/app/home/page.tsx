@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Lottie from "lottie-react";
-// import { Pill, Users, ShoppingBag } from "lucide-react";
+import { Pill, Users,  HandCoins } from "lucide-react";
 import systhesisLottie from "@/Lottie/prescriptionLottie.json";
-// import OverviewCard from "@/components/dashboard/OverviewCard";
+import OverviewCard from "@/components/Cards/OverviewCard";
+
 
 
 
@@ -75,31 +76,31 @@ function Home() {
                 <div className="absolute w-48 h-48 bg-blue-200 rounded-full opacity-50 -bottom-8 -left-12 blur-2xl"></div>
             </header>
 
-            {/* <main className="flex-grow">
+            <main className="flex-grow">
                 <section className="grid grid-cols-1 gap-6 mb-2 md:grid-cols-3">
                     <OverviewCard
-                        title="Total Products"
+                        title="Total Medicines"
                         subtitle="Registered"
-                        value={"9,870"}
+                        value={"234"}
                         className="h-full bg-white border-l-8 border-blue-500"
                         icon={<Pill className="w-8 h-8 text-blue-500" />}
                     />
                     <OverviewCard
-                        title="Total Customers"
-                        subtitle="Registered"
-                        value={"36"}
+                        title="Patients in Waiting"
+                        subtitle="Today"
+                        value={"32"}
                         className="h-full bg-white border-l-8 border-yellow-500"
                         icon={<Users className="w-8 h-8 text-yellow-500" />}
                     />
                     <OverviewCard
-                        title="Total Orders"
-                        subtitle="Today's"
-                        value={"120"}
+                        title="Total Income (Rs)"
+                        subtitle="Today"
+                        value={"11,280.00"}
                         className="h-full bg-white border-l-8 border-green-500"
-                        icon={<ShoppingBag className="w-8 h-8 text-green-500" />}
+                        icon={<HandCoins className="w-8 h-8 text-green-500" />}
                     />
                 </section>
-            </main> */}
+            </main>
         </div>
     );
 }

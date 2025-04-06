@@ -22,7 +22,7 @@ export const sidebarItems: SidebarItem[] = [
     {
         title: 'Dashboard',
         icon: MdOutlineDashboard,
-        path: '/dashboard',
+        path: '/home',
     },
     {
         title: 'Medical Centres',

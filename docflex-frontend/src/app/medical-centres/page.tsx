@@ -76,7 +76,7 @@ function Page() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
         {filteredCentres.length > 0 ? (
           filteredCentres.map((centre) => (
             <CentreCard

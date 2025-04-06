@@ -18,5 +18,19 @@
       "phone": "011-1234567",
       "email": "chapa@gmail.com"
     }
+  ],
+  "roleData": [
+    {
+      "id": "R001",
+      "name": "Admin Doctor"
+    },
+    {
+      "id": "R002",
+      "name": "Doctor"
+    },
+    {
+      "id": "R003",
+      "name": "Medical Assistant"
+    }
   ]
 }
