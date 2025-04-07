@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 
 export default function Page() {
-  const [selectedMedicalCentre, setSelectedMedicalCentre] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
@@ -22,14 +21,7 @@ export default function Page() {
 
       <div className="flex flex-col">
         <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
-          <div className="flex gap-4 w-full sm:w-auto">
-            <Dropdown
-              id="medical-centre"
-              value={selectedMedicalCentre}
-              options={[]}
-              onChange={(value) => setSelectedMedicalCentre(value as string)}
-              width="md:w-56 w-full"
-            />
+          <div className="flex gap-4 items-start">
             <Dropdown
               id="select-role"
               value={selectedRole}

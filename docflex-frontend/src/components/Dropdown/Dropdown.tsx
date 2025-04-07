@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Select, { MultiValue, SingleValue,StylesConfig } from "react-select";
+import Select, { MultiValue, SingleValue, StylesConfig } from "react-select";
 
 interface OptionType {
   label: string;
@@ -59,15 +59,16 @@ const Dropdown: React.FC<DropdownProps> = ({
   const customStyles: StylesConfig<OptionType, boolean> = {
     control: (provided, state) => ({
       ...provided,
-      borderColor: state.isFocused ? "#2684FF" : "#9f9f9f",
+      borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
       outline: state.isFocused ? "none" : undefined,
       minHeight: "2.5rem",
-      borderRadius: "0.375rem",
+      borderWidth: "1px",
+      boxShadow: "none",
+      borderRadius: "6px",
       cursor: readOnly ? "not-allowed" : "pointer",
-      backgroundColor: readOnly ? "#f9f9f9" : provided.backgroundColor,
-      width: "100%",
+      backgroundColor: readOnly ? "#f3f4f6" : provided.backgroundColor,
       "&:hover": {
-        borderColor: state.isFocused ? "#2684FF" : "#9f9f9f",
+        borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
       },
     }),
     menu: (provided) => ({
@@ -80,10 +81,13 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   const handleChange = (
-    newValue: MultiValue<OptionType> | SingleValue<OptionType>  ) => {
+    newValue: MultiValue<OptionType> | SingleValue<OptionType>
+  ) => {
     if (readOnly) return;
     if (multiple) {
-      onChange((newValue as MultiValue<OptionType>).map((option) => option.value));
+      onChange(
+        (newValue as MultiValue<OptionType>).map((option) => option.value)
+      );
     } else {
       onChange((newValue as SingleValue<OptionType>)?.value || "");
     }
