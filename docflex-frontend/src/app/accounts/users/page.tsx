@@ -1,15 +1,22 @@
 "use client";
 
+import React, { useState } from "react";
+import { IoMdAdd } from "react-icons/io";
 import RoundButton from "@/components/Buttons/RoundButton";
 import Dropdown from "@/components/Dropdown/Dropdown";
 import SearchBar from "@/components/Searchbar/Searchbar";
+import { userMgmtColumns } from "@/components/Table/Coloumns";
+import TableWithPagi from "@/components/Table/TableWithPagi";
 import { Tooltip } from "@/components/ui/tooltip";
-import React, { useState } from "react";
-import { IoMdAdd } from "react-icons/io";
+import jsonData from "@/data/data.json";
 
 export default function Page() {
-  const [selectedRole, setSelectedRole] = useState("");
-  const [searchValue, setSearchValue] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const itemsPerPage = 10;
+  const dummyData = jsonData.userData;
 
   return (
     <>
@@ -25,11 +32,14 @@ export default function Page() {
             <Dropdown
               id="select-role"
               value={selectedRole}
-              options={[]}
+              options={[
+                { label: "Admin", value: "admin" },
+                { label: "Doctor", value: "doctor" },
+              ]}
               onChange={(value) => setSelectedRole(value as string)}
               label
               labelName="Role ID / Name"
-              width="md:w-56 w-full"
+              width="md:w-[300px] w-full"
             />
             <SearchBar
               id="userId"
@@ -40,7 +50,7 @@ export default function Page() {
               suggestions={[]}
               label
               labelName="User ID / Name"
-              width="md:W-72 w-full"
+              width="md:w-72 w-full"
             />
           </div>
           <Tooltip content="Add New User" side="top">
@@ -51,6 +61,18 @@ export default function Page() {
             />
           </Tooltip>
         </div>
+      </div>
+
+      <div>
+        <TableWithPagi
+          columns={userMgmtColumns}
+          data={dummyData}
+          itemsPerPage={itemsPerPage}
+          totalPages={1}
+          currentPage={currentPage}
+          setPage={setCurrentPage}
+          totalItems={dummyData.length}
+        />
       </div>
     </>
   );
