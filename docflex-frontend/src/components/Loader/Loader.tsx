@@ -1,7 +1,7 @@
 "use client";
 
 import { useLoaderStore } from "@/store/useLoaderStore";
-import { Discuss } from "react-loader-spinner";
+import { ThreeCircles } from "react-loader-spinner";
 
 type Props = {
   text?: string;
@@ -17,11 +17,11 @@ const Loader = ({ text, size = 100 }: Props) => {
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
       <div className="flex flex-col items-center justify-center mx-auto ">
         <div className="flex items-center">
-          <Discuss
+          <ThreeCircles
             visible={true}
             height={size}
             width={size}
-            colors={["#b8d3f5", "#f0f0f0"]}
+            color="#5c59fd"
             ariaLabel="discuss-loading"
             wrapperStyle={{}}
             wrapperClass="discuss-wrapper"
