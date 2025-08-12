@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { AiFillCaretDown } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
 import { sidebarItems } from "./SidebarData";
@@ -32,8 +33,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-
+  const pathname = usePathname();
   const lastScrollY = useRef(0);
+
+  // Set active tab based on current pathname
+  useEffect(() => {
+    // Check sub items first
+    for (const item of sidebarItems) {
+      if (item.subItems) {
+        const activeSubItem = item.subItems.find(subItem => subItem.path === pathname);
+        if (activeSubItem) {
+          setActiveTab(activeSubItem.title);
+          // Don't open the parent dropdown automatically
+          return;
+        }
+      }
+    }
+
+    // Check main items
+    const activeMainItem = sidebarItems.find(item => item.path === pathname);
+    if (activeMainItem) {
+      setActiveTab(activeMainItem.title);
+    }
+  }, [pathname]);
 
   const controlSidebarVisibility = () => {
     const currentScrollY = window.scrollY;
@@ -50,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     toggleDropdown(itemTitle);
   };
 
-  const handleSubItemClick = (parentTitle: string, subItemTitle: string) => {
+  const handleSubItemClick = (subItemTitle: string) => {
     setActiveTab(subItemTitle);
     if (window.innerWidth < 1024) {
       setIsCollapsed(true);
@@ -91,6 +113,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
   } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
+  // Check if a tab or sub-tab is active
+  const isItemActive = (item: SidebarItem | SubItem) => {
+    return activeTab === item.title;
+  };
+
   //parent menu
   const renderSidebarItem = (item: SidebarItem) => (
     <li
@@ -103,13 +130,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
       {item.dropdown ? (
         <div>
           <button
-            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out  (activeTab === item.title && !item.dropdown && !isCollapsed)
-                ? 'bg-gradient-to-r from-blue_dark_hover_1 to-blue_dark_hover_2'
+            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${
+              // Only highlight parent if it's directly active (not when sub-item is active)
+              isItemActive(item)
+                ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
                 : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
-              }
-              } focus:outline-none ${
-                isCollapsed ? "justify-center" : "justify-start"
-              }`}
+            } focus:outline-none ${
+              isCollapsed ? "justify-center" : "justify-start"
+            }`}
             onClick={() => toggleDropdown(item.title)}
           >
             {item.icon && <item.icon className="text-lg" />}
@@ -130,11 +158,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         item.path && (
           <Link
             href={item.path}
-            className={`flex items-center w-full py-3 px-4 transition-colors duration-300  ${
-              activeTab === item.title
+            className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${
+              isItemActive(item)
                 ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
                 : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-            }
             } focus:outline-none ${
               isCollapsed ? "justify-center" : "justify-start"
             }`}
@@ -157,12 +184,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
             <li key={subItem.title}>
               <Link
                 href={subItem.path}
-                className={`block pl-20 p-3 transition-colors ${
-                  activeTab === item.title
+                className={`block pl-20 mb-1 p-3 transition-colors ${
+                  isItemActive(subItem)
                     ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
                     : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
                 }`}
-                onClick={() => handleSubItemClick(item.title, subItem.title)}
+                onClick={() => handleSubItemClick(subItem.title)}
               >
                 {subItem.title}
               </Link>
@@ -172,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     </ul>
   );
 
-  //collapse mode
+  //collapse mode hover menu
   const renderHoverMenu = (item: SidebarItem) => (
     <div className="fixed left-[80px] z-50 w-48 p-1">
       <div className="relative bottom-12 w-48 p-1 bg-blue-900 rounded-md shadow-lg text-md">
@@ -183,10 +210,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 <li key={subItem.title}>
                   <Link
                     href={subItem.path}
-                    className="block p-2 hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+                    className={`block p-2 ${
+                      isItemActive(subItem)
+                        ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                        : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+                    }`}
                     onClick={() => {
                       setHoveredItem(null);
-                      handleSubItemClick(item.title, subItem.title);
+                      handleSubItemClick(subItem.title);
                     }}
                   >
                     {subItem.title}
