@@ -10,13 +10,13 @@ import PasswordField from "@/components/InputField/PasswordField";
 import { Button } from "@/components/ui/button";
 import { FaArrowRightLong, FaRegUser } from "react-icons/fa6";
 import { useAuthStore } from "@/store/authStore";
-import { setToken, setLocalUser } from "@/store/local_storage";
+import { setToken } from "@/store/local_storage";
 import { loginUser } from "@/api/authApis";
 import { toast } from "react-toastify";
 
 const LoginForm = () => {
   const router = useRouter();
-  const setUser = useAuthStore((state) => state.setUser);
+  const authStore = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -27,40 +27,20 @@ const LoginForm = () => {
 
   const handleLogin = async (data: LoginFormData) => {
     try {
-      console.log("Attempting login with:", data.userName);
       const response = await loginUser(data.userName, data.password);
       console.log("Full API response:", response);
 
-      // Validate response structure
-      if (!response || typeof response !== "object") {
-        throw new Error("Invalid server response format");
-      }
+      authStore.setUser(response.user);
+      setToken(response.token);
 
-      if (response.success && response.token && response.user) {
-        // Store authentication data
-        console.log("Storing token:", response.token);
-        setToken(response.token);
-
-        console.log("Storing user:", response.user);
-        setLocalUser(response.user);
-        setUser(response.user);
-
-        toast.success("Login successful!");
-        router.push("/dashboard");
+      toast.success("You’ve Logged In Successfully!");
+      router.push("/home");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
       } else {
-        throw new Error(response.message || "Authentication failed");
+        toast.error("An unexpected error occurred.");
       }
-    } catch (err: any) {
-      console.error("Login error:", err);
-
-      let errorMessage = "Login failed. Please try again.";
-      if (err.response) {
-        err.response.data?.message || `Server error (${err.response.status})`;
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-
-      toast.error(errorMessage);
     }
   };
 

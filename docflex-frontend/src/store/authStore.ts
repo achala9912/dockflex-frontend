@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { logoutUser } from "./local_storage";
 
 
-interface User {
+export interface User {
   _id: string;
   userId: string;
   title: string;

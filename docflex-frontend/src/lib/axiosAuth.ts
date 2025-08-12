@@ -2,40 +2,46 @@
 
 import { getToken } from "@/store/local_storage";
 import { useLoaderStore } from "@/store/useLoaderStore";
-import axios from "axios";
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosHeaders,
+} from "axios";
 import { toast } from "react-toastify";
+
+
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  skipLoading?: boolean;
+}
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-const axiosAuth = axios.create({
+const axiosAuth: AxiosInstance = axios.create({
   baseURL: `${BASE_URL}/api/v1`,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request interceptor
+
 axiosAuth.interceptors.request.use(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (config: any) => {
+  (config: CustomAxiosRequestConfig) => {
     const setLoading = useLoaderStore.getState().setLoading;
-    // Check if skipLoading is not true, then set loading
-    if (!config?.skipLoading) {
+
+    if (!config.skipLoading) {
       setLoading(true);
     }
 
-
     const token = getToken();
-
-    if (!config.headers["Authorization"]) {
-      config.headers["Authorization"] = token;
+    if (token && !config.headers?.has("Authorization")) {
+      config.headers = config.headers || new AxiosHeaders();
+      config.headers.set("Authorization", token);
     }
 
     return config;
   },
   (error) => {
-    const setLoading = useLoaderStore.getState().setLoading;
-    setLoading(false);
+    useLoaderStore.getState().setLoading(false);
     return Promise.reject(error);
   }
 );
@@ -43,18 +49,16 @@ axiosAuth.interceptors.request.use(
 // Response interceptor
 axiosAuth.interceptors.response.use(
   (response) => {
-    const setLoading = useLoaderStore.getState().setLoading;
-    setLoading(false);
+    useLoaderStore.getState().setLoading(false);
     return response?.data;
   },
   (error) => {
-    console.log("🚀 ~ error:", error);
-    const setLoading = useLoaderStore.getState().setLoading;
-    setLoading(false);
+    console.error("🚀 ~ error:", error);
+    useLoaderStore.getState().setLoading(false);
 
     let errMessage = "";
-    const { status } = error?.response;
-    const { message } = error?.response?.data || "";
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message || "";
 
     if (status === 401) {
       console.log("Unauthorized, logging out ...");
