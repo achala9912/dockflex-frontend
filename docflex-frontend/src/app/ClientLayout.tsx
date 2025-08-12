@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import TopNavbar from "@/components/Navbar/TopNavbar";
 import { usePathname } from "next/navigation";
 import ConnectionWarning from "@/components/Alerts/ConnectionWarnning";
+import Loader from "@/components/Loader/Loader";
 
 export default function ClientLayout({
   children,
@@ -53,6 +54,7 @@ export default function ClientLayout({
   `}
           >
             <ConnectionWarning />
+               <Loader />
             {children}
           </div>
         </div>
