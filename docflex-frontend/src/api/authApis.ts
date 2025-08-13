@@ -1,6 +1,7 @@
 import axios from "axios";
 import axiosAuth from "@/lib/axiosAuth";
 import type { User } from "@/store/authStore";
+import { HttpResponse } from "@/types/httpResponseType";
 
 export interface LoginResponse {
   success: boolean;
@@ -41,16 +42,11 @@ export async function loginUser(
   }
 }
 
-export interface ForgotPasswordOtpResponse {
-  success: boolean;
-  message: string;
-}
-
 export async function sendForgotPasswordOtp(
   userName: string
-): Promise<ForgotPasswordOtpResponse> {
+): Promise<HttpResponse<any>> {
   try {
-    const res = await axiosAuth.post<ForgotPasswordOtpResponse>(
+    const res = await axiosAuth.post<HttpResponse<any>>(
       "/auth/forgot-password/send-otp",
       { userName }
     );
@@ -64,19 +60,13 @@ export async function sendForgotPasswordOtp(
   }
 }
 
-
-export interface VerifyOtpResponse {
-  success: boolean;
-  message: string;
-}
-
 export async function verifyOtpAndResetPassword(
   userName: string,
   otp: string,
   newPassword: string
-): Promise<VerifyOtpResponse> {
+): Promise<HttpResponse<any>> {
   try {
-    const res = await axiosAuth.post<VerifyOtpResponse>(
+    const res = await axiosAuth.post<HttpResponse<any>>(
       "/auth/forgot-password/verify-otp",
       { userName, otp, newPassword }
     );
