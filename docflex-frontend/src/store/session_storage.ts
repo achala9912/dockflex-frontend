@@ -21,30 +21,31 @@ const TOKEN = "TOKEN";
 
 export const getLocalUser = () => {
   if (typeof window === "undefined") return {};
-  return JSON.parse(localStorage.getItem(USER) || "{}");
+  return JSON.parse(sessionStorage.getItem(USER) || "{}");
 };
 
-export const setLocalUser = (user = {}) => {
+export const setLocalUser = (user = 
+  {}) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(USER, JSON.stringify(user || {}));
+    sessionStorage.setItem(USER, JSON.stringify(user || {}));
   }
 };
 
 export const getToken = () => {
   if (typeof window === "undefined") return "";
-  const token = localStorage.getItem(TOKEN);
+  const token = sessionStorage.getItem(TOKEN);
   return token ? `Bearer ${token}` : "";
 };
 
 export const setToken = (token = "") => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(TOKEN, token);
+    sessionStorage.setItem(TOKEN, token);
   }
 };
 
 export const logoutUser = () => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(TOKEN);
-    localStorage.removeItem(USER);
+    sessionStorage.removeItem(TOKEN);
+    sessionStorage.removeItem(USER);
   }
 };

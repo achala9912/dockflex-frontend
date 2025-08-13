@@ -10,7 +10,7 @@ import PasswordField from "@/components/InputField/PasswordField";
 import { Button } from "@/components/ui/button";
 import { FaArrowRightLong, FaRegUser } from "react-icons/fa6";
 import { useAuthStore } from "@/store/authStore";
-import { setToken } from "@/store/local_storage";
+import { setToken } from "@/store/session_storage";
 import { loginUser } from "@/api/authApis";
 import { toast } from "react-toastify";
 
@@ -38,8 +38,6 @@ const LoginForm = () => {
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
-      } else {
-        toast.error("An unexpected error occurred.");
       }
     }
   };

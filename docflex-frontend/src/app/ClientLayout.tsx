@@ -13,7 +13,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const excludedPaths = ["/", "/forgotPassword", "/resetPassword"];
+  const excludedPaths = ["/", "/forgotPassword", "/verifyPassword"];
   const showLayout = !excludedPaths.includes(pathname);
 
   const [isCollapsed, setIsCollapsed] = useState(false);

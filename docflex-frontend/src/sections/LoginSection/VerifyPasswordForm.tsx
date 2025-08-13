@@ -5,18 +5,19 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ForgotPasswordSchema,
-  ForgotPasswordFormData,
-} from "@/schemas/Login/ForgotPassSchema";
+  VerifyPasswordSchema,
+  VerifyPasswordData,
+} from "@/schemas/Login/VerifyPasswordSchema";
 import InputField from "@/components/InputField/InputField";
+import PasswordField from "@/components/InputField/PasswordField";
 import { Button } from "@/components/ui/button";
-import { FaRegUser } from "react-icons/fa6";
+import { FaEnvelope, FaRegUser } from "react-icons/fa6";
 import { IoChevronBackSharp } from "react-icons/io5";
 import { Tooltip } from "@/components/ui/tooltip";
-import { sendForgotPasswordOtp } from "@/api/authApis";
+import { verifyOtpAndResetPassword } from "@/api/authApis";
 import { toast } from "react-toastify";
 
-const ForgotPasswordForm = () => {
+const VerifyPasswordForm = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -24,18 +25,21 @@ const ForgotPasswordForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(ForgotPasswordSchema),
+  } = useForm<VerifyPasswordData>({
+    resolver: zodResolver(VerifyPasswordSchema),
   });
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
+  const onSubmit = async (data: VerifyPasswordData) => {
     try {
       setLoading(true);
-      const res = await sendForgotPasswordOtp(data.userName);
-      console.log("OTP sent:", res);
-      toast.success("OTP send successfully!");
-      toast.info("Please check your email inbox.");
-      router.push("/verifyPassword");
+      const res = await verifyOtpAndResetPassword(
+        data.userName,
+        data.otp,
+        data.newPassword
+      );
+      console.log("Password reset:", res);
+      toast.success("Password reset successfully!");
+      router.push("/");
     } catch (error) {
       console.error(error);
     } finally {
@@ -45,7 +49,6 @@ const ForgotPasswordForm = () => {
 
   return (
     <div className="w-full max-w-md">
-      {/* Header with Back Button */}
       <div className="flex items-center gap-1 mb-4">
         <Tooltip content="Go back" side="bottom">
           <button
@@ -57,7 +60,7 @@ const ForgotPasswordForm = () => {
           </button>
         </Tooltip>
         <h2 className="text-xl font-bold text-gray-900 font-inter">
-          Forgot Password?
+          Reset Password
         </h2>
       </div>
 
@@ -65,10 +68,7 @@ const ForgotPasswordForm = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* User Name Field */}
         <div className="flex flex-col gap-2">
-          <label
-            htmlFor="userName"
-            className="text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="userName" className="text-sm font-medium text-gray-700">
             User Name
           </label>
           <InputField
@@ -84,6 +84,40 @@ const ForgotPasswordForm = () => {
           )}
         </div>
 
+        {/* OTP Field */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="otp" className="text-sm font-medium text-gray-700">
+            OTP
+          </label>
+          <InputField
+            id="otp"
+            type="number"
+            placeholder="Enter OTP received via Email"
+            className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            icon={<FaEnvelope className="text-gray-400" />}
+            {...register("otp")}
+          />
+          {errors.otp && (
+            <p className="text-red-500 text-xs">{errors.otp.message}</p>
+          )}
+        </div>
+
+        {/* New Password Field */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="newPassword" className="text-sm font-medium text-gray-700">
+            New Password
+          </label>
+          <PasswordField
+            id="newPassword"
+            placeholder="Enter your new password"
+            className="h-10 bg-[#FAFBFE] border shadow-sm rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            {...register("newPassword")}
+          />
+          {errors.newPassword && (
+            <p className="text-red-500 text-xs">{errors.newPassword.message}</p>
+          )}
+        </div>
+
         {/* Submit Button */}
         <div className="mt-4">
           <Button
@@ -93,7 +127,7 @@ const ForgotPasswordForm = () => {
             disabled={loading}
             className="w-full h-10 flex items-center justify-center px-4 py-2 font-semibold text-white rounded-lg bg-[#0D6ACA] hover:bg-blue-800 transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? "Sending..." : "Submit"}
+            {loading ? "Submitting..." : "Submit"}
           </Button>
         </div>
       </form>
@@ -101,4 +135,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default VerifyPasswordForm;

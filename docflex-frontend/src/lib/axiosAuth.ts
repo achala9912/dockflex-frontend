@@ -1,6 +1,7 @@
 "use client";
 
-import { getToken } from "@/store/local_storage";
+import { useAuthStore } from "@/store/authStore";
+import { getToken } from "@/store/session_storage";
 import { useLoaderStore } from "@/store/useLoaderStore";
 import axios, {
   AxiosInstance,
@@ -8,7 +9,6 @@ import axios, {
   AxiosHeaders,
 } from "axios";
 import { toast } from "react-toastify";
-
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   skipLoading?: boolean;
@@ -22,7 +22,6 @@ const axiosAuth: AxiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 
 axiosAuth.interceptors.request.use(
   (config: CustomAxiosRequestConfig) => {
@@ -61,7 +60,9 @@ axiosAuth.interceptors.response.use(
     const message = error?.response?.data?.message || "";
 
     if (status === 401) {
-      console.log("Unauthorized, logging out ...");
+      console.log("Unauthorized, logging out current session ...");
+      const logout = useAuthStore.getState().logout;
+      logout();
       window.location.href = "/";
     } else if (status === 400) {
       errMessage = message || "Bad Request";

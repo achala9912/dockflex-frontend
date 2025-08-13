@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { logoutUser } from "./local_storage";
-
+import { logoutUser } from "./session_storage";
 
 export interface User {
   _id: string;
@@ -54,13 +53,8 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: "auth-store",
       storage: createJSONStorage(() => {
-        try {
-          localStorage.setItem("test", "test");
-          localStorage.removeItem("test");
-          return localStorage;
-        } catch {
-          return sessionStorage;
-        }
+        // Always use sessionStorage to isolate sessions per tab
+        return sessionStorage;
       }),
     }
   )
