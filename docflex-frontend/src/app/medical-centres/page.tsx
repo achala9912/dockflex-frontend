@@ -7,9 +7,13 @@ import { Tooltip } from "@/components/ui/tooltip";
 import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
-import { getAllMedicalCenters } from "@/api/medicalCentersApi";
+import {
+  getAllMedicalCenters,
+  deleteMedicalCenters,
+} from "@/api/medicalCentersApi";
 import { useRouter } from "next/navigation";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
+import { toast } from "react-toastify";
 
 interface Centre {
   id: string;
@@ -27,7 +31,6 @@ function Page() {
   } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [centres, setCentres] = useState<Centre[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -35,7 +38,6 @@ function Page() {
   useEffect(() => {
     const fetchCentres = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const res = await getAllMedicalCenters();
@@ -56,8 +58,6 @@ function Page() {
       } catch (err: unknown) {
         console.error(err);
         setError("Failed to load medical centres.");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -77,10 +77,19 @@ function Page() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedCentre) {
-      console.log("Deleted Centre:", selectedCentre.id);
-      // TODO: call delete API
+      try {
+        console.log("Deleting Centre:", selectedCentre.id);
+        await deleteMedicalCenters(selectedCentre.id);
+        toast.success("Medical Center successfully deleted!");
+        setCentres((prev) =>
+          prev.filter((centre) => centre.id !== selectedCentre.id)
+        );
+      } catch (error) {
+        console.error("Failed to delete medical center:", error);
+        toast.error("Failed to delete medical center.");
+      }
     }
     setIsDeleteModalOpen(false);
     setSelectedCentre(null);
@@ -125,10 +134,8 @@ function Page() {
         </div>
       </div>
 
-      {loading ? (
-        <p className="text-gray-500 text-sm">Loading centres...</p>
-      ) : error ? (
-        <p className="text-red-500 text-sm">{error}</p>
+      {error ? (
+        <p className="text-red-500 text-sm font-medium">{error}</p>
       ) : (
         <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
           {filteredCentres.length > 0 ? (
