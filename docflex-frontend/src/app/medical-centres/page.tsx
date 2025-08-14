@@ -4,18 +4,65 @@ import RoundButton from "@/components/Buttons/RoundButton";
 import CentreCard from "@/components/Cards/CentreCard";
 import InputField from "@/components/InputField/InputField";
 import { Tooltip } from "@/components/ui/tooltip";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
-import jsonData from "@/data/data.json";
+import { getAllMedicalCenters } from "@/api/medicalCentersApi";
 import { useRouter } from "next/navigation";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 
+interface Centre {
+  id: string;
+  name: string;
+  town: string;
+  phone: string;
+  email: string;
+}
+
 function Page() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCentre, setSelectedCentre] = useState<{ id: string; name: string } | null>(null);
+  const [selectedCentre, setSelectedCentre] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [centres, setCentres] = useState<Centre[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCentres = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await getAllMedicalCenters();
+        console.log("Fetched centres response:", res);
+
+        if (Array.isArray(res)) {
+          const mapped = res.map((c) => ({
+            id: c.centerId || c._id,
+            name: c.centerName,
+            town: c.town,
+            phone: c.contactNo,
+            email: c.email,
+          }));
+          setCentres(mapped);
+        } else {
+          setCentres([]);
+        }
+      } catch (err: unknown) {
+        console.error(err);
+        setError("Failed to load medical centres.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCentres();
+  }, []);
 
   const addNewCentre = () => {
     router.push(`/medical-centres/new`);
@@ -33,14 +80,16 @@ function Page() {
   const handleDelete = () => {
     if (selectedCentre) {
       console.log("Deleted Centre:", selectedCentre.id);
-      // API call to delete the centre goes here
+      // TODO: call delete API
     }
     setIsDeleteModalOpen(false);
     setSelectedCentre(null);
   };
 
-  const filteredCentres = jsonData.centreData.filter((centre) =>
-    `${centre.id} ${centre.name}`.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCentres = centres.filter((centre) =>
+    `${centre.id} ${centre.name}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -76,24 +125,30 @@ function Page() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
-        {filteredCentres.length > 0 ? (
-          filteredCentres.map((centre) => (
-            <CentreCard
-              key={centre.id}
-              topName={centre.id}
-              middleName={centre.name}
-              bottomName1={centre.town}
-              bottomName2={centre.phone}
-              bottomName3={centre.email}
-              handleEdit={() => handleEdit(centre)}
-              handleDelete={() => handleDeleteConfirm(centre)}
-            />
-          ))
-        ) : (
-          <p className="text-gray-500 text-sm">No matching centres found.</p>
-        )}
-      </div>
+      {loading ? (
+        <p className="text-gray-500 text-sm">Loading centres...</p>
+      ) : error ? (
+        <p className="text-red-500 text-sm">{error}</p>
+      ) : (
+        <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
+          {filteredCentres.length > 0 ? (
+            filteredCentres.map((centre) => (
+              <CentreCard
+                key={centre.id}
+                topName={centre.id}
+                middleName={centre.name}
+                bottomName1={centre.town}
+                bottomName2={centre.phone}
+                bottomName3={centre.email}
+                handleEdit={() => handleEdit(centre)}
+                handleDelete={() => handleDeleteConfirm(centre)}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No matching centres found.</p>
+          )}
+        </div>
+      )}
 
       <DeleteConfirm
         element={selectedCentre?.name || ""}
