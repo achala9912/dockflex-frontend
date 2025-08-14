@@ -1,28 +1,20 @@
 "use client";
 
 import InputField from "@/components/InputField/InputField";
-import ImageUploader, {
-  UploadedImage,
-} from "@/components/InputImage/ImageUploader";
+import ImageUploader from "@/components/InputImage/ImageUploader";
 import { Controller, useFormContext } from "react-hook-form";
 import { CentreFormData } from "@/schemas/MedicalCentres/CentreSchema";
-import React, { useEffect, useState } from "react";
-
+import React, { useState } from "react";
 
 function MedicalCentreForm() {
   const [resetImages, setResetImages] = useState(false);
 
   const {
     register,
-    watch,
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<CentreFormData>();
-  useEffect(() => {
-    const formImages = watch("image");
-    if (formImages) {
-    }
-  }, [watch]);
 
   return (
     <div className="space-y-6">
@@ -149,27 +141,20 @@ function MedicalCentreForm() {
         </label>
         <Controller
           control={control}
-          name="image"
+          name="logo"
           render={({ field }) => (
             <ImageUploader
               resetImages={resetImages}
               setResetImages={setResetImages}
-              value={
-                Array.isArray(field.value) && field.value.length > 0
-                  ? (field.value[0] as UploadedImage).url
-                  : ""
-              }
-              onChange={(newImages) => {
-                const updatedImages = Array.isArray(newImages)
-                  ? newImages.map((img) => img.url)
-                  : [];
-                field.onChange(updatedImages);
+              value={typeof field.value === "string" ? field.value : undefined}
+              onChange={(url) => {
+                setValue("logo", url, { shouldValidate: false, shouldTouch: false });
               }}
             />
           )}
         />
-        {errors.image && (
-          <p className="text-red-500 text-sm">{errors.image.message}</p>
+        {errors.logo && (
+          <p className="text-red-500 text-sm">{errors.logo.message}</p>
         )}
       </div>
     </div>

@@ -26,16 +26,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   value = "",
   onChange,
 }) => {
-  const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(
-    null
-  );
+  const [selectedImage, setSelectedImage] = useState<UploadedImage | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [cropping, setCropping] = useState(false);
-  const [tempImage, setTempImage] = useState<UploadedImage | null>(null); 
+  const [tempImage, setTempImage] = useState<UploadedImage | null>(null);
 
   // Load existing uploaded image
   useEffect(() => {
@@ -99,12 +97,33 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   };
 
-  const handleCropCancel = () => {
-    if (tempImage?.preview) {
-      URL.revokeObjectURL(tempImage.preview); 
+  // When Cancel is clicked, upload original (uncropped) image and set as selected
+  const handleCropCancel = async () => {
+    if (!tempImage?.file) {
+      setTempImage(null);
+      setCropping(false);
+      return;
     }
-    setTempImage(null);
-    setCropping(false);
+
+    try {
+      setIsLoading(true);
+
+      // Upload original file (not cropped)
+      const uploadedUrl = await uploadImage(tempImage.file);
+
+      // Save preview and uploaded URL
+      setSelectedImage({ ...tempImage, uploadedUrl, preview: uploadedUrl });
+      onChange?.(uploadedUrl);
+
+      // Clean up object URL
+      URL.revokeObjectURL(tempImage.preview);
+      setTempImage(null);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setCropping(false);
+      setIsLoading(false);
+    }
   };
 
   const handleRemoveImage = () => {
@@ -153,12 +172,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <div className="fixed bottom-8 left-0 right-0 flex justify-center z-50">
               <div className="bg-white p-3 rounded-lg shadow-lg flex gap-4">
                 <Button
+                  type="button"
                   onClick={handleCropCancel}
                   className="flex-1 px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-700 min-w-[100px]"
                 >
                   Cancel
                 </Button>
                 <Button
+                  type="button"
                   onClick={handleCropConfirm}
                   className="flex-1 px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-700 min-w-[100px]"
                 >
@@ -190,20 +211,15 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       {/* Thumbnail + Remove */}
       {selectedImage && (
         <div className="relative w-20 h-20 border-2 border-gray-300 rounded-lg overflow-hidden">
-          {/* <NextImage
-            src={selectedImage.preview}
-            alt="Thumbnail"
-            fill
-            className="object-cover rounded-md"
-          /> */}
           <NextImage
             src={selectedImage.preview}
             alt="Thumbnail"
             fill
-            sizes="80px" 
+            sizes="80px"
             className="object-cover rounded-md"
           />
           <button
+            type="button"
             className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
             onClick={() => setIsPopupOpen(true)}
           >
@@ -240,7 +256,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     </div>
   );
 };
-
 
 async function getCroppedBlob(
   imageSrc: string,
