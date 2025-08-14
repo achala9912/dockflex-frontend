@@ -16,8 +16,6 @@ export interface MedicalCenter {
   isDeleted: boolean;
 }
 
-
-
 export async function createMedicalCenter(
   data: Omit<
     MedicalCenter,
@@ -33,7 +31,6 @@ export async function createMedicalCenter(
   }
 }
 
-
 export async function getAllMedicalCenters(
   page?: number,
   limit?: number,
@@ -43,7 +40,7 @@ export async function getAllMedicalCenters(
     const res = await axiosAuth.get<MedicalCenter[]>("/medical-centers", {
       params: { page, limit, search },
     });
-    return res.data; 
+    return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       throw new Error(
@@ -54,14 +51,10 @@ export async function getAllMedicalCenters(
   }
 }
 
-export async function getMedicalCentersById(
-  centerId: string
-): Promise<MedicalCenter> {
+export async function getMedicalCentersById(centerId: string): Promise<any> {
   try {
-    const res = await axiosAuth.get<MedicalCenter>(
-      `/medical-centers/${centerId}`
-    );
-    return res.data;
+    const res = await axiosAuth.get<any>(`/medical-centers/${centerId}`);
+    return res;
   } catch (error) {
     console.error(`Error fetching center with ID ${centerId}:`, error);
     throw error;

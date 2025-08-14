@@ -8,12 +8,24 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CentreFormData, CentreSchema } from "@/schemas/MedicalCentres/CentreSchema";
-import jsonData from "@/data/data.json"; 
+import {
+  CentreFormData,
+  CentreSchema,
+} from "@/schemas/MedicalCentres/CentreSchema";
+import {
+  getMedicalCentersById,
+  updateMedicalCenters,
+} from "@/api/medicalCentersApi";
+import { toast } from "react-toastify";
 
 function Page() {
   const router = useRouter();
-  const { centreId } = useParams();
+  const params = useParams();
+
+  // Ensure centreId is a string
+  const centreId: string | undefined = Array.isArray(params?.centreId)
+    ? params.centreId[0]
+    : params?.centreId;
 
   const methods = useForm<CentreFormData>({
     resolver: zodResolver(CentreSchema),
@@ -24,32 +36,57 @@ function Page() {
       city: "",
       contactNo: "",
       email: "",
-      image: [],
+      logo: "",
     },
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit} = methods;
 
-  // Load Centre Data on Mount
+  // Fetch centre details and populate form
   useEffect(() => {
-    if (centreId) {
-      const centreData = jsonData.centreData.find((centre) => centre.id === centreId);
-      if (centreData) {
-        reset({
-          centreName: centreData.name || "",
-          regNo: centreData.regNo || "",
-          address: centreData.address || "",
-          city: centreData.town || "",
-          contactNo: centreData.phone || "",
-          email: centreData.email || "",
-          image: [], 
+    const fetchCentre = async () => {
+      if (!centreId) return;
+      try {
+        const data = await getMedicalCentersById(centreId);
+        if (!data) {
+          toast.error("Centre data not found");
+          return;
+        }
+        methods.reset({
+          centreName: data.centerName ?? "",
+          regNo: data.regNo ?? "",
+          address: data.address ?? "",
+          city: data.town ?? "",
+          contactNo: data.contactNo ?? "",
+          email: data.email ?? "",
+          logo: data.logo ?? "",
         });
+      } catch (error) {
+        console.error("Failed to fetch centre:", error);
+        toast.error("Failed to load centre details.");
       }
-    }
-  }, [centreId, reset]);
+    };
+    fetchCentre();
+  }, [centreId, methods]);
 
-  const onSubmit = (data: CentreFormData) => {
-    console.log("Updated Centre Data:", data);
+  const onSubmit = async (data: CentreFormData) => {
+    if (!centreId) return;
+    try {
+      await updateMedicalCenters(centreId, {
+        centerName: data.centreName,
+        regNo: data.regNo,
+        address: data.address,
+        town: data.city ?? "",
+        contactNo: data.contactNo ?? "",
+        email: data.email ?? "",
+        logo: data.logo ?? "",
+      });
+      toast.success("Medical Center successfully updated!");
+      router.push("/medical-centres");
+    } catch (error) {
+      console.error("Failed to update centre:", error);
+      toast.error("Failed to update centre.");
+    }
   };
 
   return (
