@@ -39,21 +39,41 @@ export interface UserMgmt {
 }
 
 export const userMgmtColumns: Column<UserMgmt>[] = [
-  { header: "User ID", accessor: "userId" },
-  { header: "Center Name", accessor: "centerId.centerName" },
-  { header: "Name", accessor: "name" },
-  { header: "User Name", accessor: "userName" },
-  { header: "Gender", accessor: "gender" },
-  { header: "Role", accessor: "role.roleName" },
-  { header: "SLMC No", accessor: "slmcNo" },
-  { header: "Specialization", accessor: "specialization" },
-  { header: "Email", accessor: "email" },
-  { header: "Contact No", accessor: "contactNo" },
+  { header: "User ID", accessor: "userId", headerClassName: "min-w-[100px]" },
+  {
+    header: "Center Name",
+    accessor: "centerId.centerName",
+    headerClassName: "min-w-[200px]",
+  },
+  { header: "Name", accessor: "name", headerClassName: "min-w-[200px]" },
+  {
+    header: "User Name",
+    accessor: "userName",
+    headerClassName: "min-w-[150px]",
+  },
+  { header: "Gender", accessor: "gender", headerClassName: "min-w-[100px]" },
+  {
+    header: "Role",
+    accessor: "role.roleName",
+    headerClassName: "min-w-[150px]",
+  },
+  { header: "SLMC No", accessor: "slmcNo", headerClassName: "min-w-[150px]" },
+  {
+    header: "Specialization",
+    accessor: "specialization",
+    headerClassName: "min-w-[200px]",
+  },
+  { header: "Email", accessor: "email", headerClassName: "min-w-[200px]" },
+  {
+    header: "Contact No",
+    accessor: "contactNo",
+    headerClassName: "min-w-[150px]",
+  },
   {
     header: "Action",
-    accessor: "action", // placeholder
+    accessor: "action",
     render: (_value, row, handlers) => (
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 justify-center">
         <FaEdit
           className="text-[#23A3DA] hover:text-blue-700 cursor-pointer"
           onClick={() => handlers?.edit?.(row)}
