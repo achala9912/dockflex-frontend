@@ -1,24 +1,22 @@
 "use client";
+
 import { FaEdit, FaTrash } from "react-icons/fa";
+import React from "react";
+
 export type Column<T> = {
   header: string;
-  headerClassName?: string;
-  className?: string;
-  accessor: keyof T;
+  accessor: keyof T | string; // support nested accessors
   render?: (
-    value: T[keyof T] | undefined,
+    value: any,
     row: T,
     handlers?: Record<string, (row: T) => void>
   ) => React.ReactNode;
-  Cell?: (props: { value: T[keyof T] }) => React.ReactNode;
-};
-
-type Role = {
-  roleName: string;
-  roleId: string;
+  headerClassName?: string;
+  className?: string;
 };
 
 export interface UserMgmt {
+  _id: string;
   userId: string;
   title?: string;
   name: string;
@@ -28,48 +26,42 @@ export interface UserMgmt {
   contactNo: string;
   createdAt: string;
   gender: string;
-  role: Role;
+  role: {
+    _id: string;
+    roleName: string;
+    roleId: string;
+  };
   email: string;
+  remark?: string;
+  centerId: {
+    centerName: string;
+  };
 }
 
 export const userMgmtColumns: Column<UserMgmt>[] = [
   { header: "User ID", accessor: "userId" },
+  { header: "Center Name", accessor: "centerId.centerName" },
   { header: "Name", accessor: "name" },
   { header: "User Name", accessor: "userName" },
   { header: "Gender", accessor: "gender" },
-  {
-    header: "Role",
-    accessor: "role",
-  },
-  {
-    header: "SLMC No",
-    accessor: "slmcNo",
-  },
-  {
-    header: "Specialization",
-    accessor: "specialization",
-  },
-  {
-    header: "Email",
-    accessor: "email",
-  },
-  {
-    header: "Contact No",
-    accessor: "contactNo",
-  },
+  { header: "Role", accessor: "role.roleName" },
+  { header: "SLMC No", accessor: "slmcNo" },
+  { header: "Specialization", accessor: "specialization" },
+  { header: "Email", accessor: "email" },
+  { header: "Contact No", accessor: "contactNo" },
   {
     header: "Action",
-    accessor: "action" as keyof UserMgmt,
+    accessor: "action", // placeholder
     render: (_value, row, handlers) => (
       <div className="flex space-x-4">
         <FaEdit
           className="text-[#23A3DA] hover:text-blue-700 cursor-pointer"
-          onClick={() => handlers?.edit(row)}
+          onClick={() => handlers?.edit?.(row)}
           aria-label="Edit User"
         />
         <FaTrash
           className="text-[#EB1313]/70 hover:text-red-700 cursor-pointer"
-          onClick={() => handlers?.delete(row)}
+          onClick={() => handlers?.delete?.(row)}
           aria-label="Delete User"
         />
       </div>

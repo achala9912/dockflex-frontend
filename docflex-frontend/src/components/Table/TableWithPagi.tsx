@@ -15,9 +15,9 @@ import Pagination from "./Pagination";
 
 export type Column<T> = {
   header: string;
-  accessor: keyof T;
+  accessor: keyof T | string; // ✅ allow nested accessors
   render?: (
-    value: T[keyof T],
+    value: any,
     row: T,
     handlers?: Record<string, (row: T) => void>
   ) => React.ReactNode;
@@ -33,11 +33,6 @@ interface TableWithPagiProps<T> extends React.HTMLAttributes<HTMLTableElement> {
   pagination?: boolean;
   handleEdit?: (row: T) => void;
   handleDelete?: (row: T) => void;
-  handleInfo?: (row: T) => void;
-  handleView?: (row: T) => void;
-  handlePrint?: (row: T) => void;
-  handleAccept?: (row: T) => void;
-  getRowId?: (row: T) => string | number;
   totalPages: number;
   currentPage: number;
   setPage: (page: number) => void;
@@ -45,7 +40,15 @@ interface TableWithPagiProps<T> extends React.HTMLAttributes<HTMLTableElement> {
   pagiLabel?: string;
 }
 
-function TableWithPagi<T extends Record<string, unknown>>({
+// Utility to get nested value
+const getValue = <T,>(row: T, accessor: keyof T | string) => {
+  if (typeof accessor === "string" && accessor.includes(".")) {
+    return accessor.split(".").reduce((acc: any, key) => acc?.[key], row);
+  }
+  return row[accessor as keyof T];
+};
+
+function TableWithPagi<T>({
   columns,
   data,
   caption,
@@ -54,10 +57,6 @@ function TableWithPagi<T extends Record<string, unknown>>({
   className,
   handleEdit,
   handleDelete,
-  handleInfo,
-  handleView,
-  handlePrint,
-  handleAccept,
   totalPages,
   currentPage,
   setPage,
@@ -74,8 +73,8 @@ function TableWithPagi<T extends Record<string, unknown>>({
     const sortableData = [...data];
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
+        const aValue = getValue(a, sortConfig.key);
+        const bValue = getValue(b, sortConfig.key);
 
         if (typeof aValue === "number" && typeof bValue === "number") {
           return sortConfig.direction === "ascending"
@@ -96,20 +95,14 @@ function TableWithPagi<T extends Record<string, unknown>>({
 
   const requestSort = (key: keyof T) => {
     let direction: "ascending" | "descending" = "ascending";
-    if (
-      sortConfig &&
-      sortConfig.key === key &&
-      sortConfig.direction === "ascending"
-    ) {
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
     }
     setSortConfig({ key, direction });
   };
 
   const getSortIndicator = (key: keyof T) => {
-    if (!sortConfig || sortConfig.key !== key) {
-      return null;
-    }
+    if (!sortConfig || sortConfig.key !== key) return null;
     return sortConfig.direction === "ascending" ? " 🔼" : " 🔽";
   };
 
@@ -123,14 +116,14 @@ function TableWithPagi<T extends Record<string, unknown>>({
               {columns.map((column, idx) => (
                 <TableHead
                   key={idx}
-                  onClick={() => requestSort(column.accessor)}
+                  onClick={() => requestSort(column.accessor as keyof T)}
                   className={cn("cursor-pointer select-none", column.headerClassName)}
                   role="button"
                   tabIndex={0}
                 >
                   <span className="flex items-center">
                     {column.header}
-                    {getSortIndicator(column.accessor)}
+                    {getSortIndicator(column.accessor as keyof T)}
                   </span>
                 </TableHead>
               ))}
@@ -143,25 +136,18 @@ function TableWithPagi<T extends Record<string, unknown>>({
                   {columns.map((column, cidx) => (
                     <TableCell key={cidx} className={column.className}>
                       {column.render
-                        ? column.render(row[column.accessor], row, {
+                        ? column.render(getValue(row, column.accessor), row, {
                             edit: handleEdit ?? (() => {}),
                             delete: handleDelete ?? (() => {}),
-                            info: handleInfo ?? (() => {}),
-                            view: handleView ?? (() => {}),
-                            print: handlePrint ?? (() => {}),
-                            accept: handleAccept ?? (() => {}),
                           })
-                        : String(row[column.accessor] ?? "")}
+                        : String(getValue(row, column.accessor) ?? "")}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="p-4 text-center text-gray-500"
-                >
+                <TableCell colSpan={columns.length} className="p-4 text-center text-gray-500">
                   No Records Found
                 </TableCell>
               </TableRow>

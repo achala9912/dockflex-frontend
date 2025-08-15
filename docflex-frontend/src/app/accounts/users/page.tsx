@@ -1,22 +1,73 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdAdd } from "react-icons/io";
 import RoundButton from "@/components/Buttons/RoundButton";
 import Dropdown from "@/components/Dropdown/Dropdown";
-import SearchBar from "@/components/Searchbar/Searchbar";
-import { userMgmtColumns } from "@/components/Table/Coloumns";
+import { UserMgmt, userMgmtColumns } from "@/components/Table/Coloumns";
 import TableWithPagi from "@/components/Table/TableWithPagi";
 import { Tooltip } from "@/components/ui/tooltip";
-import jsonData from "@/data/data.json";
+import { getAllUsers, User } from "@/api/usersApi";
+import InputField from "@/components/InputField/InputField";
+import { FiSearch } from "react-icons/fi";
 
 export default function Page() {
   const [selectedRole, setSelectedRole] = useState<string>("");
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [userData, setUserData] = useState<User[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
   const itemsPerPage = 10;
-  const dummyData = jsonData.userData;
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const params: Record<string, any> = {
+          page: currentPage,
+          limit: itemsPerPage,
+        };
+        if (selectedRole) params.roleId = selectedRole;
+        if (searchValue) params.name = searchValue;
+
+        const response: any = await getAllUsers(params);
+        setUserData(Array.isArray(response) ? response : []);
+        setTotalPages(1);
+        setTotalItems(Array.isArray(response) ? response.length : 0);
+      } catch (err: unknown) {
+        console.error(err);
+        setUserData([]);
+        setTotalPages(1);
+        setTotalItems(0);
+      }
+    }
+    fetchUsers();
+  }, [selectedRole, searchValue, currentPage]);
+
+
+  const userMgmtData: UserMgmt[] = userData.map((u) => ({
+    _id: u._id,
+    userId: u.userId ?? "",
+    title: u.title ?? "",
+    name: u.name ?? "",
+    userName: u.userName ?? "",
+    slmcNo: u.slmcNo ?? "",
+    specialization: u.specialization ?? "",
+    contactNo: u.contactNo ?? "",
+    createdAt: u.createdAt ?? "",
+    gender: u.gender ?? "",
+    role: {
+      _id: u.role?._id ?? "",
+      roleName: u.role?.roleName ?? "",
+      roleId: u.role?.roleId ?? "",
+    },
+    email: u.email ?? "",
+    remark: u.remarks ?? "",
+    centerId: {
+      centerName: u.centerId?.centerName ?? "",
+    },
+  }));
 
   return (
     <>
@@ -41,16 +92,17 @@ export default function Page() {
               labelName="Role ID / Name"
               width="md:w-[300px] w-full"
             />
-            <SearchBar
+       
+            <InputField
               id="userId"
+              width="w-full sm:w-[400px]"
+              icon={<FiSearch />}
+              type="text"
               value={searchValue}
               placeholder="Search User ID / Name"
               onChange={(e) => setSearchValue(e.target.value)}
-              onSuggestionSelect={(suggestion) => setSearchValue(suggestion)}
-              suggestions={[]}
-              label
-              labelName="User ID / Name"
-              width="md:w-72 w-full"
+              label={true}
+              labelName="User Name"
             />
           </div>
           <Tooltip content="Add New User" side="top">
@@ -66,12 +118,12 @@ export default function Page() {
       <div>
         <TableWithPagi
           columns={userMgmtColumns}
-          data={dummyData}
+          data={userMgmtData}
           itemsPerPage={itemsPerPage}
-          totalPages={1}
+          totalPages={totalPages}
           currentPage={currentPage}
           setPage={setCurrentPage}
-          totalItems={dummyData.length}
+          totalItems={totalItems}
         />
       </div>
     </>
