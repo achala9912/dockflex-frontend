@@ -1,6 +1,6 @@
 import axiosAuth from "@/lib/axiosAuth";
 
-// Interface for the nested Role object
+
 export interface Role {
   _id: string;
   roleId?: string;
@@ -13,13 +13,13 @@ export interface Role {
   __v: number;
 }
 
-// Interface for the nested Center object
+
 export interface Center {
   _id: string;
   centerName: string;
 }
 
-// Interface for the User object based on the postman response
+
 export interface User {
   _id: string;
   userId: string;
@@ -44,7 +44,6 @@ export interface User {
   __v: number;
 }
 
-// Interface for the response of getAllUsers
 export interface GetAllUsersResponse {
   data: User[];
   total: number;

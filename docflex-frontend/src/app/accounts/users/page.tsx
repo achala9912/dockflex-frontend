@@ -10,6 +10,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { getAllUsers, User } from "@/api/usersApi";
 import InputField from "@/components/InputField/InputField";
 import { FiSearch } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -18,8 +19,9 @@ export default function Page() {
   const [userData, setUserData] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
-
   const itemsPerPage = 10;
+
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -45,7 +47,6 @@ export default function Page() {
     fetchUsers();
   }, [selectedRole, searchValue, currentPage]);
 
-
   const userMgmtData: UserMgmt[] = userData.map((u) => ({
     _id: u._id,
     userId: u.userId ?? "",
@@ -68,7 +69,9 @@ export default function Page() {
       centerName: u.centerId?.centerName ?? "",
     },
   }));
-
+  const addNewUser = () => {
+    router.push(`/accounts/users/new`);
+  };
   return (
     <>
       <div className="flex justify-between mb-3">
@@ -92,7 +95,7 @@ export default function Page() {
               labelName="Role ID / Name"
               width="md:w-[300px] w-full"
             />
-       
+
             <InputField
               id="userId"
               width="w-full sm:w-[400px]"
@@ -109,7 +112,7 @@ export default function Page() {
             <RoundButton
               icon={IoMdAdd}
               className="hover:bg-gray-300 bg-blue-800 text-white hover:text-blue-800"
-              onClick={() => console.log("Add New User clicked")}
+              onClick={addNewUser}
             />
           </Tooltip>
         </div>
