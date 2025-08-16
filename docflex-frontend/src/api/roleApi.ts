@@ -1,26 +1,23 @@
 import axiosAuth from "@/lib/axiosAuth";
 
-
 export interface Role {
   _id: string;
   roleId: string;
   roleName: string;
   permissions: string[];
   isDeleted: boolean;
-  modificationHistory: any[]; // you can type this more strictly if needed
-  createdAt: string; // or Date if you parse it
-  updatedAt: string; // or Date if you parse it
+  modificationHistory: any[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-// In your roleApi.ts file
 export interface RolesResponse {
-  data: Role[]; // This should be just Role[] if API returns array directly
+  data: Role[];
   total?: number;
   totalPages?: number;
   currentPage?: number;
 }
 
-// Update getAllRoles to handle both formats
 export async function getAllRoles(
   page?: number,
   limit?: number,
@@ -31,7 +28,6 @@ export async function getAllRoles(
       params: { page, limit, roleName },
     });
 
-    // Handle both array and object responses
     if (Array.isArray(response.data)) {
       return {
         data: response.data,
@@ -43,6 +39,31 @@ export async function getAllRoles(
     return response.data;
   } catch (err) {
     console.error("API Error:", err);
+    throw err;
+  }
+}
+
+export interface PermissionOption {
+  label: string;
+  value: string;
+}
+
+export interface PermissionConstants {
+  user: PermissionOption[];
+  role: PermissionOption[];
+  center: PermissionOption[];
+  patient: PermissionOption[];
+  session: PermissionOption[];
+  genericname: PermissionOption[];
+  appointment: PermissionOption[];
+}
+
+export async function getPermissionConstants(): Promise<PermissionConstants> {
+  try {
+    const data = await axiosAuth.get("/roles/permission-constant");
+    return data as unknown as PermissionConstants;
+  } catch (err) {
+    console.error("Failed to fetch permission constants:", err);
     throw err;
   }
 }
