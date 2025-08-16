@@ -12,4 +12,5 @@ export interface HttpResponse<T> {
   };
   statusCode: number;
   searchResultFound?: boolean;
+  Role: never[];
 }

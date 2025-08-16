@@ -5,7 +5,7 @@ import React from "react";
 
 export type Column<T> = {
   header: string;
-  accessor: keyof T | string; // support nested accessors
+  accessor: keyof T | string;
   render?: (
     value: any,
     row: T,

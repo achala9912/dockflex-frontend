@@ -3,12 +3,12 @@
 import { Pencil, ShieldCheck, Trash2 } from "lucide-react";
 
 interface RoleCardProps {
-  topName: string;
+  topName: string | undefined;
   middleName?: string;
   bottomName1?: string;
   bottomName2?: string;
   bottomName3?: string;
-//   handleView: () => void;
+  //   handleView: () => void;
   handleEdit: () => void;
   handleDelete: () => void;
 }
@@ -21,7 +21,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
   bottomName3,
   handleEdit,
   handleDelete,
-//   handleView,
+  //   handleView,
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg w-72 relative flex flex-col items-center">
