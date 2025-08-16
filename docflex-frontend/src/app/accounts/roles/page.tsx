@@ -11,6 +11,7 @@ import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 import { getAllRoles } from "@/api/roleApi";
 import Pagination from "@/components/Table/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useRouter } from "next/navigation";
 
 interface Role {
   _id: string;
@@ -37,7 +38,7 @@ function Page() {
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchRoles = async () => {
       setLoading(true);
@@ -107,7 +108,7 @@ function Page() {
             <RoundButton
               icon={IoMdAdd}
               className="hover:bg-gray-300 bg-blue-800 text-white hover:text-blue-800"
-              onClick={() => console.log("Add New Role clicked")}
+              onClick={() => router.push("/accounts/roles/new")}
             />
           </Tooltip>
         </div>
@@ -120,7 +121,7 @@ function Page() {
             rolesData.map((role) => (
               <RoleCard
                 key={role._id}
-                topName={role.roleId || ""} 
+                topName={role.roleId || ""}
                 middleName={role.roleName}
                 handleEdit={() => console.log(`Editing role: ${role._id}`)}
                 handleDelete={() =>

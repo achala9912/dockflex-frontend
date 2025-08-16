@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useFormContext, Controller } from "react-hook-form";
 import FormField from "@/components/Fields/FormField";
 import InputField from "@/components/InputField/InputField";
 import { getPermissionConstants, PermissionConstants } from "@/api/roleApi";
 import { FiCheck } from "react-icons/fi";
 
-interface RoleFormValues {
+export interface RoleFormValues {
   roleName: string;
   permissions: string[];
 }
@@ -30,12 +30,7 @@ function prettifyCategory(category: string): string {
 }
 
 function RoleForm() {
-  const { control, handleSubmit, setValue, watch } = useForm<RoleFormValues>({
-    defaultValues: {
-      roleName: "",
-      permissions: [],
-    },
-  });
+  const { control, setValue, watch } = useFormContext<RoleFormValues>();
 
   const [permissionConstants, setPermissionConstants] =
     useState<PermissionConstants | null>(null);
@@ -50,10 +45,9 @@ function RoleForm() {
       setError(null);
       try {
         const data = await getPermissionConstants();
-        console.log("Permissions fetched:", data); 
         setPermissionConstants(data);
       } catch (err: unknown) {
-        console.error(err);
+        console.error("Failed to load permissions:", err);
         setError("Failed to load permissions. Please try again.");
       } finally {
         setIsLoading(false);
@@ -72,16 +66,8 @@ function RoleForm() {
     );
   };
 
-  const onSubmit = (data: RoleFormValues) => {
-    console.log("Form Data:", data);
-    // Add your form submission logic here
-  };
-
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2"
-    >
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div className="col-span-2">
         <FormField label="Role Name">
           <Controller
@@ -94,6 +80,7 @@ function RoleForm() {
                 type="text"
                 {...field}
                 placeholder="Enter role name"
+                
               />
             )}
           />
@@ -147,16 +134,7 @@ function RoleForm() {
           </div>
         ) : null}
       </div>
-
-      <div className="col-span-2 flex justify-end mt-6">
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Save Role
-        </button>
-      </div>
-    </form>
+    </div>
   );
 }
 

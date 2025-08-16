@@ -67,3 +67,17 @@ export async function getPermissionConstants(): Promise<PermissionConstants> {
     throw err;
   }
 }
+
+export interface CreateRolePayload {
+  roleName: string;
+  permissions: string[];
+}
+export async function createRole(payload: CreateRolePayload): Promise<Role> {
+  try {
+    const data = await axiosAuth.post("/roles", payload);
+    return data as unknown as Role;
+  } catch (err) {
+    console.error("Failed to create role:", err);
+    throw err;
+  }
+}
