@@ -95,13 +95,13 @@ function Page() {
               icon={<FiSearch />}
               type="text"
               value={searchTerm}
-              placeholder="Search Role ID / Name"
+              placeholder="Search Name"
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setPage(1);
               }}
               label={true}
-              labelName="Role ID / Name"
+              labelName="Role Name"
             />
           </div>
           <Tooltip content="Add New Role" side="top">
@@ -123,7 +123,9 @@ function Page() {
                 key={role._id}
                 topName={role.roleId || ""}
                 middleName={role.roleName}
-                handleEdit={() => console.log(`Editing role: ${role._id}`)}
+                handleEdit={() =>
+                  router.push(`/accounts/roles/edit/${role.roleId}`)
+                }
                 handleDelete={() =>
                   handleDeleteConfirm({ id: role._id, name: role.roleName })
                 }

@@ -36,19 +36,28 @@ const Pagination: React.FC<PaginationProps> = ({
   const startItem = (currentPage - 1) * limit + 1;
   const endItem = Math.min(currentPage * limit, totalItems);
 
-  // Dynamically calculate the page numbers to show
+  // const getPageNumbers = () => {
+  //   const maxVisibleButtons = 3;
+  //   const startPage = Math.max(currentPage - 1, 1);
+  //   const endPage = Math.min(startPage + maxVisibleButtons - 1, totalPages);
+
+  //   const pageNumbers = [];
+  //   for (let i = startPage; i <= endPage; i++) {
+  //     pageNumbers.push(i);
+  //   }
+  //   return pageNumbers;
+  // };
   const getPageNumbers = () => {
     const maxVisibleButtons = 3;
     const startPage = Math.max(currentPage - 1, 1);
     const endPage = Math.min(startPage + maxVisibleButtons - 1, totalPages);
 
-    const pageNumbers = [];
+    const pageNumbers: number[] = []; // Explicitly type the array as number[]
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
     return pageNumbers;
   };
-
   return (
     <div className="flex flex-col sm:flex-row items-end sm:items-center sm:justify-between mt-4 gap-3">
       <div>

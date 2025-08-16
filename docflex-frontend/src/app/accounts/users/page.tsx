@@ -11,6 +11,7 @@ import { getAllUsers, User } from "@/api/usersApi";
 import InputField from "@/components/InputField/InputField";
 import { FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { getRoleSuggestions, Role } from "@/api/roleApi";
 
 export default function Page() {
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -19,10 +20,31 @@ export default function Page() {
   const [userData, setUserData] = useState<User[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
+  const [roleOptions, setRoleOptions] = useState<
+    { label: string; value: string }[]
+  >([]);
   const itemsPerPage = 10;
 
   const router = useRouter();
+  // Fetch role suggestions
+  useEffect(() => {
+    const fetchRoleSuggestions = async () => {
+      try {
+        const roles = await getRoleSuggestions();
+        console.log("role sugge", roles);
+        const options = roles.map((role: Role) => ({
+          label: role.roleName,
+          value: role.roleId,
+        }));
+        setRoleOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch role suggestions:", error);
+        setRoleOptions([]);
+      }
+    };
 
+    fetchRoleSuggestions();
+  }, []);
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -86,10 +108,7 @@ export default function Page() {
             <Dropdown
               id="select-role"
               value={selectedRole}
-              options={[
-                { label: "Admin", value: "admin" },
-                { label: "Doctor", value: "doctor" },
-              ]}
+              options={roleOptions}
               onChange={(value) => setSelectedRole(value as string)}
               label
               labelName="Role ID / Name"
