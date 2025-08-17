@@ -12,11 +12,9 @@ export const UserSchema = z
     userName: z.string().min(1, "Username is required"),
     email: z.string().email("Invalid email address"),
     contactNo: z.string().min(1, "Contact No is required"),
-    // Doctor fields (conditionally required)
     slmcNo: z.string().optional(),
     specialization: z.string().optional(),
-    digitalSignature: z.string().optional(),
-    // Optional fields
+    digitalSignature: z.string(z.object({ url: z.string().url() })).optional(),
     remarks: z.string().optional(),
   })
   .superRefine((data, ctx) => {

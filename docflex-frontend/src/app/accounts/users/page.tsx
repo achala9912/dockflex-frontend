@@ -94,6 +94,10 @@ export default function Page() {
   const addNewUser = () => {
     router.push(`/accounts/users/new`);
   };
+
+  const handleEdit = (user: { userId: string }) => {
+    router.push(`/accounts/users/edit/${user.userId}`);
+  };
   return (
     <>
       <div className="flex justify-between mb-3">
@@ -146,6 +150,7 @@ export default function Page() {
           currentPage={currentPage}
           setPage={setCurrentPage}
           totalItems={totalItems}
+          handleEdit={handleEdit}
         />
       </div>
     </>

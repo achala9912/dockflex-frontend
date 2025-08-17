@@ -75,3 +75,35 @@ export async function createUser(data: any): Promise<any> {
     throw err;
   }
 }
+
+export async function updateUser(
+  userId: string,
+  updateData: any
+): Promise<any> {
+  try {
+    const response = await axiosAuth.put(`/users/${userId}`, updateData);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to update user:", err);
+    throw err;
+  }
+}
+
+export async function getUserById(userId: string): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/users/${userId}`);
+    return res;
+  } catch (error) {
+    console.error(`Error fetching user data with ID ${userId}:`, error);
+    throw error;
+  }
+}
+
+export async function deleteUser(userId: string): Promise<void> {
+  try {
+    await axiosAuth.delete(`/users/${userId}`);
+  } catch (error) {
+    console.error(`Error deleting  user with ID ${userId}:`, error);
+    throw error;
+  }
+}
