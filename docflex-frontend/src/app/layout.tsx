@@ -3,7 +3,6 @@ import "./globals.css";
 import ClientLayout from "./ClientLayout";
 import { ToastContainer } from "react-toastify";
 
-
 export const metadata: Metadata = {
   title: "DocFlex Pro",
   description: "Discover amazing .",
@@ -21,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ToastContainer
-          position="top-right"
+          position="top-center"
           autoClose={5000}
           hideProgressBar={false}
           newestOnTop={false}
@@ -31,7 +30,7 @@ export default function RootLayout({
           pauseOnHover
           theme="light"
         />
-     
+
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

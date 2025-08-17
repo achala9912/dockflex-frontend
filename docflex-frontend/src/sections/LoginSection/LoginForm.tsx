@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,13 +13,18 @@ import { useAuthStore } from "@/store/authStore";
 import { setToken } from "@/store/session_storage";
 import { loginUser } from "@/api/authApis";
 import { toast } from "react-toastify";
+import FirstLoginPopup from "./FirstLoginPopup";
 
 const LoginForm = () => {
   const router = useRouter();
   const authStore = useAuthStore();
+  const [showFirstLoginPopup, setShowFirstLoginPopup] = useState(false);
+  const [popupUserName, setPopupUserName] = useState("");
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(LoginSchema),
@@ -28,22 +33,34 @@ const LoginForm = () => {
   const handleLogin = async (data: LoginFormData) => {
     try {
       const response = await loginUser(data.userName, data.password);
-      console.log("Full API response:", response);
 
       authStore.setUser(response.user);
       setToken(response.token);
 
+      if (response.mustResetPassword) {
+        toast.info("Please reset your password before continuing.");
+        setPopupUserName(data.userName);
+        setShowFirstLoginPopup(true);
+        return;
+      }
+
       toast.success("You’ve Logged In Successfully!");
       router.push("/home");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
+    } catch (error: any) {
+      const serverMessage = error.response?.data?.error;
+      toast.error(
+        serverMessage || "Login failed. Please check your credentials."
+      );
     }
   };
 
+  const handlePopupClose = () => {
+    setShowFirstLoginPopup(false);
+    reset();
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto relative">
       <h2 className="mb-4 text-xl font-bold text-gray-900 text-start font-inter">
         Welcome Back!
       </h2>
@@ -115,6 +132,14 @@ const LoginForm = () => {
           Forgot my password?
         </button>
       </div>
+
+      {showFirstLoginPopup && (
+        <FirstLoginPopup
+          userName={popupUserName}
+          isOpen={showFirstLoginPopup}
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };

@@ -48,6 +48,21 @@ function UserForm() {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+       <FormField label="Medical Center">
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <Dropdown
+              id="role"
+              value={field.value}
+              onChange={field.onChange}
+              options={roleOptions}
+              placeholder="Select role..."
+            />
+          )}
+        />
+      </FormField>
       <FormField label="Role">
         <Controller
           name="role"
@@ -93,7 +108,7 @@ function UserForm() {
         </div>
       </FormField>
 
-      <FormField label="Gender">
+      <FormField label="Gender" error="">
         <Controller
           name="gender"
           control={control}

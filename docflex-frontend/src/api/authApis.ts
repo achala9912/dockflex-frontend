@@ -4,6 +4,7 @@ import type { User } from "@/store/authStore";
 import { HttpResponse } from "@/types/httpResponseType";
 
 export interface LoginResponse {
+  mustResetPassword: boolean;
   success: boolean;
   token: string;
   user: User;
@@ -20,9 +21,8 @@ export async function loginUser(
       password,
     });
 
-    console.log("Axios full response:", res);
+    console.log("Axios Login full response:", res);
 
-    // Some backends return data in res instead of res.data
     const responseData = res.data ?? (res as unknown as LoginResponse);
 
     if (!responseData || typeof responseData !== "object") {
@@ -31,13 +31,7 @@ export async function loginUser(
 
     return responseData;
   } catch (err: unknown) {
-    console.error("Axios error:", err);
-
-    if (axios.isAxiosError(err)) {
-      console.error("Axios error details:", err.response?.data);
-      throw new Error(err.response?.data?.message || "Login request failed.");
-    }
-
+    console.error("Axios Login error:", err);
     throw err;
   }
 }
@@ -76,6 +70,27 @@ export async function verifyOtpAndResetPassword(
     if (axios.isAxiosError(err)) {
       throw new Error(
         err.response?.data?.message || "Failed to reset password."
+      );
+    }
+    throw err;
+  }
+}
+
+export async function firstLoginResetPassword(
+  userName: string,
+  newPassword: string
+): Promise<HttpResponse<any>> {
+  try {
+    const res = await axiosAuth.post<HttpResponse<any>>(
+      "/auth/reset-first-login-password",
+      { userName, newPassword }
+    );
+
+    return res.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(
+        err.response?.data?.message || "Failed to reset first login password."
       );
     }
     throw err;

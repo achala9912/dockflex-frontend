@@ -6,12 +6,14 @@ import { IoMdLogOut } from "react-icons/io";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GoHome, GoScreenFull } from "react-icons/go";
 import ConfirmationPopup from "../Popups/ConfirmationPopup";
+import { useAuthStore } from "@/store/authStore";
 
 interface TopNavProps {
   isCollapsed: boolean;
 }
 
 const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
+  const user = useAuthStore((state) => state.user);
   const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
   const router = useRouter();
 
@@ -19,8 +21,8 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
     setLogoutPopupOpen(true);
   };
   const handleYes = () => {
-    // const { logout } = useAuthStore.getState(); // Get the logout function from zustand
-    // logout(); // Clear state and local storage
+    const { logout } = useAuthStore.getState();
+    logout();
 
     router.push("/");
     setLogoutPopupOpen(false);
@@ -72,8 +74,10 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
           </Avatar>
 
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-semibold text-gray-900">Achala Imesh</p>
-            <p className="text-xs text-gray-500 text-left">AcHa@99</p>
+            <p className="text-sm font-semibold text-gray-900 capitalize">
+              {user?.name}
+            </p>
+            <p className="text-xs text-gray-500 text-left">{user?.userName}</p>
           </div>
         </div>
 
