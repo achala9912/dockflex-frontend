@@ -51,6 +51,7 @@ function UserForm() {
   const [rolesData, setRolesData] = useState<Role[]>([]);
 
   const selectedRoleId = watch("role");
+  const digitalSignatureValue = watch("digitalSignature"); 
 
   const selectedRole = rolesData.find((role) => role.roleId === selectedRoleId);
   const selectedRoleName = selectedRole?.roleName?.toLowerCase();
@@ -94,8 +95,11 @@ function UserForm() {
     fetchMedicalCenterSuggestions();
   }, []);
 
+  const [prevIsDoctor, setPrevIsDoctor] = useState<boolean | null>(null);
+
   useEffect(() => {
-    if (!isDoctor) {
+
+    if (prevIsDoctor !== null && prevIsDoctor === true && !isDoctor) {
       setValue("slmcNo", "", { shouldValidate: true, shouldDirty: true });
       setValue("specialization", "", {
         shouldValidate: true,
@@ -107,7 +111,12 @@ function UserForm() {
       });
       setResetImages(true);
     }
-  }, [selectedRoleId, isDoctor, setValue]);
+    setPrevIsDoctor(isDoctor);
+  }, [selectedRoleId, isDoctor, setValue, prevIsDoctor]);
+
+  useEffect(() => {
+    console.log("Digital Signature Value:", digitalSignatureValue);
+  }, [digitalSignatureValue]);
 
   return (
     <div className="space-y-6">
@@ -317,14 +326,9 @@ function UserForm() {
                 <ImageUploader
                   resetImages={resetImages}
                   setResetImages={setResetImages}
-                  value={
-                    typeof field.value === "string" ? field.value : undefined
-                  }
+                  value={field.value || ""}
                   onChange={(url) => {
-                    setValue("digitalSignature", url, {
-                      shouldValidate: true,
-                      shouldTouch: true,
-                    });
+                    field.onChange(url);
                   }}
                 />
               )}
