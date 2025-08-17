@@ -85,3 +85,13 @@ export async function updateMedicalCenters(
     throw error;
   }
 }
+
+export async function getMedicalCenterSuggestions(): Promise<any[]> {
+  try {
+    const response = await axiosAuth.get<any[]>(`/medical-centers/constants`);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch MedicalCenter suggestions:", err);
+    throw err;
+  }
+}
