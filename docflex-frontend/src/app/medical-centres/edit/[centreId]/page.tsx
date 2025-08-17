@@ -40,7 +40,7 @@ function Page() {
     },
   });
 
-  const { handleSubmit} = methods;
+  const { handleSubmit } = methods;
 
   // Fetch centre details and populate form
   useEffect(() => {
@@ -115,6 +115,7 @@ function Page() {
               <Button
                 variant="outline"
                 size="default"
+                type="button"
                 onClick={() => router.back()}
                 className="px-6 py-2 text-sm font-semibold text-white transition bg-black rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[100px]"
               >

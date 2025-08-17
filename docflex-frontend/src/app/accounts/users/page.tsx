@@ -7,11 +7,13 @@ import Dropdown from "@/components/Dropdown/Dropdown";
 import { UserMgmt, userMgmtColumns } from "@/components/Table/Coloumns";
 import TableWithPagi from "@/components/Table/TableWithPagi";
 import { Tooltip } from "@/components/ui/tooltip";
-import { getAllUsers, User } from "@/api/usersApi";
+import { deleteUser, getAllUsers, User } from "@/api/usersApi";
 import InputField from "@/components/InputField/InputField";
 import { FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { getRoleSuggestions, Role } from "@/api/roleApi";
+import DeleteConfirm from "@/components/Popups/DeleteConfirm";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const [selectedRole, setSelectedRole] = useState<string>("");
@@ -23,9 +25,13 @@ export default function Page() {
   const [roleOptions, setRoleOptions] = useState<
     { label: string; value: string }[]
   >([]);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const itemsPerPage = 10;
 
   const router = useRouter();
+
   // Fetch role suggestions
   useEffect(() => {
     const fetchRoleSuggestions = async () => {
@@ -45,6 +51,7 @@ export default function Page() {
 
     fetchRoleSuggestions();
   }, []);
+
   useEffect(() => {
     async function fetchUsers() {
       try {
@@ -91,6 +98,7 @@ export default function Page() {
       centerName: u.centerId?.centerName ?? "",
     },
   }));
+
   const addNewUser = () => {
     router.push(`/accounts/users/new`);
   };
@@ -98,6 +106,33 @@ export default function Page() {
   const handleEdit = (user: { userId: string }) => {
     router.push(`/accounts/users/edit/${user.userId}`);
   };
+
+  const handleDeleteConfirm = (userMgmt: UserMgmt) => {
+    const originalUser = userData.find((u) => u._id === userMgmt._id);
+    if (originalUser) {
+      setUserToDelete(originalUser);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!userToDelete) return;
+
+    try {
+      await deleteUser(userToDelete.userId);
+      toast.success("User successfully deleted!");
+      setUserData((prev) =>
+        prev.filter((u) => u.userId !== userToDelete.userId)
+      );
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete user.");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setUserToDelete(null);
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between mb-3">
@@ -151,8 +186,15 @@ export default function Page() {
           setPage={setCurrentPage}
           totalItems={totalItems}
           handleEdit={handleEdit}
+          handleDelete={handleDeleteConfirm}
         />
       </div>
+      <DeleteConfirm
+        element={userToDelete?.name || ""}
+        onDelete={handleDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        isOpen={isDeleteModalOpen}
+      />
     </>
   );
 }
