@@ -1,6 +1,5 @@
 import axiosAuth from "@/lib/axiosAuth";
 
-
 export interface Role {
   _id: string;
   roleId?: string;
@@ -13,12 +12,10 @@ export interface Role {
   __v: number;
 }
 
-
 export interface Center {
   _id: string;
   centerName: string;
 }
-
 
 export interface User {
   _id: string;
@@ -48,7 +45,7 @@ export interface GetAllUsersResponse {
   data: User[];
   total: number;
   totalPages: number;
-  currentPage: number
+  currentPage: number;
 }
 
 export async function getAllUsers(params?: {
@@ -66,5 +63,15 @@ export async function getAllUsers(params?: {
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "Failed to fetch users");
+  }
+}
+
+export async function createUser(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/users", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create user:", err);
+    throw err;
   }
 }

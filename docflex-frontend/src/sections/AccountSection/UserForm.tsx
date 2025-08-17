@@ -48,21 +48,30 @@ function UserForm() {
   >([]);
   const [resetImages, setResetImages] = useState(false);
 
-  const selectedRole = watch("role")?.toLowerCase();
-  const isDoctor = selectedRole === "doctor" || selectedRole === "doctor admin";
+  const [rolesData, setRolesData] = useState<Role[]>([]);
+
+  const selectedRoleId = watch("role");
+
+  const selectedRole = rolesData.find((role) => role.roleId === selectedRoleId);
+  const selectedRoleName = selectedRole?.roleName?.toLowerCase();
+  const isDoctor =
+    selectedRoleName === "doctor" || selectedRoleName === "doctor admin";
 
   useEffect(() => {
     const fetchRoleSuggestions = async () => {
       try {
         const roles = await getRoleSuggestions();
+        setRolesData(roles);
+
         const options = roles.map((role: Role) => ({
           label: role.roleName,
-          value: role.roleName,
+          value: role.roleId,
         }));
         setRoleOptions(options);
       } catch (error) {
         console.error("Failed to fetch role suggestions:", error);
         setRoleOptions([]);
+        setRolesData([]);
       }
     };
     fetchRoleSuggestions();
@@ -74,7 +83,7 @@ function UserForm() {
         const centers = await getMedicalCenterSuggestions();
         const options = centers.map((center) => ({
           label: center.centerName,
-          value: center.centerId,
+          value: center._id,
         }));
         setCenterOptions(options);
       } catch (error) {
@@ -84,6 +93,21 @@ function UserForm() {
     };
     fetchMedicalCenterSuggestions();
   }, []);
+
+  useEffect(() => {
+    if (!isDoctor) {
+      setValue("slmcNo", "", { shouldValidate: true, shouldDirty: true });
+      setValue("specialization", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      setValue("digitalSignature", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      setResetImages(true);
+    }
+  }, [selectedRoleId, isDoctor, setValue]);
 
   return (
     <div className="space-y-6">
@@ -111,7 +135,7 @@ function UserForm() {
             control={control}
             render={({ field }) => (
               <Dropdown
-                id="role"
+                id="roleId"
                 value={field.value}
                 options={roleOptions}
                 onChange={field.onChange}
@@ -124,7 +148,10 @@ function UserForm() {
 
       {/* Name & Gender */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Name" error={errors.name?.message}>
+        <FormField
+          label="Name"
+          error={errors.name?.message || errors.title?.message}
+        >
           <div className="flex gap-2 w-full">
             <div className="min-w-32">
               <Controller
@@ -208,7 +235,7 @@ function UserForm() {
         </FormField>
       </div>
 
-      {/* Contact No & Remarks */}
+      {/* Contact No */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Contact No" error={errors.contactNo?.message}>
           <Controller
@@ -224,7 +251,6 @@ function UserForm() {
             )}
           />
         </FormField>
-
         <FormField label="Remarks (Optional)" error={errors.remarks?.message}>
           <Controller
             name="remarks"

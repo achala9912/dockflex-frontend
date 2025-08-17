@@ -9,6 +9,8 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UserFormData, UserSchema } from "@/schemas/Accounts/UserSchema";
+import { createUser } from "@/api/usersApi";
+import { toast } from "react-toastify";
 
 function Page() {
   const router = useRouter();
@@ -27,7 +29,6 @@ function Page() {
       specialization: "",
       email: "",
       contactNo: "",
-      password: "",
       remarks: "",
       digitalSignature: "",
     },
@@ -35,12 +36,18 @@ function Page() {
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = (data: UserFormData) => {
-    console.log("Form Submitted:", data);
-    // TODO: call backend API here
-    reset();
+  const onSubmit = async (data: UserFormData) => {
+    try {
+      console.log("Form Submitted:", data);
+      await createUser(data);
+      toast.success("User created successfully!");
+      reset();
+      router.push("/accounts/users");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message || "Failed to create user");
+    }
   };
-
   return (
     <>
       <div className="flex items-center gap-2 mb-4">

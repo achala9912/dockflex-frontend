@@ -12,7 +12,6 @@ export const UserSchema = z
     userName: z.string().min(1, "Username is required"),
     email: z.string().email("Invalid email address"),
     contactNo: z.string().min(1, "Contact No is required"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
     // Doctor fields (conditionally required)
     slmcNo: z.string().optional(),
     specialization: z.string().optional(),
