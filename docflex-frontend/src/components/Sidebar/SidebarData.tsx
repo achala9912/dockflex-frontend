@@ -1,77 +1,74 @@
-import { IconType } from 'react-icons';
-import { HiOutlineUserGroup } from 'react-icons/hi2';
-import { MdOutlineDashboard} from 'react-icons/md';
-import { LuUser } from 'react-icons/lu';
+import { IconType } from "react-icons";
+import { HiOutlineUserGroup } from "react-icons/hi2";
+import { MdOutlineDashboard } from "react-icons/md";
+import { LuUser } from "react-icons/lu";
 import { RiStethoscopeLine } from "react-icons/ri";
 import { RiCalendarScheduleLine } from "react-icons/ri";
 import { AiFillMedicineBox } from "react-icons/ai";
 import { FaFilePrescription } from "react-icons/fa6";
 import { RiChatVoiceAiFill } from "react-icons/ri";
-
+import { SiSession } from "react-icons/si";
 export interface SidebarItem {
-    title: string;
-    icon?: IconType;
-    dropdown?: boolean;
-    subItems?: Array<{ title: string; path: string }>;
-    path?: string;
-    permission?: string;
+  title: string;
+  icon?: IconType;
+  dropdown?: boolean;
+  subItems?: Array<{ title: string; path: string }>;
+  path?: string;
+  permission?: string;
 }
 
 export const sidebarItems: SidebarItem[] = [
-
-    {
-        title: 'Dashboard',
-        icon: MdOutlineDashboard,
-        path: '/home',
-    },
-    {
-        title: 'Medical Centres',
-        icon: RiStethoscopeLine,
-        path: '/medical-centres',
-    },
-    {
-        title: 'Acccounts',
-        icon: LuUser,
-        dropdown: true,
-        subItems: [
-            { title: 'Roles', path: '/accounts/roles' },
-            { title: 'Users', path: '/accounts/users' },
-
-        ],
-
-    },
-    {
-        title: 'Appointments',
-        icon: RiCalendarScheduleLine,
-        path: '/appointments',
-
-    },
-    {
-        title: 'Patient Directory',
-        icon: HiOutlineUserGroup,
-        path: '/patient-directory',
-
-    },
-    {
-        title: 'Medicines Directory',
-        icon: AiFillMedicineBox,
-        path: '/medicines-directory',
-
-    },
-    {
-        title: 'Prescriptions',
-        icon: FaFilePrescription,
-        dropdown: true,
-        subItems: [
-            { title: 'Generate', path: '/prescriptions/generate' },
-            { title: 'Work Flow', path: '/prescriptions/workflow' },
-        ],
-
-    },
-    {
-        title: 'Ask Me',
-        icon: RiChatVoiceAiFill,
-        path: '/askme',
-
-    },
+  {
+    title: "Dashboard",
+    icon: MdOutlineDashboard,
+    path: "/home",
+  },
+  {
+    title: "Medical Centres",
+    icon: RiStethoscopeLine,
+    path: "/medical-centres",
+  },
+  {
+    title: "Acccounts",
+    icon: LuUser,
+    dropdown: true,
+    subItems: [
+      { title: "Roles", path: "/accounts/roles" },
+      { title: "Users", path: "/accounts/users" },
+    ],
+  },
+  {
+    title: "Sessions",
+    icon: SiSession,
+    path: "/sessions",
+  },
+  {
+    title: "Appointments",
+    icon: RiCalendarScheduleLine,
+    path: "/appointments",
+  },
+  {
+    title: "Patient Directory",
+    icon: HiOutlineUserGroup,
+    path: "/patient-directory",
+  },
+  {
+    title: "Medicines Directory",
+    icon: AiFillMedicineBox,
+    path: "/medicines-directory",
+  },
+  {
+    title: "Prescriptions",
+    icon: FaFilePrescription,
+    dropdown: true,
+    subItems: [
+      { title: "Generate", path: "/prescriptions/generate" },
+      { title: "Work Flow", path: "/prescriptions/workflow" },
+    ],
+  },
+  {
+    title: "Ask Me",
+    icon: RiChatVoiceAiFill,
+    path: "/askme",
+  },
 ];
