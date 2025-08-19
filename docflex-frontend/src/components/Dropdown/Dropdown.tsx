@@ -74,9 +74,12 @@ const Dropdown: React.FC<DropdownProps> = ({
     menu: (provided) => ({
       ...provided,
       display: readOnly ? "none" : provided.display,
-      maxHeight: "250px",
-      overflowY: "auto",
       zIndex: 9999,
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      maxHeight: "250px",
+      overflowY: "auto", 
     }),
   };
 

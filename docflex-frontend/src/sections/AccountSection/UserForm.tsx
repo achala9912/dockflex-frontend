@@ -8,21 +8,10 @@ import Dropdown from "@/components/Dropdown/Dropdown";
 import InputField from "@/components/InputField/InputField";
 import ImageUploader from "@/components/InputImage/ImageUploader";
 import { getRoleSuggestions, Role } from "@/api/roleApi";
-import { getMedicalCenterSuggestions } from "@/api/medicalCentersApi";
+import CenterDropdown from "@/components/Dropdown/CenterDropdown";
+import { specializationOptions } from "@/constants/specialization.constants";
 
 const titleOptions = ["Dr.", "Mr.", "Ms."].map((val) => ({
-  label: val,
-  value: val,
-}));
-
-const specializationOptions = [
-  "Cardiology",
-  "Neurology",
-  "Pediatrics",
-  "General Practice",
-  "Surgery",
-  "Dermatology",
-].map((val) => ({
   label: val,
   value: val,
 }));
@@ -43,15 +32,13 @@ function UserForm() {
   const [roleOptions, setRoleOptions] = useState<
     { label: string; value: string }[]
   >([]);
-  const [centerOptions, setCenterOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
+
   const [resetImages, setResetImages] = useState(false);
 
   const [rolesData, setRolesData] = useState<Role[]>([]);
 
   const selectedRoleId = watch("role");
-  const digitalSignatureValue = watch("digitalSignature"); 
+  const digitalSignatureValue = watch("digitalSignature");
 
   const selectedRole = rolesData.find((role) => role.roleId === selectedRoleId);
   const selectedRoleName = selectedRole?.roleName?.toLowerCase();
@@ -78,27 +65,9 @@ function UserForm() {
     fetchRoleSuggestions();
   }, []);
 
-  useEffect(() => {
-    const fetchMedicalCenterSuggestions = async () => {
-      try {
-        const centers = await getMedicalCenterSuggestions();
-        const options = centers.map((center) => ({
-          label: center.centerName,
-          value: center._id,
-        }));
-        setCenterOptions(options);
-      } catch (error) {
-        console.error("Failed to fetch center suggestions:", error);
-        setCenterOptions([]);
-      }
-    };
-    fetchMedicalCenterSuggestions();
-  }, []);
-
   const [prevIsDoctor, setPrevIsDoctor] = useState<boolean | null>(null);
 
   useEffect(() => {
-
     if (prevIsDoctor !== null && prevIsDoctor === true && !isDoctor) {
       setValue("slmcNo", "", { shouldValidate: true, shouldDirty: true });
       setValue("specialization", "", {
@@ -127,12 +96,11 @@ function UserForm() {
             name="centerId"
             control={control}
             render={({ field }) => (
-              <Dropdown
+              <CenterDropdown
                 id="centerId"
-                value={field.value}
+                value={field.value || ""}
                 onChange={field.onChange}
-                options={centerOptions}
-                placeholder="Select medical center"
+                placeholder="Select Medical Center"
               />
             )}
           />
