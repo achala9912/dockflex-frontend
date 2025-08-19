@@ -1,5 +1,4 @@
 export const TimeOptions = [
-  { label: "5:00 AM", value: "05:00" },
   { label: "6:00 AM", value: "06:00" },
   { label: "7:00 AM", value: "07:00" },
   { label: "8:00 AM", value: "08:00" },
@@ -13,4 +12,5 @@ export const TimeOptions = [
   { label: "4:00 PM", value: "16:00" },
   { label: "5:00 PM", value: "17:00" },
   { label: "6:00 PM", value: "18:00" },
+  { label: "11:00 PM", value: "23:00" }
 ];
