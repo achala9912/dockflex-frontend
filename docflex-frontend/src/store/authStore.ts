@@ -13,6 +13,8 @@ export interface User {
   gender: string;
   slmcNo: string;
   specialization: string;
+  digitalSignature: string;
+  profilePicture: string;
   email: string;
   contactNo: string;
   remarks: string;

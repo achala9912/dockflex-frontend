@@ -69,8 +69,11 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src="/profile.jpg" alt="User Avatar" />
-            <AvatarFallback>AI</AvatarFallback>
+            <AvatarImage src={user?.profilePicture} alt={user?.name} />
+            <AvatarFallback>
+              {" "}
+              {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+            </AvatarFallback>
           </Avatar>
 
           <div className="text-right hidden sm:block">
