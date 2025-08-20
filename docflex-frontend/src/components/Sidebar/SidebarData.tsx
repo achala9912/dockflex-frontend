@@ -50,7 +50,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: "Patient Directory",
     icon: HiOutlineUserGroup,
-    path: "/patient-directory",
+    path: "/patients",
   },
   {
     title: "Medicines Directory",

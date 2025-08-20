@@ -88,3 +88,70 @@ export const userMgmtColumns: Column<UserMgmt>[] = [
     ),
   },
 ];
+
+export interface PatientMgmt {
+  _id: string;
+  patientId: string;
+  dob: string;
+  patientName: string;
+  gender: string;
+  age: number;
+  email: string;
+  contactNo: string;
+  nic: string;
+  address: string;
+  remarks?: string;
+  centerId: {
+    centerName: string;
+  };
+}
+
+export const patientMgmtColumns: Column<PatientMgmt>[] = [
+  {
+    header: "Patient ID",
+    accessor: "patientId",
+    headerClassName: "min-w-[160px]",
+  },
+  {
+    header: "Center Name",
+    accessor: "centerId.centerName",
+    headerClassName: "min-w-[200px]",
+  },
+  { header: "Name", accessor: "patientName", headerClassName: "min-w-[200px]" },
+
+  { header: "Gender", accessor: "gender", headerClassName: "min-w-[100px]" },
+  {
+    header: "DOB",
+    accessor: "dob",
+    headerClassName: "min-w-[150px]",
+    render: (value: string) => new Date(value).toISOString().split("T")[0], 
+  },
+  { header: "Age", accessor: "age", headerClassName: "min-w-[100px] text-center justify-center flex", className: "text-center" },
+  { header: "Email", accessor: "email", headerClassName: "min-w-[200px]" },
+  {
+    header: "Contact No",
+    accessor: "contactNo",
+    headerClassName: "min-w-[150px]",
+  },
+  { header: "NIC", accessor: "nic", headerClassName: "min-w-[150px]" },
+  { header: "Address", accessor: "address", headerClassName: "min-w-[190px]" },
+  { header: "Remarks", accessor: "remarks", headerClassName: "min-w-[150px]" },
+  {
+    header: "Action",
+    accessor: "action",
+    render: (_value, row, handlers) => (
+      <div className="flex space-x-4 justify-center">
+        <FaEdit
+          className="text-[#23A3DA] hover:text-blue-700 cursor-pointer"
+          onClick={() => handlers?.edit?.(row)}
+          aria-label="Edit Patient"
+        />
+        <FaTrash
+          className="text-[#EB1313]/70 hover:text-red-700 cursor-pointer"
+          onClick={() => handlers?.delete?.(row)}
+          aria-label="Delete Patient"
+        />
+      </div>
+    ),
+  },
+];
