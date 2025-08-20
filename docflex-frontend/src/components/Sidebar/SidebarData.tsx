@@ -43,15 +43,16 @@ export const sidebarItems: SidebarItem[] = [
     path: "/sessions",
   },
   {
-    title: "Appointments",
-    icon: RiCalendarScheduleLine,
-    path: "/appointments",
-  },
-  {
     title: "Patient Directory",
     icon: HiOutlineUserGroup,
     path: "/patients",
   },
+  {
+    title: "Appointments",
+    icon: RiCalendarScheduleLine,
+    path: "/appointments",
+  },
+
   {
     title: "Medicines Directory",
     icon: AiFillMedicineBox,
