@@ -32,3 +32,50 @@ export async function createSession(data: any): Promise<any> {
     throw err;
   }
 }
+
+export async function getSessionById(sessionId: string): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/sessions/${sessionId}`);
+    return res;
+  } catch (error) {
+    console.error(`Error fetching session with ID ${sessionId}:`, error);
+    throw error;
+  }
+}
+
+export async function deleteSession(sessionId: string): Promise<void> {
+  try {
+    await axiosAuth.delete(`/sessions/${sessionId}`);
+  } catch (error) {
+    console.error(`Error deleting session with ID ${sessionId}:`, error);
+    throw error;
+  }
+}
+
+export async function updateSession(
+  sessionId: string,
+  updateData: Partial<any>
+): Promise<any> {
+  try {
+    const res = await axiosAuth.put<any>(`/sessions/${sessionId}`, updateData);
+    return res.data;
+  } catch (error) {
+    console.error(`Error updating session with ID ${sessionId}:`, error);
+    throw error;
+  }
+}
+
+export async function doActiveSession(
+  sessionId: string,
+  isActive: boolean
+): Promise<any> {
+  try {
+    const res = await axiosAuth.patch(`/sessions/active/${sessionId}`, {
+      isActive,
+    });
+    return res.data;
+  } catch (error) {
+    console.error(`Error toggle active session with ID ${sessionId}:`, error);
+    throw error;
+  }
+}

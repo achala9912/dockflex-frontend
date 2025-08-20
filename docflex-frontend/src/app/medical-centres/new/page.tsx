@@ -36,8 +36,6 @@ function Page() {
   const onSubmit = async (data: CentreFormData) => {
     try {
       console.log("Form Data Submitted:", data);
-
-      // ✅ API call
       const response = await createMedicalCenter({
         centerName: data.centreName,
         regNo: data.regNo,

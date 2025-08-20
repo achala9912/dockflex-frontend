@@ -1,7 +1,8 @@
 "use client";
 
-import { Pencil, Stethoscope, Trash2 } from "lucide-react";
-import { RiTriangularFlagLine } from "react-icons/ri";
+import { Pencil, Trash2, CheckCircle,  Stethoscope, CircleOff } from "lucide-react";
+import React from "react";
+import { Tooltip } from "../ui/tooltip";
 
 interface SessionCardProps {
   sessionId: string;
@@ -38,7 +39,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
               isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
             }`}
           >
-            {isActive ? "Active" : "Deactivate"}
+            {isActive ? "Active" : "Inactive"}
           </span>
         </div>
 
@@ -53,37 +54,44 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </p>
         <div className="mt-2 flex flex-col items-center">
           <p className="text-gray-600 text-xs text-center">
-            {new Date(startTime).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}{" "}
+            {new Date(startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}{" "}
             -{" "}
-            {new Date(endTime).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {new Date(endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
           </p>
         </div>
       </div>
+
       <div className="bg-gray-600 w-full h-12 mt-2 rounded-b-2xl flex justify-center items-center gap-4 py-2">
-        <button
-          className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
-          onClick={handleActive}
-        >
-          <RiTriangularFlagLine size={18} className="text-gray-500" />
-        </button>
-        <button
-          className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
-          onClick={handleEdit}
-        >
-          <Pencil size={18} className="text-blue-500" />
-        </button>
-        <button
-          className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
-          onClick={handleDelete}
-        >
-          <Trash2 size={18} className="text-red-500" />
-        </button>
+        <Tooltip content={isActive ? "Deactivate Session" : "Activate Session"} side="bottom">
+          <button
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
+            onClick={handleActive}
+          >
+            {isActive ? (
+              <CircleOff size={18} className="text-orange-600" />
+            ) : (
+              <CheckCircle size={18} className="text-green-500" />
+            )}
+          </button>
+        </Tooltip>
+
+        <Tooltip content="Edit Session" side="bottom">
+          <button
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
+            onClick={handleEdit}
+          >
+            <Pencil size={18} className="text-blue-500" />
+          </button>
+        </Tooltip>
+
+        <Tooltip content="Delete Session" side="bottom">
+          <button
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
+            onClick={handleDelete}
+          >
+            <Trash2 size={18} className="text-red-500" />
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

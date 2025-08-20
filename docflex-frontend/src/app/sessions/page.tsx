@@ -7,13 +7,20 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 import { toast } from "react-toastify";
-import { getAllSessions } from "@/api/sessionsApi";
+import {
+  deleteSession,
+  doActiveSession,
+  getAllSessions,
+} from "@/api/sessionsApi";
 import CenterDropdown from "@/components/Dropdown/CenterDropdown";
 import Dropdown from "@/components/Dropdown/Dropdown";
 import SessionCard from "@/components/Cards/SessionCard";
 import Pagination from "@/components/Table/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import AddNewSessionPopup from "@/sections/SessionSection/AddNewSessionPopup";
+import EditSessionPopup from "@/sections/SessionSection/EditSessionPopup";
+import DeleteConfirm from "@/components/Popups/DeleteConfirm";
+import ConfirmationPopup from "@/components/Popups/ConfirmationPopup";
 
 interface Session {
   id: string;
@@ -38,6 +45,15 @@ function Page() {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
+    null
+  );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState<Session | null>(null);
+
+  const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
+  const [sessionToToggle, setSessionToToggle] = useState<Session | null>(null);
 
   const fetchSessions = useCallback(async () => {
     try {
@@ -50,15 +66,16 @@ function Page() {
         isActive
       );
 
-      const transformedSessions = res.map((session: any) => ({
-        id: session._id,
-        sessionId: session.sessionId,
-        name: session.sessionName,
-        centerName: session.centerId?.centerName || "Unknown Center",
-        startTime: session.startTime,
-        endTime: session.endTime,
-        isActive: session.isSessionActive,
-      }));
+      const transformedSessions =
+        res.map((session: any) => ({
+          id: session._id,
+          sessionId: session.sessionId,
+          name: session.sessionName,
+          centerName: session.centerId?.centerName || "Unknown Center",
+          startTime: session.startTime,
+          endTime: session.endTime,
+          isActive: session.isSessionActive,
+        })) || [];
 
       setSessions(transformedSessions || []);
       setTotalItems(transformedSessions.length);
@@ -72,23 +89,58 @@ function Page() {
     fetchSessions();
   }, [fetchSessions]);
 
-  const handleEdit = (session: { id: string }) => {
-    toast.info(`Edit API for session ${session.id} goes here.`);
+  const handleEdit = (session: { sessionId: string }) => {
+    setSelectedSessionId(session.sessionId);
+    setIsEditPopupOpen(true);
   };
 
-  const handleDelete = async (session: { id: string }) => {
-    toast.info(`Delete API call for session ${session.id} goes here.`);
+  const handleDeleteClick = (session: Session) => {
+    setSessionToDelete(session);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleToggleActive = async (session: {
-    id: string;
-    isActive: boolean;
-  }) => {
-    toast.info(
-      `Toggle Active API call for session ${
-        session.id
-      }, new state: ${!session.isActive}`
-    );
+  const confirmDelete = async () => {
+    if (!sessionToDelete) return;
+
+    try {
+      await deleteSession(sessionToDelete.sessionId);
+      toast.success(
+        `Session "${sessionToDelete.name}" from "${sessionToDelete.centerName}" deleted successfully`
+      );
+      fetchSessions();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete session");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setSessionToDelete(null);
+    }
+  };
+
+  const handleToggleActive = (session: Session) => {
+    setSessionToToggle(session);
+    setIsToggleConfirmOpen(true);
+  };
+
+  const confirmToggleActive = async () => {
+    if (!sessionToToggle) return;
+
+    try {
+      await doActiveSession(
+        sessionToToggle.sessionId,
+        !sessionToToggle.isActive
+      );
+      toast.success(
+        `Session "${sessionToToggle.name}" is now ${
+          !sessionToToggle.isActive ? "Active" : "Deactivated"
+        }`
+      );
+      fetchSessions();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to toggle session");
+    } finally {
+      setIsToggleConfirmOpen(false);
+      setSessionToToggle(null);
+    }
   };
 
   useEffect(() => {
@@ -174,7 +226,7 @@ function Page() {
                 endTime={session.endTime}
                 isActive={session.isActive}
                 handleEdit={() => handleEdit(session)}
-                handleDelete={() => handleDelete(session)}
+                handleDelete={() => handleDeleteClick(session)}
                 handleActive={() => handleToggleActive(session)}
               />
             ))
@@ -183,6 +235,7 @@ function Page() {
           )}
         </div>
       )}
+
       <div className="mt-6">
         <Pagination
           currentPage={page}
@@ -192,6 +245,7 @@ function Page() {
           onPageChange={(newPage: number) => setPage(newPage)}
         />
       </div>
+
       {isNewPopupOpen && (
         <AddNewSessionPopup
           isOpen={isNewPopupOpen}
@@ -201,6 +255,42 @@ function Page() {
           }}
         />
       )}
+
+      {isEditPopupOpen && selectedSessionId && (
+        <EditSessionPopup
+          isOpen={isEditPopupOpen}
+          onClose={() => {
+            setIsEditPopupOpen(false);
+            setSelectedSessionId(null);
+            fetchSessions();
+          }}
+          sessionId={selectedSessionId}
+        />
+      )}
+
+      <DeleteConfirm
+        element={
+          sessionToDelete
+            ? `session "${sessionToDelete.name}" from "${sessionToDelete.centerName}"`
+            : ""
+        }
+        onDelete={confirmDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        isOpen={isDeleteModalOpen}
+      />
+
+      <ConfirmationPopup
+        element={
+          sessionToToggle
+            ? `session "${sessionToToggle.name}" from "${
+                sessionToToggle.centerName
+              }" to ${sessionToToggle.isActive ? "Deactivate" : "Activate"}`
+            : ""
+        }
+        handleYes={confirmToggleActive}
+        handleNo={() => setIsToggleConfirmOpen(false)}
+        isOpen={isToggleConfirmOpen}
+      />
     </>
   );
 }
