@@ -40,9 +40,9 @@ export default function Page() {
           centerId
         );
         console.log("Fetched patients response:", res);
-        setPatients(res.data);
-        setTotalPages(res.totalPages);
-        setTotalItems(res.totalItems);
+        setPatients(res.data || []);
+        setTotalPages(res.totalPages || 1);
+        setTotalItems(res.total || 0); 
       } catch {
         toast.error("Failed to fetch patients");
       }
