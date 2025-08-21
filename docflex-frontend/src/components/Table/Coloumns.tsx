@@ -45,7 +45,13 @@ export const userMgmtColumns: Column<UserMgmt>[] = [
     accessor: "centerId.centerName",
     headerClassName: "min-w-[200px]",
   },
-  { header: "Name", accessor: "name", headerClassName: "min-w-[200px]" },
+  {
+    header: "Name",
+    accessor: "name",
+    headerClassName: "min-w-[200px]",
+    render: (value: string | null | undefined, row: any) =>
+      row.title && value ? `${row.title} ${value}` : value || "-",
+  },
   {
     header: "User Name",
     accessor: "userName",
@@ -117,7 +123,13 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
     accessor: "centerId.centerName",
     headerClassName: "min-w-[200px]",
   },
-  { header: "Patient Name", accessor: "patientName", headerClassName: "min-w-[200px]" },
+  {
+    header: "Patient Name",
+    accessor: "patientName",
+    headerClassName: "min-w-[200px]",
+    render: (value: string | null | undefined, row: any) =>
+      row.title && value ? `${row.title}. ${value}` : value || "-",
+  },
 
   { header: "Gender", accessor: "gender", headerClassName: "min-w-[100px]" },
   {

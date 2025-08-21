@@ -45,7 +45,7 @@ function AddNewSessionPopup({ isOpen, onClose }: AddNewSessionPopupProps) {
       methods.reset();
     } catch (error: any) {
       console.error("Failed to create session:", error);
-      toast.error(error.message || "Failed to create session");
+   
     }
   };
 

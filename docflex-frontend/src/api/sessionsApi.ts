@@ -74,8 +74,12 @@ export async function doActiveSession(
       isActive,
     });
     return res.data;
-  } catch (error) {
-    console.error(`Error toggle active session with ID ${sessionId}:`, error);
-    throw error;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(
+        err.response?.data?.message || "Error toggle active session."
+      );
+    }
+    throw err;
   }
 }

@@ -136,7 +136,7 @@ function Page() {
       );
       fetchSessions();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to toggle session");
+      toast.error(err.response?.data?.message);
     } finally {
       setIsToggleConfirmOpen(false);
       setSessionToToggle(null);

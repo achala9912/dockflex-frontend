@@ -4,8 +4,8 @@ import {
   Pencil,
   Trash2,
   CheckCircle,
-  Stethoscope,
   CircleOff,
+  Activity,
 } from "lucide-react";
 import React from "react";
 import { Tooltip } from "../ui/tooltip";
@@ -52,7 +52,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </div>
 
         <div className="mt-2 flex justify-center">
-          <Stethoscope strokeWidth={1} size={56} className="text-gray-600" />
+          <Activity  strokeWidth={1} size={56} className="text-gray-600" />
         </div>
         <h2 className="text-blue-600 text-md font-semibold mt-2 text-center font-inter">
           {sessionName}
