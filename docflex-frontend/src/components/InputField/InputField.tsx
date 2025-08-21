@@ -8,7 +8,9 @@ interface InputFieldProps {
   value?: string | number;
   placeholder?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void; 
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void; 
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void; 
   icon?: React.ReactNode;
   width?: string;
   ariaLabel?: string;
@@ -29,7 +31,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       value,
       placeholder,
       onChange,
-      onKeyDown, 
+      onKeyDown,
       className = "",
       icon,
       width = "w-full",

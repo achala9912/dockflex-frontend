@@ -22,6 +22,16 @@ export async function getAllPatients(
   }
 }
 
+export async function createPatient(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/patients", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create patient:", err);
+    throw err;
+  }
+}
+
 export async function updatePatient(
   patientId: string,
   updateData: Partial<any>
