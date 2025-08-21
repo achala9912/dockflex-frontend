@@ -100,7 +100,7 @@ export interface PatientMgmt {
   contactNo: string;
   nic: string;
   address: string;
-  remarks?: string;
+  remark?: string;
   centerId: {
     centerName: string;
   };
@@ -117,16 +117,21 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
     accessor: "centerId.centerName",
     headerClassName: "min-w-[200px]",
   },
-  { header: "Name", accessor: "patientName", headerClassName: "min-w-[200px]" },
+  { header: "Patient Name", accessor: "patientName", headerClassName: "min-w-[200px]" },
 
   { header: "Gender", accessor: "gender", headerClassName: "min-w-[100px]" },
   {
     header: "DOB",
     accessor: "dob",
-    headerClassName: "min-w-[150px]",
-    render: (value: string) => new Date(value).toISOString().split("T")[0], 
+    headerClassName: "min-w-[120px]",
+    render: (value: string) => new Date(value).toISOString().split("T")[0],
   },
-  { header: "Age", accessor: "age", headerClassName: "min-w-[100px] text-center justify-center flex", className: "text-center" },
+  {
+    header: "Age",
+    accessor: "age",
+    headerClassName: "min-w-[100px] text-center justify-center flex",
+    className: "text-center",
+  },
   { header: "Email", accessor: "email", headerClassName: "min-w-[200px]" },
   {
     header: "Contact No",
@@ -134,8 +139,19 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
     headerClassName: "min-w-[150px]",
   },
   { header: "NIC", accessor: "nic", headerClassName: "min-w-[150px]" },
-  { header: "Address", accessor: "address", headerClassName: "min-w-[190px]" },
-  { header: "Remarks", accessor: "remarks", headerClassName: "min-w-[150px]" },
+  {
+    header: "Address",
+    accessor: "address",
+    headerClassName: "min-w-[190px]",
+    render: (value: string | null | undefined) => (value ? value : "-"),
+  },
+  {
+    header: "Remark",
+    accessor: "remark",
+    headerClassName: "min-w-[150px]",
+    render: (value: string | null | undefined) => (value ? value : "-"),
+  },
+
   {
     header: "Action",
     accessor: "action",

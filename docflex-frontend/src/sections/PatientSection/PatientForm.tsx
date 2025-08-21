@@ -215,9 +215,9 @@ function PatientForm() {
       </div>
 
       {/* Remarks */}
-      <FormField label="Remarks (Optional)" error={errors.remarks?.message}>
+      <FormField label="Remarks (Optional)" error={errors.remark?.message}>
         <Controller
-          name="remarks"
+          name="remark"
           control={control}
           render={({ field }) => (
             <InputField

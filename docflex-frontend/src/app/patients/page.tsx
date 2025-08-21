@@ -57,7 +57,7 @@ export default function Page() {
 
   // Navigate to edit patient page
   const handleEdit = (patient: PatientMgmt) => {
-    router.push(`/patients/edit/${patient._id}`);
+    router.push(`/patients/edit/${patient.patientId}`);
   };
 
   const handleDeleteConfirm = (patient: PatientMgmt) => {

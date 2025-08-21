@@ -12,7 +12,7 @@ export const PatientSchema = z
     contactNo: z.string().min(1, "Contact No is required"),
     nic: z.string().optional(),
     address: z.string().min(1, "Address is required"),
-    remarks: z.string().optional(),
+    remark: z.string().optional(),
   })
   .refine(
     (data) => {
