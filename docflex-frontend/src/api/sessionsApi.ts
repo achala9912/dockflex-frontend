@@ -83,3 +83,19 @@ export async function doActiveSession(
     throw err;
   }
 }
+
+export async function getSessionSuggestions(
+  centerId: string,
+  search?: string,
+  limit?: number
+): Promise<any> {
+  try {
+    const response = await axiosAuth.get<any>(`/sessions/constants`, {
+      params: { centerId, search, limit },
+    });
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch session suggestions:", err);
+    throw err;
+  }
+}
