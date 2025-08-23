@@ -35,6 +35,7 @@ function Page() {
       contactNo: "",
       remarks: "",
       digitalSignature: "",
+      roleName: "", 
     },
   });
 
@@ -55,6 +56,7 @@ function Page() {
           ...data,
           centerId: data.centerId?._id || "", // just the string id
           role: data.role?.roleId || "", // just the string id
+          roleName: data.role?.roleName || "", // Add the role name for validation
         };
 
         console.log("User get by id (mapped):", mappedData);
@@ -74,7 +76,9 @@ function Page() {
         toast.error("User ID not found");
         return;
       }
-      await updateUser(userId, data); //
+      const submitData = { ...data };
+
+      await updateUser(userId, submitData);
       toast.success("User updated successfully!");
       router.push("/accounts/users");
     } catch (error: any) {

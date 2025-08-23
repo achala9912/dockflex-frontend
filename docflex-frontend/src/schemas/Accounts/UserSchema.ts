@@ -14,12 +14,14 @@ export const UserSchema = z
     contactNo: z.string().min(1, "Contact No is required"),
     slmcNo: z.string().optional(),
     specialization: z.string().optional(),
-    digitalSignature: z.string(z.object({ url: z.string().url() })).optional(),
+    digitalSignature: z.string().optional(),
     remarks: z.string().optional(),
+    roleName: z.string().optional(), // Add this field
   })
   .superRefine((data, ctx) => {
-    const role = data.role?.toLowerCase();
-    if (doctorRoles.includes(role)) {
+    const role = data.roleName?.toLowerCase();
+
+    if (role && doctorRoles.includes(role)) {
       if (!data.slmcNo || data.slmcNo.trim() === "") {
         ctx.addIssue({
           path: ["slmcNo"],

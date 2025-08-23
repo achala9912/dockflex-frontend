@@ -26,6 +26,7 @@ function UserForm() {
     control,
     setValue,
     watch,
+    trigger, // Add trigger to manually validate fields
     formState: { errors },
   } = useFormContext<UserFormData>();
 
@@ -78,10 +79,30 @@ function UserForm() {
         shouldValidate: true,
         shouldDirty: true,
       });
+      setValue("roleName", "", { shouldValidate: true, shouldDirty: true });
       setResetImages(true);
     }
     setPrevIsDoctor(isDoctor);
   }, [selectedRoleId, isDoctor, setValue, prevIsDoctor]);
+
+  useEffect(() => {
+    // Update the roleName field whenever the role changes for validation
+    if (selectedRole) {
+      setValue("roleName", selectedRole.roleName, { shouldValidate: false, shouldDirty: true });
+      
+      // Trigger validation for doctor-specific fields
+      setTimeout(() => {
+        trigger(["slmcNo", "specialization", "digitalSignature"]);
+      }, 0);
+    } else {
+      setValue("roleName", "", { shouldValidate: false, shouldDirty: true });
+      
+      // Clear validation errors when no role is selected
+      setTimeout(() => {
+        trigger(["slmcNo", "specialization", "digitalSignature"]);
+      }, 0);
+    }
+  }, [selectedRole, setValue, trigger]);
 
   useEffect(() => {
     console.log("Digital Signature Value:", digitalSignatureValue);
