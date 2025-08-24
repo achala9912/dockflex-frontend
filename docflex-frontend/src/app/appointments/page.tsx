@@ -55,7 +55,7 @@ export default function Page() {
   }, [debouncedSearchTerm, centerId, currentPage, selectedDate]);
 
   const addNewPatient = () => {
-    router.push(`/patients/new`);
+    router.push(`/appointments/new`);
   };
 
   return (

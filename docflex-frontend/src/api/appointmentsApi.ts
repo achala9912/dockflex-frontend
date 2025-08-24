@@ -23,3 +23,13 @@ export async function getAllAppointments(
     throw err;
   }
 }
+
+export async function createAppointment(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/appointments", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create appointments:", err);
+    throw err;
+  }
+}
