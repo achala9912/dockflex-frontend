@@ -83,19 +83,24 @@ export async function doActiveSession(
     throw err;
   }
 }
-
-export async function getSessionSuggestions(
-  centerId: string,
-  search?: string,
-  limit?: number
-): Promise<any> {
+export async function getSessionSuggestions(centerId: string): Promise<any> {
   try {
-    const response = await axiosAuth.get<any>(`/sessions/constants`, {
-      params: { centerId, search, limit },
+    const response = await axiosAuth.get(`/sessions/constants`, {
+      params: { centerId },
     });
-    return response.data;
+
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (Array.isArray(response.data?.data)) {
+      return response.data.data;
+    } else if (Array.isArray(response)) {
+      return response;
+    } else {
+      console.error("Could not find session array in response");
+      return [];
+    }
   } catch (err) {
     console.error("Failed to fetch session suggestions:", err);
-    throw err;
+    return [];
   }
 }
