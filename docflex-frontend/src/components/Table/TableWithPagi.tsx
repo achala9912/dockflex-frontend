@@ -95,7 +95,11 @@ function TableWithPagi<T>({
 
   const requestSort = (key: keyof T) => {
     let direction: "ascending" | "descending" = "ascending";
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === "ascending") {
+    if (
+      sortConfig &&
+      sortConfig.key === key &&
+      sortConfig.direction === "ascending"
+    ) {
       direction = "descending";
     }
     setSortConfig({ key, direction });
@@ -108,20 +112,23 @@ function TableWithPagi<T>({
 
   return (
     <div className="w-full">
-      <div className="border border-[#D9E0FF] rounded-lg">
+      <div className="border border-[#D9E0FF] rounded-lg ">
         <Table className={cn("text-sm", className)} {...props}>
           {caption && <TableCaption>{caption}</TableCaption>}
-          <TableHeader className="bg-[#E9ECFA]">
+          <TableHeader className="bg-[#E9ECFA] ">
             <TableRow>
               {columns.map((column, idx) => (
                 <TableHead
                   key={idx}
                   onClick={() => requestSort(column.accessor as keyof T)}
-                  className={cn("cursor-pointer select-none", column.headerClassName)}
+                  className={cn(
+                    "cursor-pointer select-none",
+                    column.headerClassName
+                  )}
                   role="button"
                   tabIndex={0}
                 >
-                  <span className="flex items-center">
+                  <span className="flex items-center font-medium">
                     {column.header}
                     {getSortIndicator(column.accessor as keyof T)}
                   </span>
@@ -147,7 +154,10 @@ function TableWithPagi<T>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="p-4 text-center text-gray-500">
+                <TableCell
+                  colSpan={columns.length}
+                  className="p-4 text-center text-gray-500"
+                >
                   No Records Found
                 </TableCell>
               </TableRow>

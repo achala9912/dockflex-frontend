@@ -2,6 +2,7 @@ import axios from "axios";
 import axiosAuth from "@/lib/axiosAuth";
 
 export async function getAllAppointments(
+  date: string,
   page?: number,
   limit?: number,
   search?: string,
@@ -10,9 +11,9 @@ export async function getAllAppointments(
 ): Promise<any> {
   try {
     const res = await axiosAuth.get<any>("/appointments", {
-      params: { page, limit, search, isPatientvisited, centerId },
+      params: { page, date, limit, search, isPatientvisited, centerId },
     });
-    return res.data;
+    return res;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       throw new Error(

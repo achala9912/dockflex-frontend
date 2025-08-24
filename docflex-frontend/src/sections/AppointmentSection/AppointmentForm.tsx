@@ -13,6 +13,7 @@ import { getSessionSuggestions } from "@/api/sessionsApi";
 import { toast } from "react-toastify";
 
 interface Patient {
+  title: any;
   _id: string;
   patientId: string;
   patientName: string;
@@ -175,7 +176,7 @@ function AppointmentForm() {
 
   // Create patient suggestions for SearchBar
   const patientSuggestions: string[] = patients.map(
-    (p) => `${p.patientName} - ${p.contactNo}`
+    (p) => `${p.title} ${p.patientName} - ${p.contactNo}`
   );
 
   const selectedPatient = patients.find((p) => p._id === formData.patientId);
@@ -213,7 +214,7 @@ function AppointmentForm() {
             value={formData.sessionId}
             options={sessionOptions}
             placeholder="Select a Session"
-            disabled={loading || !formData.centerId}
+            readOnly={loading || !formData.centerId}
             onChange={handleSessionChange}
           />
         </FormField>
@@ -230,12 +231,13 @@ function AppointmentForm() {
             onSuggestionSelect={(suggestion: string) => {
               // Find patient by matching the suggestion format
               const patient = patients.find(
-                (p) => suggestion === `${p.patientName} - ${p.contactNo}`
+                (p) => suggestion === `${p.title} ${p.patientName} - ${p.contactNo}`
               );
               if (patient) {
                 handlePatientSelect(patient._id);
               }
             }}
+            readOnly={loading || !formData.centerId}
           />
         </FormField>
       </div>
