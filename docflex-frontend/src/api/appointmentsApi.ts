@@ -33,3 +33,28 @@ export async function createAppointment(data: any): Promise<any> {
     throw err;
   }
 }
+
+export async function cancelAppointment(appointmentId: string): Promise<void> {
+  try {
+    await axiosAuth.patch(`/appointments/${appointmentId}/cancel`);
+  } catch (error) {
+    console.error(
+      `Error cancelling appointment with ID ${appointmentId}:`,
+      error
+    );
+    throw error;
+  }
+}
+
+
+export async function accpetPatientVisiting(appointmentId: string): Promise<void> {
+  try {
+    await axiosAuth.patch(`/appointments/${appointmentId}/visit`);
+  } catch (error) {
+    console.error(
+      `Error accpetPatientVisiting with ID ${appointmentId}:`,
+      error
+    );
+    throw error;
+  }
+}

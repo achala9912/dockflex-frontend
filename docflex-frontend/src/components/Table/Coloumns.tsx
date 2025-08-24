@@ -302,9 +302,9 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
       let textClass = "";
 
       switch (value.toLowerCase()) {
-        case "completed":
-          bgClass = "bg-green-100";
-          textClass = "text-green-700";
+        case "scheduled":
+          bgClass = "bg-orange-100";
+          textClass = "text-orange-700";
           break;
         case "cancelled":
           bgClass = "bg-red-100";
@@ -336,11 +336,11 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
       const text = value ? "Yes" : "No";
 
       const bgClass = value ? "bg-green-100" : "bg-red-100";
-      const textClass = value ? "text-green-500" : "text-red-500";
+      const textClass = value ? "text-green-700" : "text-red-500";
 
       return (
         <span
-          className={`px-3 py-1 capitalize text-sm font-semibold rounded-full min-w-[100px] inline-block text-center ${bgClass} ${textClass}`}
+          className={`px-3 py-1 capitalize text-sm font-medium rounded-full min-w-[80px] inline-block text-center ${bgClass} ${textClass}`}
         >
           {text}
         </span>
@@ -352,27 +352,37 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
     header: "Action",
     accessor: "action",
     headerClassName: "text-center",
-    render: (_value, row, handlers) => (
-      <div className="flex space-x-3 justify-center">
-        <FaEdit
-          className="text-[#23A3DA] hover:text-blue-700 cursor-pointer "
-          onClick={() => handlers?.edit?.(row)}
-          aria-label="Edit Appointment"
-          size={20}
-        />
-        <GiConfirmed
-          className="text-[#40e10f] hover:text-green-700 cursor-pointer "
-          onClick={() => handlers?.edit?.(row)}
-          aria-label="Edit Appointment"
-          size={20}
-        />
-        <IoMdCloseCircleOutline
-          className="text-[#EB1313]/70 hover:text-red-700 cursor-pointer "
-          onClick={() => handlers?.cancel?.(row)}
-          aria-label="Cancel Appointment"
-          size={22}
-        />
-      </div>
-    ),
+    render: (_value, row, handlers) => {
+
+      const showAcceptButton = !row.isPatientvisited;
+
+      const showCancelButton = row.status?.toLowerCase() !== "cancelled";
+
+ 
+      if (!showAcceptButton && !showCancelButton) {
+        return <div className="h-6"></div>;
+      }
+
+      return (
+        <div className="flex space-x-3 justify-center">
+          {showAcceptButton && (
+            <GiConfirmed
+              className="text-[#40e10f] hover:text-green-700 cursor-pointer"
+              onClick={() => handlers?.edit?.(row)}
+              aria-label="Accept Appointment"
+              size={20}
+            />
+          )}
+          {showCancelButton && (
+            <IoMdCloseCircleOutline
+              className="text-[#EB1313]/70 hover:text-red-700 cursor-pointer"
+              onClick={() => handlers?.delete?.(row)}
+              aria-label="Cancel Appointment"
+              size={22}
+            />
+          )}
+        </div>
+      );
+    },
   },
 ];

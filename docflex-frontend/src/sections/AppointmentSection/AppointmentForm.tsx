@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useFormContext } from "react-hook-form";
 import { AppointmentFormData } from "@/schemas/Appointment/AppointmentSchema";
 import FormField from "@/components/Fields/FormField";
 import Dropdown from "@/components/Dropdown/Dropdown";
@@ -27,7 +28,7 @@ interface Patient {
 }
 
 interface Session {
-  id: string; // Changed from _id to id
+  id: string;
   sessionId: string;
   sessionName: string;
 }
@@ -38,19 +39,23 @@ interface Suggestion {
 }
 
 function AppointmentForm() {
-  const [formData, setFormData] = useState<AppointmentFormData>({
-    centerId: "",
-    sessionId: "",
-    date: "",
-    contactNo: "",
-    email: "",
-    patientId: "",
-    remarks: "",
-  });
+  // Use React Hook Form context instead of local state
+  const {
+    watch,
+    setValue,
+    formState: { errors },
+    clearErrors,
+  } = useFormContext<AppointmentFormData>();
 
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof AppointmentFormData, string>>
-  >({});
+  // Watch form values
+  const centerId = watch("centerId");
+  const contactNo = watch("contactNo");
+  const sessionId = watch("sessionId");
+  const patientId = watch("patientId");
+  const email = watch("email");
+  const remarks = watch("remarks");
+  const date = watch("date");
+
   const [patients, setPatients] = useState<Patient[]>([]);
   const [sessionOptions, setSessionOptions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,21 +64,18 @@ function AppointmentForm() {
     field: keyof AppointmentFormData,
     value: string
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setValue(field, value);
 
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+      clearErrors(field);
     }
 
     if (field === "centerId") {
       // reset dependent fields
-      setFormData((prev) => ({
-        ...prev,
-        sessionId: "",
-        patientId: "",
-        contactNo: "",
-        email: "",
-      }));
+      setValue("sessionId", "");
+      setValue("patientId", "");
+      setValue("contactNo", "");
+      setValue("email", "");
       setSessionOptions([]);
       setPatients([]);
     }
@@ -82,24 +84,21 @@ function AppointmentForm() {
   // Handle contact number change and fetch patients
   const handleContactChange = useCallback(
     async (contactNo: string) => {
-      setFormData((prev) => ({ ...prev, contactNo }));
+      setValue("contactNo", contactNo);
 
       // Clear errors when user types
       if (errors.contactNo) {
-        setErrors((prev) => ({ ...prev, contactNo: undefined }));
+        clearErrors("contactNo");
       }
 
       // Only search if we have a contact number and center selected
-      if (!contactNo.trim() || !formData.centerId) {
+      if (!contactNo.trim() || !centerId) {
         setPatients([]);
         return;
       }
 
       try {
-        const result = await getPatientSuggestions(
-          contactNo,
-          formData.centerId
-        );
+        const result = await getPatientSuggestions(contactNo, centerId);
         console.log("Patient suggestions:", result);
         setPatients(result || []);
       } catch (err: any) {
@@ -108,22 +107,19 @@ function AppointmentForm() {
         setPatients([]);
       }
     },
-    [formData.centerId, errors.contactNo]
+    [centerId, errors.contactNo, setValue, clearErrors]
   );
 
   const handlePatientSelect = (patientId: string) => {
     const selectedPatient = patients.find((p) => p._id === patientId);
     if (!selectedPatient) return;
 
-    setFormData((prev) => ({
-      ...prev,
-      contactNo: selectedPatient.contactNo || "",
-      email: selectedPatient.email || "",
-      patientId: selectedPatient._id || "",
-    }));
+    setValue("contactNo", selectedPatient.contactNo || "");
+    setValue("email", selectedPatient.email || "");
+    setValue("patientId", selectedPatient._id || "");
 
     if (errors.contactNo) {
-      setErrors((prev) => ({ ...prev, contactNo: undefined }));
+      clearErrors("contactNo");
     }
   };
 
@@ -135,26 +131,23 @@ function AppointmentForm() {
 
   // Fetch sessions when center changes
   const fetchSessions = useCallback(async () => {
-    if (!formData.centerId) {
+    if (!centerId) {
       setSessionOptions([]);
       return;
     }
 
     try {
       setLoading(true);
-      const response = await getSessionSuggestions(formData.centerId);
+      const response = await getSessionSuggestions(centerId);
       console.log("Session API response in component:", response);
-      console.log("Response type:", typeof response);
-      console.log("Is array:", Array.isArray(response));
       
-      // Ensure we have an array to work with
       const sessionsArray = Array.isArray(response) ? response : [];
       console.log("Sessions array:", sessionsArray);
       
       const transformed: Suggestion[] = sessionsArray.map((session: Session) => {
         console.log("Mapping session:", session);
         return {
-          value: session.id,
+          value: session.sessionId,
           label: session.sessionName,
         };
       });
@@ -168,7 +161,7 @@ function AppointmentForm() {
     } finally {
       setLoading(false);
     }
-  }, [formData.centerId]);
+  }, [centerId]);
 
   useEffect(() => {
     fetchSessions();
@@ -179,25 +172,25 @@ function AppointmentForm() {
     (p) => `${p.title} ${p.patientName} - ${p.contactNo}`
   );
 
-  const selectedPatient = patients.find((p) => p._id === formData.patientId);
+  const selectedPatient = patients.find((p) => p._id === patientId);
 
   return (
     <div className="space-y-6">
       {/* Medical Center & Date */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Medical Center" error={errors.centerId}>
+        <FormField label="Medical Center" error={errors.centerId?.message}>
           <CenterDropdown
             id="centerId"
-            value={formData.centerId}
+            value={centerId || ""}
             onChange={(val: string) => handleInputChange("centerId", val)}
             placeholder="Select Medical Center"
           />
         </FormField>
 
-        <FormField label="Date" error={errors.date}>
+        <FormField label="Date" error={errors.date?.message}>
           <DatePicker
             id="date"
-            value={formData.date}
+            value={date || ""}
             dateFormat="yyyy-MM-dd"
             onDateChange={(date: string) => handleInputChange("date", date)}
             className="w-full"
@@ -208,21 +201,21 @@ function AppointmentForm() {
 
       {/* Session & Contact */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Session" error={errors.sessionId}>
+        <FormField label="Session" error={errors.sessionId?.message}>
           <Dropdown
             id="sessionId"
-            value={formData.sessionId}
+            value={sessionId || ""}
             options={sessionOptions}
             placeholder="Select a Session"
-            readOnly={loading || !formData.centerId}
+            readOnly={loading || !centerId}
             onChange={handleSessionChange}
           />
         </FormField>
 
-        <FormField label="Contact No" error={errors.contactNo}>
+        <FormField label="Contact No" error={errors.contactNo?.message}>
           <SearchBar
             id="contactNo"
-            value={formData.contactNo}
+            value={contactNo || ""}
             placeholder="Search by contact number"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               handleContactChange(e.target.value)
@@ -237,7 +230,7 @@ function AppointmentForm() {
                 handlePatientSelect(patient._id);
               }
             }}
-            readOnly={loading || !formData.centerId}
+            readOnly={loading || !centerId}
           />
         </FormField>
       </div>
@@ -270,7 +263,7 @@ function AppointmentForm() {
           <InputField
             id="email"
             type="email"
-            value={formData.email}
+            value={email || ""}
             placeholder="Email"
             readOnly
           />
@@ -288,11 +281,11 @@ function AppointmentForm() {
       </div>
 
       {/* Remarks */}
-      <FormField label="Remarks (Optional)" error={errors.remarks}>
+      <FormField label="Remarks (Optional)" error={errors.remarks?.message}>
         <InputField
           id="remarks"
           type="text"
-          value={formData.remarks}
+          value={remarks || ""}
           onChange={(e) => handleInputChange("remarks", e.target.value)}
           placeholder="Enter remarks"
         />

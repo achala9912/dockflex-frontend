@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
@@ -15,47 +15,115 @@ import {
   appointmentMgmtColumns,
 } from "@/components/Table/Coloumns";
 import { useDebounce } from "@/hooks/useDebounce";
-import { getAllAppointments } from "@/api/appointmentsApi";
+import {
+  cancelAppointment,
+  getAllAppointments,
+  accpetPatientVisiting,
+} from "@/api/appointmentsApi";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
+import ConfirmationPopup from "@/components/Popups/ConfirmationPopup";
 
 export default function Page() {
   const router = useRouter();
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [appointment, setAppointment] = useState<AppointmentMgmt[]>([]); // Fixed naming
+  const [appointment, setAppointment] = useState<AppointmentMgmt[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [centerId, setCenterId] = useState<string | undefined>();
-  const [selectedDate, setSelectedDate] = useState<string>(""); // Added state for date
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [isCancelPopupOpen, setIsCancelPopupOpen] = useState<boolean>(false);
+  const [isVisitPopupOpen, setIsVisitPopupOpen] = useState<boolean>(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<
+    string | null
+  >(null);
+
   const debouncedSearchTerm = useDebounce(searchValue, 500);
   const itemsPerPage = 10;
 
+  // Fetch appointments function with useCallback
+  const fetchAppointments = useCallback(async () => {
+    try {
+      const res = await getAllAppointments(
+        selectedDate,
+        currentPage,
+        itemsPerPage,
+        debouncedSearchTerm,
+        centerId
+      );
+      setAppointment(res.data || []);
+      setTotalPages(res.totalPages || 1);
+      setTotalItems(res.total || 0);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch appointments");
+    }
+  }, [selectedDate, currentPage, itemsPerPage, debouncedSearchTerm, centerId]);
+
+  // Fetch appointments on mount & whenever filters change
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await getAllAppointments(
-          selectedDate, 
-          currentPage, 
-          itemsPerPage, 
-          debouncedSearchTerm, 
-          centerId 
-        );
-
-        console.log("Fetched appointments response:", res);
-        setAppointment(res.data || []); 
-        setTotalPages(res.totalPages || 1);
-        setTotalItems(res.total || 0);
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to fetch appointments");
-      }
-    };
-
     fetchAppointments();
-  }, [debouncedSearchTerm, centerId, currentPage, selectedDate]);
+  }, [fetchAppointments]);
 
+  // Navigate to add new appointment
   const addNewPatient = () => {
     router.push(`/appointments/new`);
+  };
+
+  // Open cancellation confirmation popup
+  const confirmCancel = (row: AppointmentMgmt) => {
+    setSelectedAppointmentId(row.appointmentId);
+    setIsCancelPopupOpen(true);
+  };
+
+  // Open patient visit confirmation popup
+  const confirmPatientVisited = (row: AppointmentMgmt) => {
+    setSelectedAppointmentId(row.appointmentId);
+    setIsVisitPopupOpen(true);
+  };
+
+  // Handle Yes in cancellation popup
+  const handleCancelYes = async () => {
+    if (!selectedAppointmentId) return;
+    try {
+      await cancelAppointment(selectedAppointmentId);
+      toast.success("Appointment canceled successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to cancel appointment");
+    } finally {
+      setIsCancelPopupOpen(false);
+      setSelectedAppointmentId(null);
+      fetchAppointments(); // re-fetch after popup closes
+    }
+  };
+
+  // Handle Yes in visit popup
+  const handleVisitYes = async () => {
+    if (!selectedAppointmentId) return;
+    try {
+      await accpetPatientVisiting(selectedAppointmentId);
+      toast.success("Patient visit recorded successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to record patient visit");
+    } finally {
+      setIsVisitPopupOpen(false);
+      setSelectedAppointmentId(null);
+      fetchAppointments(); // re-fetch after popup closes
+    }
+  };
+
+  // Handle No in cancellation popup
+  const handleCancelNo = () => {
+    setIsCancelPopupOpen(false);
+    setSelectedAppointmentId(null);
+  };
+
+  // Handle No in visit popup
+  const handleVisitNo = () => {
+    setIsVisitPopupOpen(false);
+    setSelectedAppointmentId(null);
   };
 
   return (
@@ -72,7 +140,7 @@ export default function Page() {
             <DatePicker
               id="date"
               value={selectedDate}
-              onDateChange={(date) => setSelectedDate(date)} // Fixed missing handler
+              onDateChange={(date) => setSelectedDate(date)}
             />
 
             <CenterDropdown
@@ -116,8 +184,27 @@ export default function Page() {
           currentPage={currentPage}
           setPage={setCurrentPage}
           totalItems={totalItems}
+          handleDelete={confirmCancel}
+          handleEdit={confirmPatientVisited}
         />
       </div>
+
+      {/* Cancellation Popup */}
+      <ConfirmationPopup
+        isOpen={isCancelPopupOpen}
+        handleYes={handleCancelYes}
+        handleNo={handleCancelNo}
+        element="cancel this appointment"
+      />
+
+      {/* Visit Confirmation Popup */}
+      <ConfirmationPopup
+        isOpen={isVisitPopupOpen}
+        handleYes={handleVisitYes}
+        handleNo={handleVisitNo}
+        element="confirm the patient visited?"
+        yesButtonColor="green"
+      />
     </>
   );
 }
