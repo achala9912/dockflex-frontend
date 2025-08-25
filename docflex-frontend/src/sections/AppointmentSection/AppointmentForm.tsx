@@ -189,7 +189,8 @@ const AppointmentForm: React.FC = () => {
             dateFormat="yyyy-MM-dd"
             onDateChange={(val) => handleInputChange("date", val)}
             className="w-full"
-            placeholder="Select a Date"
+            placeholder="Select an appointment date"
+            isDisablePast={true}
           />
         </FormField>
       </div>
@@ -207,11 +208,11 @@ const AppointmentForm: React.FC = () => {
           />
         </FormField>
 
-        <FormField label="Contact No" error={errors.contactNo?.message}>
+        <FormField label="Patient Contact No" error={errors.contactNo?.message}>
           <SearchBar
             id="contactNo"
             value={contactNo || ""}
-            placeholder="Search by contact number"
+            placeholder="Search patient by contact no"
             onChange={(e) => handleContactChange(e.target.value)}
             suggestions={patientSuggestions}
             onSuggestionSelect={(suggestion) => {

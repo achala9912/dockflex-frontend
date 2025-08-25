@@ -354,13 +354,13 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
     headerClassName: "text-center",
     render: (_value, row, handlers) => {
 
-      const showAcceptButton = !row.isPatientvisited;
+      const showAcceptButton = !row.isPatientvisited && row.status?.toLowerCase() !== "cancelled" ;
 
       const showCancelButton = row.status?.toLowerCase() !== "cancelled";
 
  
       if (!showAcceptButton && !showCancelButton) {
-        return <div className="h-6"></div>;
+        return <div className="h-6"> -</div>;
       }
 
       return (

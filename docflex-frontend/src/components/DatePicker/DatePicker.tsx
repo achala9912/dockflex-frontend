@@ -24,7 +24,8 @@ interface DatePickerProps {
   readOnly?: boolean;
   className?: string;
   specialType?: string;
-  isExpiryDate?: boolean;
+  isExpiryDate?: boolean; // still supported
+  isDisablePast?: boolean; // 👈 new prop
   dateFormat?: string;
 }
 
@@ -39,6 +40,7 @@ export function DatePicker({
   readOnly = false,
   className,
   isExpiryDate = false,
+  isDisablePast = false,
   dateFormat = "yyyy-MM-dd",
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
@@ -50,6 +52,20 @@ export function DatePicker({
     controlledValue || (date ? format(date, dateFormat) : "")
   );
   const [isFocused, setIsFocused] = React.useState(false);
+
+  // normalize to start of day (ignore hours/minutes)
+  const startOfDay = (d: Date) => {
+    const dt = new Date(d);
+    dt.setHours(0, 0, 0, 0);
+    return dt;
+  };
+
+  // restriction logic (today allowed)
+  const restrictPast = (d: Date) => {
+    const today = startOfDay(new Date());
+    const target = startOfDay(d);
+    return (isExpiryDate || isDisablePast) && target < today;
+  };
 
   // keep in sync with external `value`
   React.useEffect(() => {
@@ -66,10 +82,7 @@ export function DatePicker({
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (!selectedDate) return;
 
-    // Expiry date restriction: no past dates
-    if (isExpiryDate && selectedDate < new Date()) {
-      return;
-    }
+    if (restrictPast(selectedDate)) return;
 
     setDate(selectedDate);
     const formatted = format(selectedDate, dateFormat);
@@ -97,7 +110,7 @@ export function DatePicker({
           id={id || "date-picker-input"}
           value={value}
           placeholder={placeholder}
-          className={`bg-background pr-10 w-full ${className || ""}`} // 👈 enforce full width
+          className={`bg-background pr-10 w-full ${className || ""}`}
           readOnly={readOnly}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
@@ -106,7 +119,7 @@ export function DatePicker({
             setValue(raw);
             const parsed = parse(raw, dateFormat, new Date());
             if (!isNaN(parsed.getTime())) {
-              if (isExpiryDate && parsed < new Date()) return;
+              if (restrictPast(parsed)) return;
               setDate(parsed);
               setMonth(parsed);
               if (onDateChange) onDateChange(format(parsed, dateFormat));
@@ -122,7 +135,6 @@ export function DatePicker({
           type="text"
         />
 
-   
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -147,7 +159,7 @@ export function DatePicker({
               month={month}
               onMonthChange={setMonth}
               onSelect={handleDateSelect}
-              disabled={(date) => (isExpiryDate ? date < new Date() : false)}
+              disabled={(d) => restrictPast(d)}
             />
           </PopoverContent>
         </Popover>
