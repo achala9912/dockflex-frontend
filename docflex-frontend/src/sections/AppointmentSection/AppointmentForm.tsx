@@ -32,6 +32,7 @@ interface Patient {
   contactNo: string;
   email: string;
   age: string;
+  ageDisplay: string;
   address: string;
 }
 
@@ -121,6 +122,7 @@ const AppointmentForm: React.FC = () => {
     setValue("patientId", "");
     setValue("contactNo", "");
     setValue("email", "");
+    setValue("age", "");
     setPatients([]);
   }, [centerId, setValue]);
 
@@ -128,27 +130,35 @@ const AppointmentForm: React.FC = () => {
   const handleInputChange = useCallback(
     (field: keyof AppointmentFormData, value: string) => {
       setValue(field, value);
-      if (errors[field]) clearErrors(field);
+      clearErrors(field);
     },
-    [setValue, clearErrors, errors]
+    [setValue, clearErrors]
   );
 
   /** Debounced patient search */
   const handleContactChange = useCallback(
     (value: string) => {
       setValue("contactNo", value);
-      if (errors.contactNo) clearErrors("contactNo");
+      clearErrors("contactNo");
 
-      if (typingTimeout.current) clearTimeout(typingTimeout.current);
+      // If the search bar is empty, clear all patient-related data
+      if (!value.trim()) {
+        setValue("patientId", "");
+        setValue("email", "");
+        setValue("age", "");
+        setPatients([]);
+      } else {
+        if (typingTimeout.current) clearTimeout(typingTimeout.current);
 
-      typingTimeout.current = setTimeout(() => {
-        fetchPatientSuggestions(value);
-      }, 300);
+        typingTimeout.current = setTimeout(() => {
+          fetchPatientSuggestions(value);
+        }, 300);
+      }
     },
-    [setValue, clearErrors, errors.contactNo, fetchPatientSuggestions]
+    [setValue, clearErrors, fetchPatientSuggestions]
   );
 
-  /** Select patient */
+
   const handlePatientSelect = useCallback(
     (selectedId: string) => {
       const patient = patients.find((p) => p._id === selectedId);
@@ -156,10 +166,11 @@ const AppointmentForm: React.FC = () => {
 
       setValue("contactNo", patient.contactNo || "");
       setValue("email", patient.email || "");
+      setValue("age", patient.ageDisplay || ""); // <-- use ageDisplay
       setValue("patientId", patient._id || "");
-      if (errors.contactNo) clearErrors("contactNo");
+      clearErrors("contactNo");
     },
-    [patients, setValue, clearErrors, errors.contactNo]
+    [patients, setValue, clearErrors]
   );
 
   /** Session dropdown change */
@@ -173,7 +184,10 @@ const AppointmentForm: React.FC = () => {
   /** Memoized patient suggestions */
   const patientSuggestions = useMemo(
     () =>
-      patients.map((p) => `${p.title || ""} ${p.patientName} - ${p.contactNo}`),
+      patients.map((p) => ({
+        label: `${p.title || ""} ${p.patientName} - ${p.contactNo}`,
+        value: p._id,
+      })),
     [patients]
   );
 
@@ -203,7 +217,7 @@ const AppointmentForm: React.FC = () => {
             onDateChange={(val) => handleInputChange("date", val)}
             className="w-full"
             placeholder="Select an appointment date"
-            isDisablePast={true}
+            isDisablePast={true} // <-- keep as is; DatePicker should allow today
           />
         </FormField>
       </div>
@@ -228,21 +242,19 @@ const AppointmentForm: React.FC = () => {
               value={contactNo || ""}
               placeholder="Search patient by contact no"
               onChange={(e) => handleContactChange(e.target.value)}
-              suggestions={patientSuggestions}
+              suggestions={patientSuggestions.map((p) => p.label)}
               onSuggestionSelect={(suggestion) => {
-                const patient = patients.find(
-                  (p) =>
-                    suggestion ===
-                    `${p.title || ""} ${p.patientName} - ${p.contactNo}`
+                const patient = patientSuggestions.find(
+                  (p) => p.label === suggestion
                 );
-                if (patient) handlePatientSelect(patient._id);
+                if (patient) handlePatientSelect(patient.value);
               }}
               readOnly={loading || !centerId}
             />
 
             <Tooltip content="Add New Patient" side="bottom">
               <button
-                type="button" 
+                type="button"
                 onClick={() => setIsNewPatientPopupOpen(true)}
                 className="p-2 bg-blue-200 border h-10 w-10 flex items-center justify-center border-gray-400 rounded-md shadow-sm hover:bg-transparent hover:text-blue-600 hover:border-blue-600"
               >
@@ -268,8 +280,8 @@ const AppointmentForm: React.FC = () => {
         <FormField label="Age">
           <InputField
             id="age"
-            type="number"
-            value={selectedPatient?.age || ""}
+            type="text"
+            value={selectedPatient?.ageDisplay || ""}
             readOnly
             placeholder="Age"
           />

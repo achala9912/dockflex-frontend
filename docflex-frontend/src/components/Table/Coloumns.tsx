@@ -104,6 +104,7 @@ export interface PatientMgmt {
   patientName: string;
   gender: string;
   age: number;
+  ageDisplay?: string;
   email: string;
   contactNo: string;
   nic: string;
@@ -142,7 +143,7 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
   },
   {
     header: "Age",
-    accessor: "age",
+    accessor: "ageDisplay",
     headerClassName: "min-w-[100px] text-center justify-center flex",
     className: "text-center",
   },
@@ -353,12 +354,11 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
     accessor: "action",
     headerClassName: "text-center",
     render: (_value, row, handlers) => {
-
-      const showAcceptButton = !row.isPatientvisited && row.status?.toLowerCase() !== "cancelled" ;
+      const showAcceptButton =
+        !row.isPatientvisited && row.status?.toLowerCase() !== "cancelled";
 
       const showCancelButton = row.status?.toLowerCase() !== "cancelled";
 
- 
       if (!showAcceptButton && !showCancelButton) {
         return <div className="h-6"> -</div>;
       }

@@ -8,6 +8,7 @@ export const AppointmentSchema = z.object({
   patientId: z.string().min(1, "Patient Name is required"),
   remarks: z.string().optional(),
   email: z.string().email("Invalid email address").optional(),
+  age: z.string().optional(),
 });
 
 export type AppointmentFormData = z.infer<typeof AppointmentSchema>;
