@@ -311,8 +311,8 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
           textClass = "text-red-500";
           break;
         default:
-          bgClass = "bg-gray-100";
-          textClass = "text-gray-500";
+          bgClass = "bg-green-100";
+          textClass = "text-green-700";
       }
 
       return (
