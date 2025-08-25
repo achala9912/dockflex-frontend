@@ -20,6 +20,9 @@ import SearchBar from "@/components/Searchbar/Searchbar";
 
 import { getPatientSuggestions } from "@/api/patientsApi";
 import { getSessionSuggestions } from "@/api/sessionsApi";
+import { Tooltip } from "@/components/ui/tooltip";
+import { Plus } from "lucide-react";
+import AddNewPatientPopup from "../PatientSection/AddNewPatientPopup";
 
 interface Patient {
   title?: string;
@@ -64,6 +67,28 @@ const AppointmentForm: React.FC = () => {
 
   const typingTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastCenterId = useRef<string | undefined>(undefined);
+
+  const [isNewPatientPopupOpen, setIsNewPatientPopupOpen] = useState(false);
+
+  /** Fetch patients by contact */
+  const fetchPatientSuggestions = useCallback(
+    async (value: string) => {
+      if (!value.trim() || !centerId) {
+        setPatients([]);
+        return;
+      }
+
+      try {
+        const result = await getPatientSuggestions(value, centerId);
+        setPatients(result || []);
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message || "Failed to fetch patient suggestions.");
+        setPatients([]);
+      }
+    },
+    [centerId]
+  );
 
   /** Fetch sessions only when center changes */
   useEffect(() => {
@@ -116,23 +141,11 @@ const AppointmentForm: React.FC = () => {
 
       if (typingTimeout.current) clearTimeout(typingTimeout.current);
 
-      typingTimeout.current = setTimeout(async () => {
-        if (!value.trim() || !centerId) {
-          setPatients([]);
-          return;
-        }
-
-        try {
-          const result = await getPatientSuggestions(value, centerId);
-          setPatients(result || []);
-        } catch (err: any) {
-          console.error(err);
-          toast.error(err.message || "Failed to fetch patient suggestions.");
-          setPatients([]);
-        }
+      typingTimeout.current = setTimeout(() => {
+        fetchPatientSuggestions(value);
       }, 300);
     },
-    [centerId, setValue, clearErrors, errors.contactNo]
+    [setValue, clearErrors, errors.contactNo, fetchPatientSuggestions]
   );
 
   /** Select patient */
@@ -209,22 +222,34 @@ const AppointmentForm: React.FC = () => {
         </FormField>
 
         <FormField label="Patient Contact No" error={errors.contactNo?.message}>
-          <SearchBar
-            id="contactNo"
-            value={contactNo || ""}
-            placeholder="Search patient by contact no"
-            onChange={(e) => handleContactChange(e.target.value)}
-            suggestions={patientSuggestions}
-            onSuggestionSelect={(suggestion) => {
-              const patient = patients.find(
-                (p) =>
-                  suggestion ===
-                  `${p.title || ""} ${p.patientName} - ${p.contactNo}`
-              );
-              if (patient) handlePatientSelect(patient._id);
-            }}
-            readOnly={loading || !centerId}
-          />
+          <div className="flex gap-2 items-center">
+            <SearchBar
+              id="contactNo"
+              value={contactNo || ""}
+              placeholder="Search patient by contact no"
+              onChange={(e) => handleContactChange(e.target.value)}
+              suggestions={patientSuggestions}
+              onSuggestionSelect={(suggestion) => {
+                const patient = patients.find(
+                  (p) =>
+                    suggestion ===
+                    `${p.title || ""} ${p.patientName} - ${p.contactNo}`
+                );
+                if (patient) handlePatientSelect(patient._id);
+              }}
+              readOnly={loading || !centerId}
+            />
+
+            <Tooltip content="Add New Patient" side="bottom">
+              <button
+                type="button" 
+                onClick={() => setIsNewPatientPopupOpen(true)}
+                className="p-2 bg-blue-200 border h-10 w-10 flex items-center justify-center border-gray-400 rounded-md shadow-sm hover:bg-transparent hover:text-blue-600 hover:border-blue-600"
+              >
+                <Plus size={16} />
+              </button>
+            </Tooltip>
+          </div>
         </FormField>
       </div>
 
@@ -283,6 +308,19 @@ const AppointmentForm: React.FC = () => {
           placeholder="Enter remarks"
         />
       </FormField>
+
+      {/* New Patient Popup */}
+      {isNewPatientPopupOpen && (
+        <AddNewPatientPopup
+          isOpen={isNewPatientPopupOpen}
+          onClose={async () => {
+            setIsNewPatientPopupOpen(false);
+            if (contactNo) {
+              await fetchPatientSuggestions(contactNo);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

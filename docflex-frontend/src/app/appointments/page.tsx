@@ -137,12 +137,6 @@ export default function Page() {
       <div className="flex flex-col ">
         <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm">
           <div className="flex gap-4 items-start">
-            <DatePicker
-              id="date"
-              value={selectedDate}
-              onDateChange={(date) => setSelectedDate(date)}
-            />
-
             <CenterDropdown
               id="centerId"
               value={centerId || ""}
@@ -151,6 +145,11 @@ export default function Page() {
               width="md:w-[300px] w-full"
               label
               labelName="Center Name"
+            />
+            <DatePicker
+              id="date"
+              value={selectedDate}
+              onDateChange={(date) => setSelectedDate(date)}
             />
 
             <InputField

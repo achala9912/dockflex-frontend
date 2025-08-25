@@ -98,6 +98,7 @@ function PatientForm() {
                     type="text"
                     {...field}
                     placeholder="Full name"
+                    capitalize
                   />
                 )}
               />
