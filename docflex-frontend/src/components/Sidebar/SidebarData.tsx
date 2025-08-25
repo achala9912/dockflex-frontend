@@ -56,7 +56,11 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: "Medicines Directory",
     icon: AiFillMedicineBox,
-    path: "/medicines-directory",
+    dropdown: true,
+    subItems: [
+      { title: "Generic Names", path: "/medicines/generic" },
+      { title: "Products", path: "/medicines/products" },
+    ],
   },
   {
     title: "Prescriptions",
