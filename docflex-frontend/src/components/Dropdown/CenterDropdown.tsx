@@ -39,6 +39,7 @@
 //   const [selectedOption, setSelectedOption] =
 //     useState<SingleValue<OptionType>>(null);
 //   const [isFocused, setIsFocused] = useState(false);
+
 //   const user = useAuthStore((state) => state.user);
 //   const userCenterId = user?.centerId as string | string[] | undefined;
 
@@ -46,32 +47,43 @@
 //     const fetchCenters = async () => {
 //       try {
 //         const centers = await getMedicalCenterSuggestions();
-//         const options = centers.map((c) => ({
+//         const options: OptionType[] = centers.map((c) => ({
 //           label: c.centerName,
 //           value: c._id,
 //         }));
 
+//         let availableOptions = options;
 //         let initialSelection: SingleValue<OptionType> = null;
 
 //         if (userCenterId) {
 //           if (typeof userCenterId === "string") {
+//             // 🔹 Single center → preselect + restrict options
 //             initialSelection =
 //               options.find((c) => c.value === userCenterId) || null;
-//             setCenterOptions(initialSelection ? [initialSelection] : options);
-//           } else if (Array.isArray(userCenterId) && userCenterId.length === 1) {
-//             initialSelection =
-//               options.find((c) => c.value === userCenterId[0]) || null;
-//             setCenterOptions(initialSelection ? [initialSelection] : options);
-//           } else {
-//             setCenterOptions(options);
+//             availableOptions = initialSelection ? [initialSelection] : options;
+//           } else if (Array.isArray(userCenterId)) {
+//             if (userCenterId.length === 1) {
+//               // 🔹 Exactly one center → preselect + restrict options
+//               initialSelection =
+//                 options.find((c) => c.value === userCenterId[0]) || null;
+//               availableOptions = initialSelection
+//                 ? [initialSelection]
+//                 : options;
+//             } else {
+//               // 🔹 Multiple centers → show only allowed ones
+//               availableOptions = options.filter((c) =>
+//                 userCenterId.includes(c.value)
+//               );
+//             }
 //           }
-//         } else {
-//           setCenterOptions(options);
 //         }
 
+//         setCenterOptions(availableOptions);
+
+//         // 🔹 Pre-select user’s centerId if found
 //         if (initialSelection) {
 //           setSelectedOption(initialSelection);
-//           onChange(initialSelection.value);
+//           onChange(initialSelection.value); // 🚀 update parent immediately
 //         }
 //       } catch (err) {
 //         console.error("Failed to fetch centers:", err);
@@ -94,23 +106,16 @@
 //     onChange(newValue?.value || "");
 //   };
 
-//   const handleFocus = () => setIsFocused(true);
-//   const handleBlur = () => setIsFocused(false);
-
 //   const customStyles: StylesConfig<OptionType, false> = {
 //     control: (provided, state) => ({
 //       ...provided,
 //       borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
-//       outline: state.isFocused ? "none" : undefined,
 //       minHeight: "2.5rem",
 //       borderWidth: "1px",
 //       boxShadow: "none",
 //       borderRadius: "6px",
 //       cursor: readOnly ? "not-allowed" : "pointer",
 //       backgroundColor: readOnly ? "#f3f4f6" : provided.backgroundColor,
-//       "&:hover": {
-//         borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
-//       },
 //     }),
 //     menu: (provided) => ({
 //       ...provided,
@@ -146,8 +151,8 @@
 //           inputId={id}
 //           value={selectedOption}
 //           onChange={handleChange}
-//           onFocus={readOnly ? undefined : handleFocus}
-//           onBlur={handleBlur}
+//           onFocus={readOnly ? undefined : () => setIsFocused(true)}
+//           onBlur={() => setIsFocused(false)}
 //           options={centerOptions}
 //           placeholder={placeholder}
 //           isDisabled={disabled || readOnly}
@@ -162,6 +167,7 @@
 // };
 
 // export default CenterDropdown;
+
 
 "use client";
 
@@ -201,54 +207,43 @@ const CenterDropdown: React.FC<CenterDropdownProps> = ({
   requiredLabel = false,
 }) => {
   const [centerOptions, setCenterOptions] = useState<OptionType[]>([]);
-  const [selectedOption, setSelectedOption] =
-    useState<SingleValue<OptionType>>(null);
+  const [selectedOption, setSelectedOption] = useState<SingleValue<OptionType>>(null);
   const [isFocused, setIsFocused] = useState(false);
 
   const user = useAuthStore((state) => state.user);
   const userCenterId = user?.centerId as string | string[] | undefined;
 
+  // 🔹 Fetch centers only once
   useEffect(() => {
+    let mounted = true;
     const fetchCenters = async () => {
       try {
         const centers = await getMedicalCenterSuggestions();
-        const options: OptionType[] = centers.map((c) => ({
+        if (!mounted) return;
+
+        let options: OptionType[] = centers.map((c) => ({
           label: c.centerName,
           value: c._id,
         }));
 
-        let availableOptions = options;
+        // Preselect user's center if single
         let initialSelection: SingleValue<OptionType> = null;
-
         if (userCenterId) {
           if (typeof userCenterId === "string") {
-            // 🔹 Single center → preselect + restrict options
-            initialSelection =
-              options.find((c) => c.value === userCenterId) || null;
-            availableOptions = initialSelection ? [initialSelection] : options;
-          } else if (Array.isArray(userCenterId)) {
-            if (userCenterId.length === 1) {
-              // 🔹 Exactly one center → preselect + restrict options
-              initialSelection =
-                options.find((c) => c.value === userCenterId[0]) || null;
-              availableOptions = initialSelection
-                ? [initialSelection]
-                : options;
-            } else {
-              // 🔹 Multiple centers → show only allowed ones
-              availableOptions = options.filter((c) =>
-                userCenterId.includes(c.value)
-              );
-            }
+            initialSelection = options.find((c) => c.value === userCenterId) || null;
+            options = initialSelection ? [initialSelection] : options;
+          } else if (Array.isArray(userCenterId) && userCenterId.length === 1) {
+            initialSelection = options.find((c) => c.value === userCenterId[0]) || null;
+            options = initialSelection ? [initialSelection] : options;
           }
         }
 
-        setCenterOptions(availableOptions);
+        setCenterOptions(options);
 
-        // 🔹 Pre-select user’s centerId if found
-        if (initialSelection) {
+        // Only preselect once
+        if (initialSelection && !value) {
           setSelectedOption(initialSelection);
-          onChange(initialSelection.value); // 🚀 update parent immediately
+          onChange(initialSelection.value);
         }
       } catch (err) {
         console.error("Failed to fetch centers:", err);
@@ -257,8 +252,13 @@ const CenterDropdown: React.FC<CenterDropdownProps> = ({
     };
 
     fetchCenters();
-  }, [userCenterId, onChange]);
 
+    return () => {
+      mounted = false;
+    };
+  }, [userCenterId, onChange, value]);
+
+  // Update selected option if parent value changes
   useEffect(() => {
     if (value && centerOptions.length) {
       const selected = centerOptions.find((c) => c.value === value) || null;

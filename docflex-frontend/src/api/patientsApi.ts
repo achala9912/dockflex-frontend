@@ -64,20 +64,17 @@ export async function deletePatient(patientId: string): Promise<void> {
   }
 }
 
-// Temporary debug version - replace your current function with this
 export async function getPatientSuggestions(
   contactNo: string,
-  centerId?: string
+  centerId?: string,
+  skipLoader: boolean = true
 ): Promise<any[]> {
   try {
     console.log("🔍 Making API call with params:", { contactNo, centerId });
 
     const res = await axiosAuth.get("/patients/suggestions", {
       params: { contactNo, centerId },
-      headers: {
-        "X-Skip-Global-Loader": "true",
-      },
-      
+      skipLoading: skipLoader,
     });
 
     console.log("📡 Raw response object:", res);
@@ -86,7 +83,6 @@ export async function getPatientSuggestions(
     console.log("🔢 Type of response:", typeof res);
     console.log("📋 Is response an array?", Array.isArray(res));
 
-    // Check if the response itself is the array (common with custom axios interceptors)
     if (Array.isArray(res)) {
       console.log("✅ Response is directly an array");
       console.log(`📝 Array length: ${res.length}`);
