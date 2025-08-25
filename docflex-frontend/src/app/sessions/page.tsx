@@ -160,6 +160,15 @@ function Page() {
       <div className="flex flex-col">
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
           <div className="flex gap-4 w-full sm:w-auto">
+            <CenterDropdown
+              id="centerId"
+              value={centerId || ""}
+              onChange={(val) => setCenterId(val)}
+              placeholder="Select Medical Center"
+              width="md:w-[300px] w-full"
+              label
+              labelName="Center Name"
+            />
             <InputField
               id="session-search"
               width="w-full sm:w-[400px]"
@@ -170,16 +179,6 @@ function Page() {
               onChange={(e) => setSearchTerm(e.target.value)}
               label={true}
               labelName="Session ID / Name"
-            />
-
-            <CenterDropdown
-              id="centerId"
-              value={centerId || ""}
-              onChange={(val) => setCenterId(val)}
-              placeholder="Select Medical Center"
-              width="md:w-[300px] w-full"
-              label
-              labelName="Center Name"
             />
 
             <Dropdown
