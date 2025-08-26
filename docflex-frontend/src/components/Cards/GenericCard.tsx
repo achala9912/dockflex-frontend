@@ -5,7 +5,7 @@ import { Pencil, ShieldCheck, Trash2 } from "lucide-react";
 interface GenericCardProps {
   genericId: string | undefined;
   genericName?: string;
-  bottomName1?: string;
+  centerName?: string;
   bottomName2?: string;
   bottomName3?: string;
   handleEdit: () => void;
@@ -15,12 +15,11 @@ interface GenericCardProps {
 const GenericCard: React.FC<GenericCardProps> = ({
   genericId,
   genericName,
-  bottomName1,
+  centerName,
   bottomName2,
   bottomName3,
   handleEdit,
   handleDelete,
-  //   handleView,
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg w-72 relative flex flex-col items-center">
@@ -35,7 +34,7 @@ const GenericCard: React.FC<GenericCardProps> = ({
           {genericName}
         </h2>
         <p className="text-gray-600 text-sm text-center font-medium">
-          {bottomName1}
+          @{centerName}
         </p>
         <div className="mt-2 flex flex-col items-center">
           <p className="text-gray-600 text-xs text-center">{bottomName2}</p>
