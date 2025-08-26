@@ -80,7 +80,13 @@ function RoleForm() {
                 type="text"
                 {...field}
                 placeholder="Enter role name"
-                
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const capitalized = value
+                    .toLowerCase()
+                    .replace(/\b\w/g, (char) => char.toUpperCase());
+                  field.onChange(capitalized);
+                }}
               />
             )}
           />

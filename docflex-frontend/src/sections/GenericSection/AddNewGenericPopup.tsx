@@ -3,62 +3,51 @@
 import Popup from "@/components/Popups/Popup";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import SessionForm from "./SessionForm";
 import {
-  SessionFormData,
-  SessionSchema,
-} from "@/schemas/Sessions/SessionSchema";
+  GenericFormData,
+  GenericSchema,
+} from "@/schemas/Generic/GenericSchema";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createSession } from "@/api/sessionsApi";
 import { toast } from "react-toastify";
+import GenericForm from "./GenericForm";
+import { createGenericName } from "@/api/genericNameApi";
 
-interface AddNewSessionPopupProps {
+interface AddNewGenericPopupProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-function AddNewSessionPopup({ isOpen, onClose }: AddNewSessionPopupProps) {
-  const methods = useForm<SessionFormData>({
-    resolver: zodResolver(SessionSchema),
+function AddNewGenericPopup({ isOpen, onClose }: AddNewGenericPopupProps) {
+  const methods = useForm<GenericFormData>({
+    resolver: zodResolver(GenericSchema),
     defaultValues: {
       centerId: "",
-      sessionName: "",
-      startTime: "",
-      endTime: "",
+      genericName: "",
     },
   });
 
-  const onSubmit = async (data: SessionFormData) => {
+  const onSubmit = async (data: GenericFormData) => {
     try {
-      const today = new Date().toISOString().split("T")[0]; 
-
-      const payload = {
-        ...data,
-        startTime: new Date(`${today}T${data.startTime}`).toISOString(),
-        endTime: new Date(`${today}T${data.endTime}`).toISOString(),
-      };
-
-      await createSession(payload);
-      toast.success("Session created successfully!");
+      await createGenericName(data);
+      toast.success("Generic Name created successfully!");
       onClose();
       methods.reset();
     } catch (error: any) {
-      console.error("Failed to create session:", error);
-   
+      console.error("Failed to create generic:", error);
     }
   };
 
   return (
     <Popup
-      title="New Session"
+      title="New Generic Name"
       isOpen={isOpen}
       onClose={onClose}
       headerClassName="bg-blue-600"
     >
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <SessionForm />
+          <GenericForm />
 
           <div className="flex flex-wrap justify-end gap-4 mt-6">
             <Button
@@ -85,4 +74,4 @@ function AddNewSessionPopup({ isOpen, onClose }: AddNewSessionPopupProps) {
   );
 }
 
-export default AddNewSessionPopup;
+export default AddNewGenericPopup;

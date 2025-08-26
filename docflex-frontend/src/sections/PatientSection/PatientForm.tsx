@@ -99,6 +99,13 @@ function PatientForm() {
                     {...field}
                     placeholder="Full name"
                     capitalize
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const capitalized = value
+                        .toLowerCase()
+                        .replace(/\b\w/g, (char) => char.toUpperCase());
+                      field.onChange(capitalized);
+                    }}
                   />
                 )}
               />
@@ -170,6 +177,7 @@ function PatientForm() {
                 type="email"
                 {...field}
                 placeholder="Email address"
+                onChange={(e) => field.onChange(e.target.value.toLowerCase())}
               />
             )}
           />
@@ -181,7 +189,7 @@ function PatientForm() {
         <FormField
           label="Address"
           error={errors.address?.message}
-          className={showNIC ? "" : "sm:col-span-2"} 
+          className={showNIC ? "" : "sm:col-span-2"}
         >
           <Controller
             name="address"
@@ -192,6 +200,13 @@ function PatientForm() {
                 type="text"
                 {...field}
                 placeholder="Enter address"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const capitalized = value
+                    .toLowerCase()
+                    .replace(/\b\w/g, (char) => char.toUpperCase());
+                  field.onChange(capitalized);
+                }}
               />
             )}
           />

@@ -88,15 +88,18 @@ function UserForm() {
   useEffect(() => {
     // Update the roleName field whenever the role changes for validation
     if (selectedRole) {
-      setValue("roleName", selectedRole.roleName, { shouldValidate: false, shouldDirty: true });
-      
+      setValue("roleName", selectedRole.roleName, {
+        shouldValidate: false,
+        shouldDirty: true,
+      });
+
       // Trigger validation for doctor-specific fields
       setTimeout(() => {
         trigger(["slmcNo", "specialization", "digitalSignature"]);
       }, 0);
     } else {
       setValue("roleName", "", { shouldValidate: false, shouldDirty: true });
-      
+
       // Clear validation errors when no role is selected
       setTimeout(() => {
         trigger(["slmcNo", "specialization", "digitalSignature"]);
@@ -176,6 +179,13 @@ function UserForm() {
                     type="text"
                     {...field}
                     placeholder="Full name"
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      const capitalized = value
+                        .toLowerCase()
+                        .replace(/\b\w/g, (char) => char.toUpperCase());
+                      field.onChange(capitalized);
+                    }}
                   />
                 )}
               />
@@ -212,6 +222,7 @@ function UserForm() {
                 type="text"
                 {...field}
                 placeholder="Username"
+                onChange={(e) => field.onChange(e.target.value.toLowerCase())}
               />
             )}
           />
@@ -227,6 +238,7 @@ function UserForm() {
                 type="email"
                 {...field}
                 placeholder="Email address"
+                onChange={(e) => field.onChange(e.target.value.toLowerCase())}
               />
             )}
           />
@@ -259,6 +271,13 @@ function UserForm() {
                 type="text"
                 {...field}
                 placeholder="Enter remarks"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const capitalized =
+                    value.charAt(0).toUpperCase() +
+                    value.slice(1).toLowerCase();
+                  field.onChange(capitalized);
+                }}
               />
             )}
           />

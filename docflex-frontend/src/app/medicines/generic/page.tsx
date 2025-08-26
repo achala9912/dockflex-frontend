@@ -7,15 +7,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
 import { toast } from "react-toastify";
-
 import CenterDropdown from "@/components/Dropdown/CenterDropdown";
 import Pagination from "@/components/Table/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
-
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 import GenericCard from "@/components/Cards/GenericCard";
-
 import { getAllGenericNames, deleteGenericName } from "@/api/genericNameApi";
+import AddNewGenericPopup from "@/sections/GenericSection/AddNewGenericPopup";
 
 interface IGenericName {
   genericId: string;
@@ -37,12 +35,11 @@ function Page() {
   const [totalPages, setTotalPages] = useState(0);
   const [limit] = useState(10);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
   const [genericNameToDelete, setGenericNameToDelete] =
     useState<IGenericName | null>(null);
 
-  /** 🔹 Fetch data (memoized to avoid recreation on re-renders) */
   const fetchGenericNames = useCallback(async () => {
     try {
       setError(null);
@@ -139,7 +136,7 @@ function Page() {
             <RoundButton
               icon={IoMdAdd}
               className="hover:bg-gray-300 bg-blue-800 text-white hover:text-blue-800"
-              onClick={() => {}}
+              onClick={() => setIsNewPopupOpen(true)}
             />
           </Tooltip>
         </div>
@@ -176,14 +173,26 @@ function Page() {
         />
       </div>
 
-      <DeleteConfirm
-        element={
-          genericNameToDelete ? `"${genericNameToDelete.genericName}""` : ""
-        }
-        onDelete={confirmDelete}
-        onCancel={() => setIsDeleteModalOpen(false)}
-        isOpen={isDeleteModalOpen}
-      />
+      {isNewPopupOpen && (
+        <AddNewGenericPopup
+          isOpen={isNewPopupOpen}
+          onClose={() => {
+            setIsNewPopupOpen(false);
+            fetchGenericNames();
+          }}
+        />
+      )}
+      
+      {isDeleteModalOpen && (
+        <DeleteConfirm
+          element={
+            genericNameToDelete ? `"${genericNameToDelete.genericName}""` : ""
+          }
+          onDelete={confirmDelete}
+          onCancel={() => setIsDeleteModalOpen(false)}
+          isOpen={isDeleteModalOpen}
+        />
+      )}
     </>
   );
 }

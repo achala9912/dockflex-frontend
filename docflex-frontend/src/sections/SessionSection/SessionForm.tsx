@@ -44,6 +44,13 @@ function SessionForm() {
                 type="text"
                 {...field}
                 placeholder="Session Name"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const capitalized = value
+                    .toLowerCase()
+                    .replace(/\b\w/g, (char) => char.toUpperCase());
+                  field.onChange(capitalized);
+                }}
               />
             )}
           />

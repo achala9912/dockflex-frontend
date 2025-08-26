@@ -1,7 +1,6 @@
 import axios from "axios";
 import axiosAuth from "@/lib/axiosAuth";
 
-// ✅ cleaner & extensible
 export async function getAllGenericNames({
   page,
   limit,
@@ -24,6 +23,16 @@ export async function getAllGenericNames({
         err.response?.data?.message || "Failed to fetch generic."
       );
     }
+    throw err;
+  }
+}
+
+export async function createGenericName(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/generic", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create generic:", err);
     throw err;
   }
 }

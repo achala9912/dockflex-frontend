@@ -31,6 +31,7 @@ function MedicalCentreForm() {
             type="text"
             placeholder="Enter Medical Centre Name"
             {...register("centreName")}
+            
           />
           {errors.centreName && (
             <p className="text-red-500 text-sm">{errors.centreName.message}</p>

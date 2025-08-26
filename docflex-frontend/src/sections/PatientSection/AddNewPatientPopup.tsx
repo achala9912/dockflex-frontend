@@ -50,7 +50,7 @@ function AddNewPatientPopup({ isOpen, onClose }: AddNewPatientPopupProps) {
 
   return (
     <Popup
-      title="Add New Patient"
+      title="New Patient"
       isOpen={isOpen}
       onClose={onClose}
       headerClassName="bg-blue-600"
