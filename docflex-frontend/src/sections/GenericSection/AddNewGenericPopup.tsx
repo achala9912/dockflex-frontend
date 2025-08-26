@@ -30,7 +30,7 @@ function AddNewGenericPopup({ isOpen, onClose }: AddNewGenericPopupProps) {
   const onSubmit = async (data: GenericFormData) => {
     try {
       await createGenericName(data);
-      toast.success("Generic Name created successfully!");
+      toast.success("Generic name created successfully!");
       onClose();
       methods.reset();
     } catch (error: any) {

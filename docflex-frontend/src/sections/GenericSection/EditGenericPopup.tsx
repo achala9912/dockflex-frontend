@@ -53,7 +53,7 @@ function EditGenericPopup({
   const onSubmit = async (data: GenericFormData) => {
     try {
       await updateGenericName(genericId, data);
-      toast.success("Generic updated successfully!");
+      toast.success("Generic name updated successfully!");
       onClose();
       methods.reset();
     } catch (error: any) {
