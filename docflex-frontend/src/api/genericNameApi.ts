@@ -15,6 +15,7 @@ export async function getAllGenericNames({
   try {
     const res = await axiosAuth.get<any>("/generic", {
       params: { page, limit, search, centerId },
+      skipLoading: true,
     });
     return res;
   } catch (err: unknown) {
