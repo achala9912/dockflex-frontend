@@ -1,6 +1,7 @@
 "use client";
 
-import { Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { Pencil,Trash2 } from "lucide-react";
+import { LuDroplets } from "react-icons/lu";
 
 interface GenericCardProps {
   genericId: string | undefined;
@@ -27,8 +28,8 @@ const GenericCard: React.FC<GenericCardProps> = ({
         <p className="text-gray-600 text-xs mt-2 text-left pl-2 font-semibold">
           {genericId}
         </p>
-        <div className="mt-2 flex justify-center">
-          <ShieldCheck strokeWidth={1} size={56} className="text-gray-600" />
+        <div className="mt-3 flex justify-center">
+          <LuDroplets strokeWidth={1} size={56} className="text-gray-600" />
         </div>
         <h2 className="text-blue-600 text-md font-semibold mt-2 text-center font-inter">
           {genericName}

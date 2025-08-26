@@ -37,6 +37,29 @@ export async function createGenericName(data: any): Promise<any> {
   }
 }
 
+export async function getGenericNameById(genericId: string): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/generic/${genericId}`);
+    return res;
+  } catch (error) {
+    console.error(`Error fetching generic with ID ${genericId}:`, error);
+    throw error;
+  }
+}
+
+export async function updateGenericName(
+  genericId: string,
+  updateData: Partial<any>
+): Promise<any> {
+  try {
+    const res = await axiosAuth.put<any>(`/generic/${genericId}`, updateData);
+    return res.data;
+  } catch (error) {
+    console.error(`Error updating generic with ID ${genericId}:`, error);
+    throw error;
+  }
+}
+
 export async function deleteGenericName(genericId: string): Promise<void> {
   try {
     await axiosAuth.delete(`/generic/${genericId}`);

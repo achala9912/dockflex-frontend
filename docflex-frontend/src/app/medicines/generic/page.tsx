@@ -14,6 +14,7 @@ import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 import GenericCard from "@/components/Cards/GenericCard";
 import { getAllGenericNames, deleteGenericName } from "@/api/genericNameApi";
 import AddNewGenericPopup from "@/sections/GenericSection/AddNewGenericPopup";
+import EditGenericPopup from "@/sections/GenericSection/EditGenericPopup";
 
 interface IGenericName {
   genericId: string;
@@ -33,10 +34,14 @@ function Page() {
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [limit] = useState(10);
+  const [limit] = useState(8);
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [selectedGenericId, setSelectedGenericId] = useState<string | null>(
+    null
+  );
   const [genericNameToDelete, setGenericNameToDelete] =
     useState<IGenericName | null>(null);
 
@@ -49,7 +54,6 @@ function Page() {
         search: debouncedSearchTerm.trim() || undefined,
         centerId,
       });
-      console.log("Api", res);
       setGenericNames(res.data || []);
       setTotalItems(res.total || 0);
       setTotalPages(res.totalPages || 0);
@@ -63,6 +67,11 @@ function Page() {
   useEffect(() => {
     fetchGenericNames();
   }, [fetchGenericNames]);
+
+  const handleEdit = (generic: { genericId: string }) => {
+    setSelectedGenericId(generic.genericId);
+    setIsEditPopupOpen(true);
+  };
 
   const handleDeleteClick = (generic: IGenericName) => {
     setGenericNameToDelete(generic);
@@ -153,7 +162,7 @@ function Page() {
                 genericId={generic.genericId}
                 genericName={generic.genericName}
                 centerName={generic.centerId.centerName}
-                handleEdit={() => {}}
+                handleEdit={() => handleEdit(generic)}
                 handleDelete={() => handleDeleteClick(generic)}
               />
             ))
@@ -182,7 +191,17 @@ function Page() {
           }}
         />
       )}
-      
+      {isEditPopupOpen && selectedGenericId && (
+        <EditGenericPopup
+          isOpen={isEditPopupOpen}
+          onClose={() => {
+            setIsEditPopupOpen(false);
+            setSelectedGenericId(null);
+            fetchGenericNames();
+          }}
+          genericId={selectedGenericId}
+        />
+      )}
       {isDeleteModalOpen && (
         <DeleteConfirm
           element={
