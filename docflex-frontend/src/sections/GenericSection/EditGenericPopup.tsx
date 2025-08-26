@@ -64,7 +64,7 @@ function EditGenericPopup({
 
   return (
     <Popup
-      title="Edit Generic"
+      title="Edit Generic Name"
       isOpen={isOpen}
       onClose={onClose}
       headerClassName="bg-blue-600"

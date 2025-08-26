@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil,Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { LuDroplets } from "react-icons/lu";
 
 interface GenericCardProps {
@@ -32,8 +32,11 @@ const GenericCard: React.FC<GenericCardProps> = ({
           <LuDroplets strokeWidth={1} size={56} className="text-gray-600" />
         </div>
         <h2 className="text-blue-600 text-md font-semibold mt-2 text-center font-inter">
-          {genericName}
+          {genericName && genericName.length > 30
+            ? genericName.slice(0, 30) + "..."
+            : genericName || ""}
         </h2>
+
         <p className="text-gray-600 text-sm text-center font-medium">
           @{centerName}
         </p>
