@@ -14,9 +14,10 @@ import { useDebounce } from "@/hooks/useDebounce";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 import ProductCard from "@/components/Cards/ProductCard";
 import SearchBar from "@/components/Searchbar/Searchbar";
-
 import { getAllProducts, deleteProduct } from "@/api/productApi";
 import { getAllGenericNames } from "@/api/genericNameApi";
+import AddNewProductPopup from "@/sections/ProductSection/AddNewProductPopup";
+import EditProductPopup from "@/sections/ProductSection/EditProductPopup";
 
 interface IProduct {
   productId: string;
@@ -53,8 +54,12 @@ function Page() {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<IProduct | null>(null);
-  const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
 
+  const [isNewPopupOpen, setIsNewPopupOpen] = useState(false);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
 
   const fetchProducts = useCallback(async () => {
     try {
@@ -82,7 +87,6 @@ function Page() {
     fetchProducts();
   }, [fetchProducts]);
 
-
   const fetchGenericNames = useCallback(async () => {
     try {
       const res = await getAllGenericNames({ centerId });
@@ -96,7 +100,6 @@ function Page() {
     fetchGenericNames();
   }, [fetchGenericNames]);
 
-
   const handleDeleteClick = useCallback((product: IProduct) => {
     setProductToDelete(product);
     setIsDeleteModalOpen(true);
@@ -106,9 +109,7 @@ function Page() {
     if (!productToDelete) return;
     try {
       await deleteProduct(productToDelete.productId);
-      toast.success(
-        `Product "${productToDelete.productName}" from "${productToDelete.centerId.centerName}" deleted successfully`
-      );
+      toast.success(`"${productToDelete.productName}" deleted successfully`);
 
       if (products.length === 1 && page > 1) {
         setPage((prev) => prev - 1);
@@ -124,7 +125,6 @@ function Page() {
     }
   }, [productToDelete, products, page, fetchProducts]);
 
-
   const handleGenericSelect = useCallback(
     (suggestion: string) => {
       const selected = genericNameSuggestions.find(
@@ -138,7 +138,6 @@ function Page() {
     },
     [genericNameSuggestions]
   );
-
 
   const handleClearGeneric = useCallback(() => {
     setSelectedGenericId(undefined);
@@ -154,11 +153,9 @@ function Page() {
         </h3>
       </div>
 
-
       <div className="flex flex-col">
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
           <div className="flex gap-4 w-full sm:w-auto">
-            {/* Center Filter */}
             <CenterDropdown
               id="centerId"
               value={centerId || ""}
@@ -172,7 +169,6 @@ function Page() {
               labelName="Center Name"
             />
 
-            {/* Product Search */}
             <InputField
               id="product-search"
               width="w-full sm:w-[400px]"
@@ -190,7 +186,6 @@ function Page() {
               className="md:w-[350px] w-full"
             />
 
-            {/* Generic Search */}
             <SearchBar
               id="genSearch"
               value={genericSearchTerm}
@@ -215,7 +210,6 @@ function Page() {
         </div>
       </div>
 
-      {/* 🔹 Product List */}
       {error ? (
         <p className="text-red-500 text-sm font-medium">{error}</p>
       ) : (
@@ -229,6 +223,10 @@ function Page() {
                 genericName={product.genericId.genericName}
                 centerName={product.centerId.centerName}
                 handleDelete={() => handleDeleteClick(product)}
+                handleEdit={() => {
+                  setSelectedProductId(product.productId);
+                  setIsEditPopupOpen(true);
+                }}
               />
             ))
           ) : (
@@ -247,6 +245,28 @@ function Page() {
           onPageChange={setPage}
         />
       </div>
+
+      {isNewPopupOpen && (
+        <AddNewProductPopup
+          isOpen={isNewPopupOpen}
+          onClose={() => {
+            setIsNewPopupOpen(false);
+            fetchProducts();
+          }}
+        />
+      )}
+
+      {isEditPopupOpen && selectedProductId && (
+        <EditProductPopup
+          isOpen={isEditPopupOpen}
+          onClose={() => {
+            setIsEditPopupOpen(false);
+            setSelectedProductId(null);
+            fetchProducts();
+          }}
+          productId={selectedProductId}
+        />
+      )}
 
       {/* 🔹 Delete Confirmation */}
       {isDeleteModalOpen && (

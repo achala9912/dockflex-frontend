@@ -29,11 +29,44 @@ export async function getAllProducts({
   }
 }
 
+export async function createProduct(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/products", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create products:", err);
+    throw err;
+  }
+}
+
 export async function deleteProduct(productId: string): Promise<void> {
   try {
     await axiosAuth.delete(`/products/${productId}`);
   } catch (error) {
     console.error(`Error deleting product with ID ${productId}:`, error);
+    throw error;
+  }
+}
+
+export async function getProductById(productId: string): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/products/${productId}`);
+    return res;
+  } catch (error) {
+    console.error(`Error fetching products with ID ${productId}:`, error);
+    throw error;
+  }
+}
+
+export async function updateProduct(
+  productId: string,
+  updateData: Partial<any>
+): Promise<any> {
+  try {
+    const res = await axiosAuth.put<any>(`/products/${productId}`, updateData);
+    return res.data;
+  } catch (error) {
+    console.error(`Error updating product with ID ${productId}:`, error);
     throw error;
   }
 }
