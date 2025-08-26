@@ -38,10 +38,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </h2>
 
         <p className="text-gray-600 text-sm text-center font-medium">
-          @{genericName}
+          {genericName}
         </p>
         <div className="mt-2 flex flex-col items-center">
-          <p className="text-gray-600 text-xs text-center">{centerName}</p>
+          <p className="text-gray-600 text-xs text-center capitalize">@{centerName}</p>
           <p className="text-gray-600 text-xs text-center">{bottomName3}</p>
         </div>
       </div>

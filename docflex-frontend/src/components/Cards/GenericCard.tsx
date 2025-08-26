@@ -38,10 +38,10 @@ const GenericCard: React.FC<GenericCardProps> = ({
         </h2>
 
         <p className="text-gray-600 text-sm text-center font-medium">
-          @{centerName}
+         {bottomName2}
         </p>
         <div className="mt-2 flex flex-col items-center">
-          <p className="text-gray-600 text-xs text-center">{bottomName2}</p>
+          <p className="text-gray-600 text-xs text-center capitalize"> @{centerName}</p>
           <p className="text-gray-600 text-xs text-center">{bottomName3}</p>
         </div>
       </div>
