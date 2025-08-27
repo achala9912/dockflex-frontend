@@ -32,7 +32,6 @@ interface Patient {
   contactNo: string;
   email: string;
   age: string;
-  ageDisplay: string;
   address: string;
 }
 
@@ -60,7 +59,15 @@ const AppointmentForm: React.FC = () => {
   const patientId = watch("patientId");
   const email = watch("email");
   const remarks = watch("remarks");
-  const date = watch("date");
+  const date =
+    watch("date") ||
+    (() => {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    })();
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [sessionOptions, setSessionOptions] = useState<Suggestion[]>([]);
@@ -158,7 +165,6 @@ const AppointmentForm: React.FC = () => {
     [setValue, clearErrors, fetchPatientSuggestions]
   );
 
-
   const handlePatientSelect = useCallback(
     (selectedId: string) => {
       const patient = patients.find((p) => p._id === selectedId);
@@ -166,7 +172,7 @@ const AppointmentForm: React.FC = () => {
 
       setValue("contactNo", patient.contactNo || "");
       setValue("email", patient.email || "");
-      setValue("age", patient.ageDisplay || ""); // <-- use ageDisplay
+      setValue("age", patient.age || "");
       setValue("patientId", patient._id || "");
       clearErrors("contactNo");
     },
@@ -217,7 +223,7 @@ const AppointmentForm: React.FC = () => {
             onDateChange={(val) => handleInputChange("date", val)}
             className="w-full"
             placeholder="Select an appointment date"
-            isDisablePast={true} // <-- keep as is; DatePicker should allow today
+            isDisablePast={true}
           />
         </FormField>
       </div>
@@ -281,7 +287,7 @@ const AppointmentForm: React.FC = () => {
           <InputField
             id="age"
             type="text"
-            value={selectedPatient?.ageDisplay || ""}
+            value={selectedPatient?.age || ""}
             readOnly
             placeholder="Age"
           />
