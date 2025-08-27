@@ -143,7 +143,7 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
   },
   {
     header: "Age",
-    accessor: "ageDisplay",
+    accessor: "age",
     headerClassName: "min-w-[100px] text-center justify-center flex",
     className: "text-center",
   },
@@ -153,7 +153,12 @@ export const patientMgmtColumns: Column<PatientMgmt>[] = [
     accessor: "contactNo",
     headerClassName: "min-w-[150px]",
   },
-  { header: "NIC", accessor: "nic", headerClassName: "min-w-[150px]" },
+  {
+    header: "NIC",
+    accessor: "nic",
+    headerClassName: "min-w-[150px]",
+    render: (value: string | null | undefined) => (value ? value : "-"),
+  },
   {
     header: "Address",
     accessor: "address",

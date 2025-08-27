@@ -48,7 +48,7 @@ const PresCard: React.FC<PresCardProps> = ({
         </h2>
 
         <div className="mt-2 flex flex-col items-center">
-          <p className="text-gray-600 text-sm">{age} years</p>
+          <p className="text-gray-600 text-sm">{age}</p>
           <p className="text-gray-600 text-sm">{gender}</p>
         </div>
 
