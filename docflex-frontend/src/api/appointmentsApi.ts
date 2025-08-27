@@ -46,8 +46,9 @@ export async function cancelAppointment(appointmentId: string): Promise<void> {
   }
 }
 
-
-export async function accpetPatientVisiting(appointmentId: string): Promise<void> {
+export async function accpetPatientVisiting(
+  appointmentId: string
+): Promise<void> {
   try {
     await axiosAuth.patch(`/appointments/${appointmentId}/visit`);
   } catch (error) {
@@ -56,5 +57,27 @@ export async function accpetPatientVisiting(appointmentId: string): Promise<void
       error
     );
     throw error;
+  }
+}
+
+export async function getActiveSessionPatientVisitedAppointment(
+  date: string,
+  page?: number,
+  limit?: number,
+  search?: string,
+  centerId?: string
+): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>("/appointments/visited-appointments", {
+      params: { page, date, limit, search, centerId },
+    });
+    return res;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(
+        err.response?.data?.message || "Failed to fetch visited appointments."
+      );
+    }
+    throw err;
   }
 }

@@ -67,8 +67,8 @@ export const sidebarItems: SidebarItem[] = [
     icon: FaFilePrescription,
     dropdown: true,
     subItems: [
-      { title: "Generate", path: "/prescriptions/generate" },
-      { title: "Work Flow", path: "/prescriptions/workflow" },
+      { title: "Generate", path: "/prescription/generate" },
+      { title: "Work Flow", path: "/prescription/workflow" },
     ],
   },
   {
