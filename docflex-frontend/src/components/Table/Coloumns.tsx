@@ -5,7 +5,6 @@ import React from "react";
 import { GiConfirmed } from "react-icons/gi";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
-
 export type Column<T> = {
   header: string;
   accessor: keyof T | string;
@@ -457,11 +456,6 @@ export interface PrescriptionMgmt {
 
 export const prescriptionsMgmtColumns: Column<PrescriptionMgmt>[] = [
   {
-    header: "Center Name",
-    accessor: "centerId.centerName",
-    headerClassName: "min-w-[200px]",
-  },
-  {
     header: "Prescription No",
     accessor: "prescriptionNo",
     headerClassName: "min-w-[180px]",
@@ -470,6 +464,40 @@ export const prescriptionsMgmtColumns: Column<PrescriptionMgmt>[] = [
     header: "Appointment No",
     accessor: "appointmentId.appointmentId",
     headerClassName: "min-w-[180px]",
+  },
+  {
+    header: "Status",
+    accessor: "status",
+    headerClassName: "min-w-[150px] text-center flex justify-center",
+    className: "text-center",
+    render: (value: string | undefined) => {
+      if (!value) return "-";
+
+      let bgClass = "";
+      let textClass = "";
+
+      switch (value.toLowerCase()) {
+        case "scheduled":
+          bgClass = "bg-orange-100";
+          textClass = "text-orange-700";
+          break;
+        case "cancelled":
+          bgClass = "bg-red-100";
+          textClass = "text-red-500";
+          break;
+        default:
+          bgClass = "bg-green-100";
+          textClass = "text-green-700";
+      }
+
+      return (
+        <span
+          className={`px-3 py-1 capitalize text-sm font-medium rounded-full min-w-[100px] inline-block text-center ${bgClass} ${textClass}`}
+        >
+          {value}
+        </span>
+      );
+    },
   },
   {
     header: "Patient Name",
