@@ -77,7 +77,7 @@ export default function Page() {
   }, [fetchPrescriptions, centerId]);
 
   const handleView = (row: PrescriptionMgmt) => {
-    router.push(`/prescriptions/${row.prescriptionNo}`);
+    router.push(`/prescription/${row.prescriptionNo}`);
   };
 
   return (

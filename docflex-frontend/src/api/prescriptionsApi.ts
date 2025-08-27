@@ -24,3 +24,18 @@ export async function getAllPrescriptions(
     throw err;
   }
 }
+
+export async function getPrescriptionDataById(
+  prescriptionNo: string
+): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/prescriptions/${prescriptionNo}`);
+    return res;
+  } catch (error) {
+    console.error(
+      `Error fetching prescriptions data with ID ${prescriptionNo}:`,
+      error
+    );
+    throw error;
+  }
+}
