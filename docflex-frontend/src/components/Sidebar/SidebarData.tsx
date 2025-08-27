@@ -68,7 +68,7 @@ export const sidebarItems: SidebarItem[] = [
     dropdown: true,
     subItems: [
       { title: "Generate", path: "/prescription/generate" },
-      { title: "Work Flow", path: "/prescription/workflow" },
+      { title: "Work List", path: "/prescription/worklist" },
     ],
   },
   {
