@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import InfoItem from "./InfoItem";
 
 interface PrescriberData {
@@ -30,7 +29,7 @@ const PrescriberInfo: React.FC<PrescriberInfoProps> = ({ prescriberData }) => {
         Prescriber Details
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1  gap-4">
         <InfoItem
           icon={
             <svg
@@ -104,20 +103,6 @@ const PrescriberInfo: React.FC<PrescriberInfoProps> = ({ prescriberData }) => {
         />
       </div>
 
-      {prescriberData.digitalSignature && (
-        <div className="mt-6 pt-4 border-t border-blue-200">
-          <p className="text-sm text-gray-500 mb-2">Digital Signature</p>
-          <div className="bg-gray-50 p-3 rounded-lg inline-block shadow-sm">
-            <Image
-              src={prescriberData.digitalSignature}
-              alt="Doctor Signature"
-              width={150}
-              height={60}
-              className="object-contain"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { getPrescriptionDataById } from "@/api/prescriptionsApi";
 import AdviceRemarks from "@/sections/PrescriptionSection/AdviceRemarks";
@@ -12,8 +12,12 @@ import VisitInfo from "@/sections/PrescriptionSection/VisitInfo";
 import PrescriberInfo from "@/sections/PrescriptionSection/PrescriberInfo";
 import PatientInfo from "@/sections/PrescriptionSection/PatientInfo";
 import HeaderSection from "@/sections/PrescriptionSection/HeaderSection";
+import { Tooltip } from "@/components/ui/tooltip";
+import { IoChevronBackOutline } from "react-icons/io5";
+
 
 const Page = () => {
+  const router = useRouter();
   const params = useParams();
   const [prescriptionData, setPrescriptionData] = useState<any>(null);
 
@@ -44,17 +48,27 @@ const Page = () => {
   }, [prescriptionNo]);
 
   if (!prescriptionData) {
-    return (
-      <p className="mt-4 text-lg text-gray-600">
-      </p>
-    );
+    return <p className="mt-4 text-lg text-gray-600"></p>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 py-8 px-4">
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <Tooltip content="Back" side="bottom">
+          <button
+            id="backButton"
+            onClick={() => router.push("/prescription/worklist")}
+            className="flex items-center gap-1 hover:text-blue-700 hover:font-bold"
+          >
+            <IoChevronBackOutline size={18} />
+          </button>
+        </Tooltip>
+        <h3 className="flex items-center font-semibold font-inter">
+          Prescription Info
+        </h3>
+      </div>
       <div className="max-w-6xl mx-auto">
         <HeaderSection
-          centerData={prescriptionData.centerId}
           prescriptionNo={prescriptionData.prescriptionNo}
           createdAt={prescriptionData.createdAt}
           prescriptionType={prescriptionData.prescriptionType}
