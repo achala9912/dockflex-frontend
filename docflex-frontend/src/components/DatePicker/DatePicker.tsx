@@ -24,8 +24,8 @@ interface DatePickerProps {
   readOnly?: boolean;
   className?: string;
   specialType?: string;
-  isExpiryDate?: boolean; // still supported
-  isDisablePast?: boolean; // 👈 new prop
+  isExpiryDate?: boolean;
+  isDisablePast?: boolean;
   dateFormat?: string;
 }
 
@@ -96,9 +96,11 @@ export function DatePicker({
       <div className={`relative w-full ${className || ""}`}>
         {label && (
           <label
-            htmlFor={id || "date-picker-input"}
-            className={`absolute z-10 px-1 text-xs font-semibold bg-white text-blue_light -top-2 left-3 ${
-              isFocused || date ? "" : "hidden"
+            htmlFor={id}
+            className={`absolute left-3 transition-all duration-200 text-xs ${
+              isFocused || value !== ""
+                ? "-top-3 text-blue_light bg-white px-1 font-medium z-[1]"
+                : "top-2 text-gray-400"
             }`}
           >
             {labelName}

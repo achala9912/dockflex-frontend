@@ -197,11 +197,12 @@ export interface AppointmentMgmt {
     sessionId: string;
     sessionName: string;
   };
-  centerId: {
+  center: {
     centerId: string;
     centerName: string;
   };
-  patientId: {
+  patient: {
+    title: string;
     patientId: string;
     patientName: string;
     age: number;
@@ -224,7 +225,7 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
   },
   {
     header: "Center Name",
-    accessor: "centerId.centerName",
+    accessor: "center.centerName",
     headerClassName: "min-w-[200px]",
   },
   {
@@ -252,42 +253,46 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
       );
     },
   },
-
   {
     header: "Patient Name",
-    accessor: "patientId.patientName",
+    accessor: "patient.patientName",
     headerClassName: "min-w-[200px]",
+    render: (_value, row) =>
+      row.patient?.title
+        ? `${row.patient.title} ${row.patient.patientName}`
+        : row.patient.patientName || "-",
   },
+
   {
     header: "Gender",
-    accessor: "patientId.gender",
+    accessor: "patient.gender",
     headerClassName: "min-w-[100px]",
   },
   {
     header: "Age",
-    accessor: "patientId.age",
+    accessor: "patient.age",
     headerClassName: "min-w-[100px] text-center justify-center flex",
     className: "text-center",
   },
   {
     header: "Email",
-    accessor: "patientId.email",
+    accessor: "patient.email",
     headerClassName: "min-w-[200px]",
   },
   {
     header: "Contact No",
-    accessor: "patientId.contactNo",
+    accessor: "patient.contactNo",
     headerClassName: "min-w-[150px]",
   },
   {
     header: "NIC",
-    accessor: "patientId.nic",
+    accessor: "patient.nic",
     headerClassName: "min-w-[150px]",
     render: (value: string | undefined) => value || "-",
   },
   {
     header: "Address",
-    accessor: "patientId.address",
+    accessor: "patient.address",
     headerClassName: "min-w-[190px]",
     render: (value: string | undefined) => value || "-",
   },

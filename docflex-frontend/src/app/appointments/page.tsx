@@ -31,7 +31,13 @@ export default function Page() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [centerId, setCenterId] = useState<string | undefined>();
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  });
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState<boolean>(false);
   const [isVisitPopupOpen, setIsVisitPopupOpen] = useState<boolean>(false);
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<
@@ -41,7 +47,6 @@ export default function Page() {
   const debouncedSearchTerm = useDebounce(searchValue, 500);
   const itemsPerPage = 10;
 
-  // Fetch appointments function with useCallback
   const fetchAppointments = useCallback(async () => {
     try {
       const res = await getAllAppointments(
@@ -60,7 +65,7 @@ export default function Page() {
     }
   }, [selectedDate, currentPage, itemsPerPage, debouncedSearchTerm, centerId]);
 
-  // Fetch appointments on mount & whenever filters change
+
   useEffect(() => {
     fetchAppointments();
   }, [fetchAppointments]);
@@ -94,11 +99,11 @@ export default function Page() {
     } finally {
       setIsCancelPopupOpen(false);
       setSelectedAppointmentId(null);
-      fetchAppointments(); // re-fetch after popup closes
+      fetchAppointments();
     }
   };
 
-  // Handle Yes in visit popup
+
   const handleVisitYes = async () => {
     if (!selectedAppointmentId) return;
     try {
@@ -110,7 +115,7 @@ export default function Page() {
     } finally {
       setIsVisitPopupOpen(false);
       setSelectedAppointmentId(null);
-      fetchAppointments(); // re-fetch after popup closes
+      fetchAppointments(); 
     }
   };
 
@@ -150,6 +155,8 @@ export default function Page() {
               id="date"
               value={selectedDate}
               onDateChange={(date) => setSelectedDate(date)}
+              label
+              labelName="Appointment Date"
             />
 
             <InputField
