@@ -1,9 +1,10 @@
 "use client";
 
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import React from "react";
 import { GiConfirmed } from "react-icons/gi";
 import { IoMdCloseCircleOutline } from "react-icons/io";
+
 
 export type Column<T> = {
   header: string;
@@ -394,5 +395,170 @@ export const appointmentMgmtColumns: Column<AppointmentMgmt>[] = [
         </div>
       );
     },
+  },
+];
+
+export interface PrescriptionMgmt {
+  _id: string;
+  prescriptionNo: string;
+  prescriptionType: string;
+  status: string;
+  createdAt: string;
+
+  prescriberDetails: {
+    digitalSignature: string;
+    slmcNo: string;
+    title: string;
+    name: string;
+    specialization: string;
+    remarks: string;
+  };
+
+  centerId: {
+    _id: string;
+    centerId: string;
+    centerName: string;
+    contactNo: string;
+    address: string;
+    town: string;
+    logo: string;
+    email: string;
+    regNo: string;
+  };
+
+  appointmentId: {
+    _id: string;
+    date: string;
+    appointmentId: string;
+    tokenNo: number;
+    status: string;
+    sessionId: string;
+    patientId: string;
+    centerId: string;
+    isPatientvisited: boolean;
+  };
+
+  patientId: {
+    _id: string;
+    patientId: string;
+    title: string;
+    patientName: string;
+    gender: string;
+    dob: string;
+    age: string;
+    centerId: string;
+    contactNo: string;
+    address: string;
+    nic: string;
+    email: string;
+    remark: string;
+  };
+}
+
+export const prescriptionsMgmtColumns: Column<PrescriptionMgmt>[] = [
+  {
+    header: "Center Name",
+    accessor: "centerId.centerName",
+    headerClassName: "min-w-[200px]",
+  },
+  {
+    header: "Prescription No",
+    accessor: "prescriptionNo",
+    headerClassName: "min-w-[180px]",
+  },
+  {
+    header: "Appointment No",
+    accessor: "appointmentId.appointmentId",
+    headerClassName: "min-w-[180px]",
+  },
+  {
+    header: "Patient Name",
+    accessor: "patient.patientName",
+    headerClassName: "min-w-[230px]",
+    render: (_value, row) =>
+      row.patientId?.title
+        ? `${row.patientId.title} ${row.patientId.patientName}`
+        : row.patientId.patientName || "-",
+  },
+
+  {
+    header: "Token No",
+    accessor: "appointmentId.tokenNo",
+    headerClassName: "min-w-[100px]",
+    className: "text-center flex justify-center",
+    render: (value: number | undefined) => {
+      if (value === undefined || value === null) return "-";
+
+      return (
+        <div className="w-8 h-8 bg-blue-400 text-white font-semibold rounded-full flex items-center justify-center mx-auto">
+          {value}
+        </div>
+      );
+    },
+  },
+
+  {
+    header: "Gender",
+    accessor: "patientId.gender",
+    headerClassName: "min-w-[100px]",
+  },
+
+  {
+    header: "Age",
+    accessor: "patientId.age",
+    headerClassName: "min-w-[100px] text-center justify-center flex",
+    className: "text-center",
+  },
+  {
+    header: "Email",
+    accessor: "patientId.email",
+    headerClassName: "min-w-[200px]",
+  },
+  {
+    header: "Contact No",
+    accessor: "patientId.contactNo",
+    headerClassName: "min-w-[150px]",
+  },
+  {
+    header: "Prescribed At",
+    accessor: "createdAt",
+    headerClassName: "min-w-[200px]",
+    render(value) {
+      if (!value) return "-";
+      const date = new Date(value);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
+      return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
+    },
+  },
+
+  {
+    header: "Prescribed By",
+    accessor: "prescriberDetails.name",
+    headerClassName: "min-w-[200px]",
+    render: (_value, row) =>
+      row.prescriberDetails?.title
+        ? `${row.prescriberDetails.title} ${row.prescriberDetails.name}`
+        : row.prescriberDetails.name || "-",
+  },
+
+  {
+    header: "Action",
+    accessor: "action",
+    render: (_value, row, handlers) => (
+      <div className="flex space-x-4 justify-center">
+        <FaEye
+          className="text-[#23A3DA] hover:text-blue-700 cursor-pointer"
+          size={20}
+          onClick={() => handlers?.edit?.(row)}
+          aria-label="View Prescription"
+        />
+      </div>
+    ),
   },
 ];
