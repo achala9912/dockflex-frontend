@@ -63,7 +63,7 @@ const PresCard: React.FC<PresCardProps> = ({
       {/* Main content */}
       <div className="px-6 py-6">
         <div className="text-center mb-4">
-          <h2 className="text-gray-800 text-xl font-bold leading-tight">
+          <h2 className="text-gray-800 text-lg font-bold leading-tight">
             {title && patientName ? `${title} ${patientName}` : patientName}
           </h2>
         </div>
@@ -74,7 +74,7 @@ const PresCard: React.FC<PresCardProps> = ({
               <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">
                 Age
               </p>
-              <p className="text-gray-800 text-lg font-semibold">{age}</p>
+              <p className="text-gray-800 text-base font-semibold">{age}</p>
             </div>
           )}
           {age !== undefined && gender && (
@@ -85,7 +85,7 @@ const PresCard: React.FC<PresCardProps> = ({
               <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">
                 Gender
               </p>
-              <p className="text-gray-800 text-lg font-semibold">{gender}</p>
+              <p className="text-gray-800 text-base font-semibold">{gender}</p>
             </div>
           )}
         </div>
@@ -94,7 +94,7 @@ const PresCard: React.FC<PresCardProps> = ({
 
       <div className="px-6 pb-6">
         <button
-          className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl"
+          className="w-full text-base bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl"
           onClick={handleGenerate}
         >
           <FileText size={18} />
