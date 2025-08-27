@@ -80,6 +80,7 @@ const config = {
 				blue_dark_2: '#0D6ACA',
 				blue_dark_hover_1: '#154270',
 				blue_dark_hover_2: '#0E56A0',
+				blue_sp:"#0D4C73",
 			},
 			dropShadow: {
 				"3xl": "0 35px 35px rgba(0, 0, 0, 0.25)",

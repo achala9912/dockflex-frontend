@@ -42,7 +42,7 @@ const PresCard: React.FC<PresCardProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-lg  w-80 overflow-hidden  ">
       {/* Header with gradient */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+      <div className="bg-gradient-to-r from-blue-500 to-blue_sp px-6 py-4">
         <p className="text-white/80 text-xs font-medium tracking-wider uppercase">
           ID: {appointmentId}
         </p>
@@ -94,7 +94,7 @@ const PresCard: React.FC<PresCardProps> = ({
 
       <div className="px-6 pb-6">
         <button
-          className="w-full text-base bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl"
+          className="w-full text-base bg-gradient-to-r from-blue-500 to-blue_sp text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg hover:shadow-xl"
           onClick={handleGenerate}
         >
           <FileText size={18} />
