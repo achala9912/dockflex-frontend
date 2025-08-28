@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
       "res.cloudinary.com",
       // add other trusted domains if needed
     ],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img.favpng.com',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

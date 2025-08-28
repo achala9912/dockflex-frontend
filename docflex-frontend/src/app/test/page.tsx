@@ -1,7 +1,5 @@
-
 // import PrescriptionTemplate from "@/components/Canvas/PrescriptionLayout";
 // import React from "react";
-
 
 // // Example usage in a page component
 // const PrescriptionPage: React.FC = () => {
@@ -67,3 +65,50 @@
 // };
 
 // export default PrescriptionPage;
+
+import PrescriptionTemplate from "@/components/Canvas/PrescriptionTemplate";
+import React from "react";
+
+function page() {
+  return (
+    <div>
+      <PrescriptionTemplate
+        patientDetails={{
+          name: "Mr. Kasun Perera",
+          age: "25Y",
+          contact: "0771737680",
+          email: "kasun@gmail.com",
+        }}
+        reasonForVisit="Cramp of the left leg"
+        symptoms={["Nausea", "Vomiting", "Runny Nose"]}
+        vitalSigns={{
+          weight: "65kg",
+          height: "180cm",
+          bmi: "20.1",
+          temp: "29°C",
+          pulseRate: "120/80 mm",
+        }}
+        clinicalDetails="No food allergy and drug allergy"
+        advice="Take bed rest"
+        medications={[
+          {
+            name: "Voltaren 50mg Tablet (Diclofenac Sodium)",
+            dosage: "1 tablet two times a day (12h) for 5 Days",
+            instructions: "",
+          },
+          {
+            name: "Lomac 20mg Capsule (Omeprazole)",
+            dosage: "1 capsule two times a day (12h) for 5 Days",
+            instructions: "30 mins before meals",
+          },
+        ]} doctor={{
+          name: "Dr. Imesh Batuwangala",
+          specialization: "CardioLogist",
+          slmcNo: "4434343",
+          signatureUrl: "https://img.favpng.com/12/13/20/digital-signature-electronic-signature-png-favpng-0M6hggShV3n6ww2aFrFvv92bK.jpg"
+        }}      />
+    </div>
+  );
+}
+
+export default page;
