@@ -6,11 +6,25 @@ import { LiaMedrt } from "react-icons/lia";
 import { FaUser, FaPhone, FaEnvelope, FaBirthdayCake } from "react-icons/fa";
 
 interface PrescriptionTemplateProps {
-  patientDetails: {
-    name: string;
+  centerId: {
+    centerName: string;
+    contactNo: string;
+    address: string;
+    town: string;
+    logo?: string;
+    email?: string;
+  };
+  prescriptionNo: string;
+  createdAt: string;
+  prescriptionType: string;
+  patientId: {
+    patientName: string;
     age: string;
-    contact: string;
+    contactNo: string;
     email: string;
+    gender: string;
+    dob: string;
+    title: string;
   };
   reasonForVisit: string;
   symptoms: string[];
@@ -18,22 +32,28 @@ interface PrescriptionTemplateProps {
     weight: string;
     height: string;
     bmi: string;
-    temp: string;
     pulseRate: string;
-  };
+    temp?: string;
+  }[];
   clinicalDetails: string;
   advice: string;
-  remarks?: string;
+  remark?: string;
   medications: {
-    name: string;
-    dosage: string;
-    instructions: string;
+    productName: string;
+    dose: string;
+    frequency: string;
+    duration: string;
+    note?: string;
+    route: string;
+    genericName: string;
   }[];
-  doctor: {
+  prescriberDetails: {
     name: string;
     specialization: string;
     slmcNo: string;
-    signatureUrl?: string;
+    digitalSignature?: string;
+    title: string;
+    remarks?: string;
   };
 }
 
@@ -61,38 +81,47 @@ const InfoRow = ({
 );
 
 const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
-  patientDetails,
+  centerId,
+  prescriptionNo,
+  createdAt,
+  patientId,
   reasonForVisit,
   symptoms,
   vitalSigns,
   clinicalDetails,
   advice,
-  remarks,
+  remark,
   medications,
-  doctor,
+  prescriberDetails,
 }) => {
+  const vital = vitalSigns[0]; // API gives array, we show first set
+
   return (
     <div className="max-w-4xl mx-auto bg-white  p-10 border border-gray-200 space-y-8">
       <div className="flex items-center justify-center border-b pb-6 gap-6">
         {/* Logo */}
         <div className="flex-shrink-0">
-          <Image
-            src="/"
-            alt="Center Logo"
-            width={120}
-            height={60}
-            className="object-contain"
-          />
+          {centerId.logo && (
+            <Image
+              src={centerId.logo}
+              alt="Center Logo"
+              width={120}
+              height={60}
+              className="object-contain"
+            />
+          )}
         </div>
 
         {/* Center Details */}
         <div className="text-left">
-          <h1 className="text-2xl font-bold text-blue-700">MediCare Pvt Ltd</h1>
+          <h1 className="text-2xl font-bold text-blue-700">
+            {centerId.centerName}
+          </h1>
           <p className="text-sm text-gray-600 mt-1">
-            No 171C, 20th Lane, Arunodaya, Borelasgamuwa
+            {centerId.address}, {centerId.town}
           </p>
           <p className="text-sm text-gray-600 mt-1">
-            info@medicare.com | +94 125 092 43
+            {centerId.email} | {centerId.contactNo}
           </p>
         </div>
       </div>
@@ -100,11 +129,11 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
       <div className="flex justify-between items-center border-b pb-4">
         <div className="text-base text-gray-700">
           <span className="font-semibold text-blue-700">Prescription No:</span>{" "}
-          12345
+          {prescriptionNo}
         </div>
         <div className="text-base text-gray-700">
           <span className="font-semibold text-blue-700">Prescribed At:</span>{" "}
-          28-Aug-2025
+          {new Date(createdAt).toLocaleDateString()}
         </div>
       </div>
 
@@ -117,22 +146,22 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
             <InfoRow
               icon={<FaUser />}
               label="Name"
-              value={patientDetails.name}
+              value={`${patientId.title} ${patientId.patientName}`}
             />
             <InfoRow
               icon={<FaBirthdayCake />}
               label="Age"
-              value={patientDetails.age}
+              value={patientId.age}
             />
             <InfoRow
               icon={<FaPhone />}
               label="Contact"
-              value={patientDetails.contact}
+              value={patientId.contactNo}
             />
             <InfoRow
               icon={<FaEnvelope />}
               label="Email"
-              value={patientDetails.email}
+              value={patientId.email}
             />
           </div>
         </div>
@@ -144,31 +173,33 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">Weight</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vitalSigns.weight}
+                {vital?.weight}
               </p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">Height</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vitalSigns.height}
+                {vital?.height}
               </p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">BMI</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vitalSigns.bmi}
+                {vital?.bmi}
               </p>
             </div>
-            <div className="bg-white rounded-lg shadow-sm p-3 text-center">
-              <p className="text-xs text-gray-500">Temp</p>
-              <p className="font-semibold text-gray-800 text-sm">
-                {vitalSigns.temp}
-              </p>
-            </div>
+            {vital?.temp && (
+              <div className="bg-white rounded-lg shadow-sm p-3 text-center">
+                <p className="text-xs text-gray-500">Temp</p>
+                <p className="font-semibold text-gray-800 text-sm">
+                  {vital?.temp}
+                </p>
+              </div>
+            )}
             <div className="col-span-2 bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">Pulse Rate</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vitalSigns.pulseRate}
+                {vital?.pulseRate}
               </p>
             </div>
           </div>
@@ -203,13 +234,14 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
         </div>
 
         {/* Remarks */}
-        {remarks && (
+        {remark && (
           <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
             <SectionTitle>Remarks</SectionTitle>
-            <p className="text-sm">{remarks}</p>
+            <p className="text-sm">{remark}</p>
           </div>
         )}
       </div>
+
       {/* Prescription Section */}
       <div>
         <div className="flex items-center mb-6">
@@ -220,21 +252,35 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
           {medications.map((med, index) => (
             <div
               key={index}
-              className="border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 shadow-sm"
+              className="border border-blue-200 bg-blue-50 rounded-lg p-5 shadow-sm"
             >
               <div className="flex items-center gap-2 mb-2">
                 <LiaMedrt className="w-6 h-6 text-blue-600" />
                 <h3 className="text-base font-semibold text-gray-800 uppercase">
-                  {med.name}
+                  {med.productName} ( {med.genericName} )
                 </h3>
               </div>
               <p className="text-base text-gray-700 mb-1">
-                <span className="font-medium">Dosage:</span> {med.dosage}
+                <span className="font-semibold">Route: </span>
+                {med.route}
               </p>
-              {med.instructions && (
-                <p className="text-sm text-gray-700">
-                  <span className="font-medium">Instructions:</span>{" "}
-                  {med.instructions}
+              <p className="text-base text-gray-700 mb-1">
+                <span className="font-semibold">Dose: </span>
+                {med.dose}
+              </p>
+              <p className="text-base text-gray-700 mb-1">
+                <span className="font-semibold">Frequency: </span>
+                {med.frequency}
+              </p>
+              <p className="text-base text-gray-700 mb-1">
+                <span className="font-semibold">Duration: </span>
+                For {med.duration}
+              </p>
+
+              {med.note && (
+                <p className="text-base text-gray-700 mb-1">
+                  <span className="font-semibold">Note: </span>
+                  {med.note}
                 </p>
               )}
             </div>
@@ -244,18 +290,24 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
 
       {/* Doctor Signature */}
       <div className="border-t pt-6 mt-8 flex flex-col items-center text-center">
-        {doctor.signatureUrl && (
+        {prescriberDetails.digitalSignature && (
           <Image
-            src={doctor.signatureUrl}
+            src={prescriberDetails.digitalSignature}
             alt="Doctor Signature"
             width={120}
             height={50}
             className="object-contain mb-2"
           />
         )}
-        <p className="font-semibold text-gray-800">{doctor.name}</p>
-        <p className="text-gray-600 text-sm">{doctor.specialization}</p>
-        <p className="text-gray-500 text-xs">SLMC No: {doctor.slmcNo}</p>
+        <p className="font-semibold text-gray-800">
+          {prescriberDetails.title} {prescriberDetails.name}
+        </p>
+        <p className="text-gray-600 text-sm">
+          {prescriberDetails.specialization}
+        </p>
+        <p className="text-gray-500 text-xs">
+          SLMC No: {prescriberDetails.slmcNo}
+        </p>
       </div>
 
       {/* Footer */}

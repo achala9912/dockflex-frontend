@@ -73,40 +73,70 @@ function page() {
   return (
     <div>
       <PrescriptionTemplate
-        patientDetails={{
-          name: "Mr. Kasun Perera",
+        centerId={{
+          centerName: "Golden Care Medical Center",
+          contactNo: "0112233445",
+          address: "123 Main Street",
+          town: "Colombo",
+          logo: "https://img.favpng.com/12/13/20/digital-signature-electronic-signature-png-favpng-0M6hggShV3n6ww2aFrFvv92bK.jpg",
+          email: "info@goldencare.lk",
+        }}
+        prescriptionNo="RX-000123"
+        createdAt={new Date().toISOString()}
+        prescriptionType="OPD"
+        patientId={{
+          title: "Mr.",
+          patientName: "Kasun Perera",
+          gender: "Male",
+          dob: "2000-01-01",
           age: "25Y",
-          contact: "0771737680",
+          contactNo: "0771737680",
           email: "kasun@gmail.com",
         }}
         reasonForVisit="Cramp of the left leg"
         symptoms={["Nausea", "Vomiting", "Runny Nose"]}
-        vitalSigns={{
-          weight: "65kg",
-          height: "180cm",
-          bmi: "20.1",
-          temp: "29°C",
-          pulseRate: "120/80 mm",
-        }}
+        vitalSigns={[
+          {
+            weight: "65kg",
+            height: "180cm",
+            bmi: "20.1",
+            pulseRate: "72 bpm",
+            temp: "36.9°C",
+          },
+        ]}
         clinicalDetails="No food allergy and drug allergy"
-        advice="Take bed rest"
+        advice="Take bed rest and drink plenty of fluids."
+        remark="Follow up in 2 weeks."
         medications={[
           {
-            name: "Voltaren 50mg Tablet (Diclofenac Sodium)",
-            dosage: "1 tablet two times a day (12h) for 5 Days",
-            instructions: "",
+            route: "Oral",
+            productName: "Panadol 500mg",
+            genericName: "Paracetamol",
+            dose: "2g",
+            frequency: "8 houlry",
+            duration: "5 days",
+
           },
           {
-            name: "Lomac 20mg Capsule (Omeprazole)",
-            dosage: "1 capsule two times a day (12h) for 5 Days",
-            instructions: "30 mins before meals",
+            route: "Oral",
+            productName: "Lomac 20mg",
+            genericName: "Omeprazole",
+            dose: "20mg",
+            frequency: "2 times a day",
+            duration: "5 days",
+            note: "Take 30 mins before meals",
           },
-        ]} doctor={{
-          name: "Dr. Imesh Batuwangala",
-          specialization: "CardioLogist",
-          slmcNo: "4434343",
-          signatureUrl: "https://img.favpng.com/12/13/20/digital-signature-electronic-signature-png-favpng-0M6hggShV3n6ww2aFrFvv92bK.jpg"
-        }}      />
+        ]}
+        prescriberDetails={{
+          title: "Dr.",
+          name: "Imesh Batuwangala",
+          specialization: "Cardiologist",
+          slmcNo: "SL12345",
+          digitalSignature:
+            "https://img.favpng.com/12/13/20/digital-signature-electronic-signature-png-favpng-0M6hggShV3n6ww2aFrFvv92bK.jpg",
+          remarks: "Consult immediately if pain worsens",
+        }}
+      />
     </div>
   );
 }
