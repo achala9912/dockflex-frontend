@@ -39,3 +39,35 @@ export async function getPrescriptionDataById(
     throw error;
   }
 }
+
+export async function createPrescriptions(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/prescriptions", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create prescriptions:", err);
+    throw err;
+  }
+}
+
+export async function sendPrescriptionsByEmail(
+  prescriptionNo: string
+): Promise<any> {
+  try {
+    const res = await axiosAuth.post(
+      `/prescriptions/${prescriptionNo}/send-email`
+    );
+    return res.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      console.error(
+        `Failed to send prescription ${prescriptionNo}:`,
+        err.response?.data || err.message
+      );
+      throw new Error(
+        err.response?.data?.message || "Failed to send prescription email."
+      );
+    }
+    throw err;
+  }
+}

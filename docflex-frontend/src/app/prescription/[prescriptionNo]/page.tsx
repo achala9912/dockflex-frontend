@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { getPrescriptionDataById } from "@/api/prescriptionsApi";
+import {
+  getPrescriptionDataById,
+  sendPrescriptionsByEmail,
+} from "@/api/prescriptionsApi";
 import AdviceRemarks from "@/sections/PrescriptionSection/AdviceRemarks";
 import Medications from "@/sections/PrescriptionSection/Medications ";
 import ClinicalDetails from "@/sections/PrescriptionSection/ClinicalDetails";
@@ -14,7 +17,6 @@ import PatientInfo from "@/sections/PrescriptionSection/PatientInfo";
 import HeaderSection from "@/sections/PrescriptionSection/HeaderSection";
 import { Tooltip } from "@/components/ui/tooltip";
 import { IoChevronBackOutline } from "react-icons/io5";
-
 
 const Page = () => {
   const router = useRouter();
@@ -46,6 +48,17 @@ const Page = () => {
 
     fetchPrescriptionData();
   }, [prescriptionNo]);
+  const handleSendMail = async () => {
+    if (!prescriptionData?.prescriptionNo) return;
+
+    try {
+      await sendPrescriptionsByEmail(prescriptionData.prescriptionNo);
+      toast.success("Prescription sent via email successfully!");
+    } catch (error) {
+      console.error("Failed to send prescription email:", error);
+      toast.error("Failed to send prescription email.");
+    }
+  };
 
   if (!prescriptionData) {
     return <p className="mt-4 text-lg text-gray-600"></p>;
@@ -72,6 +85,7 @@ const Page = () => {
           prescriptionNo={prescriptionData.prescriptionNo}
           createdAt={prescriptionData.createdAt}
           prescriptionType={prescriptionData.prescriptionType}
+          onSendMail={handleSendMail}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
