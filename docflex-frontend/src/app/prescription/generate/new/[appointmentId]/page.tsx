@@ -196,14 +196,14 @@ const GeneratePrescriptionPage = () => {
       console.log("🚀 Final Payload:", payload);
 
       // Call the API to create prescription
-      const result = await createPrescription(payload);
+      // const result = await createPrescription(payload);
 
-      if (result.success) {
-        toast.success("Prescription saved successfully!");
-        router.push("/prescription");
-      } else {
-        toast.error(result.message || "Failed to save prescription");
-      }
+      // if (result.success) {
+      //   toast.success("Prescription saved successfully!");
+      //   router.push("/prescription");
+      // } else {
+      //   toast.error(result.message || "Failed to save prescription");
+      // }
     } catch (error) {
       console.error("❌ Error submitting prescription:", error);
       toast.error("An error occurred while saving prescription.");
@@ -223,7 +223,7 @@ const GeneratePrescriptionPage = () => {
 
   const handleAddRow = (targetIndex?: number) => {
     const rowToValidate =
-      targetIndex !== undefined ? rowData[targetIndex] : rowData[0]; 
+      targetIndex !== undefined ? rowData[targetIndex] : rowData[0];
 
     const requiredFields = [
       "route",
@@ -329,7 +329,7 @@ const GeneratePrescriptionPage = () => {
   };
 
   // Calculate BMI when weight or height changes
-  const bmi = weight && height ? calculateBMI(weight, height) : "";
+  const bmi = weight && height ? calculateBMI(height, weight) : "";
 
   // Prepare vital signs for the preview
   const vitalSigns = [
@@ -457,17 +457,19 @@ const GeneratePrescriptionPage = () => {
                 label
                 value={weight}
                 labelName="Weight"
-                icon="Kg"
+                icon="kg"
                 onChange={(e) => setWeight(e.target.value)}
+                showAlwaysLabel
               />
               <InputField
                 id="height"
                 type="text"
                 label
                 labelName="Height"
-                icon="Cm"
+                icon="cm"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
+                showAlwaysLabel
               />
               <InputField
                 id="bmi"
@@ -477,6 +479,7 @@ const GeneratePrescriptionPage = () => {
                 icon={<LiaCloudscale />}
                 value={bmi.toString()}
                 readOnly
+                showAlwaysLabel
               />
               <InputField
                 id="temperature"
@@ -486,6 +489,7 @@ const GeneratePrescriptionPage = () => {
                 labelName="Temperature"
                 icon="℃"
                 onChange={(e) => setTemperature(e.target.value)}
+                showAlwaysLabel
               />
               <InputField
                 id="pulseRate"
@@ -495,6 +499,7 @@ const GeneratePrescriptionPage = () => {
                 labelName="Pulse Rate"
                 icon="mm"
                 onChange={(e) => setPulseRate(e.target.value)}
+                showAlwaysLabel
               />
             </div>
           </FormField>
