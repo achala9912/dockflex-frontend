@@ -22,6 +22,7 @@ import SearchBar from "@/components/Searchbar/Searchbar";
 import { createPrescription } from "@/api/prescriptionsApi";
 import { useAuthStore } from "@/store/authStore";
 import LivePrescription from "@/components/Canvas/LivePrescription";
+import DeleteConfirm from "@/components/Popups/DeleteConfirm";
 
 interface RowData {
   route: string;
@@ -86,7 +87,8 @@ const GeneratePrescriptionPage = () => {
     useState<AppointmentData | null>(null);
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [centerData, setCenterData] = useState<CenterData | null>(null);
-
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   // Ensure appointmentId is a string
   const appointmentId: string | undefined = Array.isArray(params?.appointmentId)
     ? params.appointmentId[0]
@@ -277,9 +279,30 @@ const GeneratePrescriptionPage = () => {
 
   // ✅ Delete a row
   const handleDeleteRow = (index: number) => {
-    if (rowData.length === 1) return; // keep at least 1 row
-    setRowData(rowData.filter((_, i) => i !== index));
+    if (index === 0) {
+      // First row → just clear values, don’t delete
+      setRowData((prev) =>
+        prev.map((row, i) =>
+          i === 0
+            ? {
+                route: "",
+                productName: "",
+                genericName: "",
+                dose: "",
+                frequency: "",
+                duration: "",
+                note: "",
+              }
+            : row
+        )
+      );
+    } else {
+      // Other rows → confirm delete
+      setDeleteIndex(index);
+      setIsDeleteConfirmOpen(true);
+    }
   };
+
   // ✅ Handle search change
   const handleSearchChange = (value: string, index: number) => {
     handleInputChange(index, "productName", value);
@@ -636,6 +659,24 @@ const GeneratePrescriptionPage = () => {
         handlers={{
           add: (row: any) => handleAddRow(row.index),
           delete: (row: any) => handleDeleteRow(row.index),
+        }}
+      />
+
+      <DeleteConfirm
+        element="this item"
+        isOpen={isDeleteConfirmOpen}
+        onDelete={() => {
+          if (deleteIndex !== null && deleteIndex > 0) {
+            setRowData((prevRows) =>
+              prevRows.filter((_, i) => i !== deleteIndex)
+            );
+          }
+          setDeleteIndex(null);
+          setIsDeleteConfirmOpen(false);
+        }}
+        onCancel={() => {
+          setDeleteIndex(null);
+          setIsDeleteConfirmOpen(false);
         }}
       />
     </div>
