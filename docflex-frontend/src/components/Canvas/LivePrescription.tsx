@@ -180,7 +180,7 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
         </div>
         <div className="bg-gray-50 p-5 rounded-xl shadow-sm md:col-span-2">
           <SectionTitle>Remarks</SectionTitle>
-          <p className="text-sm">{remark}</p>
+          <p className="text-sm">{remark || "Not specified"}</p>
         </div>
       </div>
 
