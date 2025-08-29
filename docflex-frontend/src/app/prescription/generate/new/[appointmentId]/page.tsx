@@ -222,18 +222,9 @@ const GeneratePrescriptionPage = () => {
   };
 
   const handleAddRow = (targetIndex?: number) => {
-    // Always validate the row being added after (or last row if adding at the end)
-    let rowToValidate;
+    const rowToValidate =
+      targetIndex !== undefined ? rowData[targetIndex] : rowData[0]; 
 
-    if (targetIndex !== undefined) {
-      // If adding after a specific row, validate that row
-      rowToValidate = rowData[targetIndex];
-    } else {
-      // If no target index, validate the last row
-      rowToValidate = rowData[rowData.length - 1];
-    }
-
-    // Check if the row has all required fields filled
     const requiredFields = [
       "route",
       "productName",
@@ -255,8 +246,7 @@ const GeneratePrescriptionPage = () => {
       return;
     }
 
-    // Create new empty row
-    const newRow = {
+    const newRow: RowData = {
       route: "",
       productName: "",
       genericName: "",
@@ -267,37 +257,42 @@ const GeneratePrescriptionPage = () => {
     };
 
     if (targetIndex === undefined) {
-      // Add at the end if no target index
-      setRowData([...rowData, newRow]);
+      setRowData([newRow, ...rowData]);
     } else {
-      // Add at specific position (after the clicked row)
       const updatedRows = [...rowData];
-      updatedRows.splice(targetIndex - 1, 0, newRow);
+      updatedRows.splice(targetIndex, 0, newRow);
       setRowData(updatedRows);
     }
   };
+  // Clear First Row
+  const clearFirstRow = () => {
+    setRowData((prev) =>
+      prev.map((row, i) =>
+        i === 0
+          ? {
+              route: "",
+              productName: "",
+              genericName: "",
+              dose: "",
+              frequency: "",
+              duration: "",
+              note: "",
+            }
+          : row
+      )
+    );
+  };
 
-  // ✅ Delete a row
   const handleDeleteRow = (index: number) => {
+    const topRowEmpty = Object.values(rowData[0]).every((val) => val === "");
+
     if (index === 0) {
-      // First row → just clear values, don’t delete
-      setRowData((prev) =>
-        prev.map((row, i) =>
-          i === 0
-            ? {
-                route: "",
-                productName: "",
-                genericName: "",
-                dose: "",
-                frequency: "",
-                duration: "",
-                note: "",
-              }
-            : row
-        )
-      );
+      if (!topRowEmpty) {
+        clearFirstRow();
+      } else if (rowData.length > 1) {
+        setRowData((prev) => prev.slice(1));
+      }
     } else {
-      // Other rows → confirm delete
       setDeleteIndex(index);
       setIsDeleteConfirmOpen(true);
     }
