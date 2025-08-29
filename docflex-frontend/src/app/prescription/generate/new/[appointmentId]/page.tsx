@@ -270,7 +270,7 @@ const GeneratePrescriptionPage = () => {
     } else {
       // Add at specific position (after the clicked row)
       const updatedRows = [...rowData];
-      updatedRows.splice(targetIndex + 1, 0, newRow);
+      updatedRows.splice(targetIndex - 1, 0, newRow);
       setRowData(updatedRows);
     }
   };
