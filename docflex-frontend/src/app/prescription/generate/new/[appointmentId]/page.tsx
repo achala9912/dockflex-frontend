@@ -319,9 +319,9 @@ const GeneratePrescriptionPage = () => {
       {/* Patient & Prescription Form */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Section */}
-        <div className="space-y-4">
-          <FormField label="Patient Details" labelClassName="mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4 bg-white p-5">
+          <FormField label="Patient Details" labelClassName="mb-4 font-semibold !text-blue-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <InputField
                 id="patientName"
                 type="text"
@@ -361,7 +361,7 @@ const GeneratePrescriptionPage = () => {
             </div>
           </FormField>
 
-          <FormField label="Reason for visit:">
+          <FormField label="Reason for visit:" labelClassName="font-semibold !text-blue-700">
             <TextArea
               id="reasonForVisit"
               placeholder="Enter a reason"
@@ -370,7 +370,7 @@ const GeneratePrescriptionPage = () => {
             />
           </FormField>
 
-          <FormField label="Symptoms:">
+          <FormField label="Symptoms:" labelClassName="font-semibold !text-blue-700">
             <MultiDropdown
               id="symptoms"
               placeholder="Select Symptoms"
@@ -381,7 +381,7 @@ const GeneratePrescriptionPage = () => {
             />
           </FormField>
 
-          <FormField label="Vital Signs:" labelClassName="mb-4">
+          <FormField label="Vital Signs:" labelClassName="mb-4 font-semibold !text-blue-700">
             <div className="flex flex-col md:flex-row gap-2 items-center">
               <InputField
                 id="weight"
@@ -431,7 +431,7 @@ const GeneratePrescriptionPage = () => {
             </div>
           </FormField>
 
-          <FormField label="Clinical Details in Brief:">
+          <FormField label="Clinical Details in Brief:" labelClassName="font-semibold !text-blue-700">
             <TextArea
               id="clinicalDetails"
               placeholder="Enter clinical details"
@@ -440,7 +440,7 @@ const GeneratePrescriptionPage = () => {
             />
           </FormField>
 
-          <FormField label="Advice (Optional):">
+          <FormField label="Advice (Optional):" labelClassName="font-semibold !text-blue-700">
             <TextArea
               id="advise"
               placeholder="Enter advice"
@@ -449,7 +449,7 @@ const GeneratePrescriptionPage = () => {
             />
           </FormField>
 
-          <FormField label="Remarks (Optional):">
+          <FormField label="Remarks (Optional):" labelClassName="font-semibold !text-blue-700">
             <TextArea
               id="remarks"
               placeholder="Enter remarks"
