@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Select, { MultiValue, SingleValue, StylesConfig } from "react-select";
+import Select, { SingleValue, StylesConfig } from "react-select";
 
 interface OptionType {
   label: string;
@@ -10,18 +10,18 @@ interface OptionType {
 
 interface DropdownProps {
   id: string;
-  value: string | string[];
+  value: string;
   options: string[] | OptionType[];
   placeholder?: string;
-  onChange: (value: string | string[]) => void;
+  onChange: (value: string) => void;   // ✅ only single string now
   width?: string;
   ariaLabel?: string;
   label?: boolean;
   labelName?: string;
   disabled?: boolean;
-  multiple?: boolean;
   requiredLabel?: boolean;
   readOnly?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
 const Dropdown: React.FC<DropdownProps> = ({
@@ -35,15 +35,16 @@ const Dropdown: React.FC<DropdownProps> = ({
   label = false,
   labelName,
   disabled = false,
-  multiple = false,
   requiredLabel = false,
   readOnly = false,
+  onKeyDown,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
 
+  // normalize options
   const selectOptions =
     typeof options[0] === "string"
       ? (options as string[]).map((option) => ({
@@ -52,11 +53,11 @@ const Dropdown: React.FC<DropdownProps> = ({
         }))
       : (options as OptionType[]);
 
-  const selectedOptions = Array.isArray(value)
-    ? selectOptions.filter((option) => value.includes(option.value))
-    : selectOptions.find((option) => option.value === value) || null;
+  // find selected option
+  const selectedOption =
+    selectOptions.find((option) => option.value === value) || null;
 
-  const customStyles: StylesConfig<OptionType, boolean> = {
+  const customStyles: StylesConfig<OptionType, false> = {
     control: (provided, state) => ({
       ...provided,
       borderColor: state.isFocused ? "#3b82f6" : "#9ca3af",
@@ -79,21 +80,13 @@ const Dropdown: React.FC<DropdownProps> = ({
     menuList: (provided) => ({
       ...provided,
       maxHeight: "250px",
-      overflowY: "auto", 
+      overflowY: "auto",
     }),
   };
 
-  const handleChange = (
-    newValue: MultiValue<OptionType> | SingleValue<OptionType>
-  ) => {
+  const handleChange = (newValue: SingleValue<OptionType>) => {
     if (readOnly) return;
-    if (multiple) {
-      onChange(
-        (newValue as MultiValue<OptionType>).map((option) => option.value)
-      );
-    } else {
-      onChange((newValue as SingleValue<OptionType>)?.value || "");
-    }
+    onChange(newValue?.value || "");
   };
 
   return (
@@ -112,9 +105,9 @@ const Dropdown: React.FC<DropdownProps> = ({
         </label>
       )}
       <div className="w-full">
-        <Select<OptionType, boolean>
+        <Select<OptionType, false>
           inputId={id}
-          value={selectedOptions}
+          value={selectedOption}
           onChange={handleChange}
           onFocus={readOnly ? undefined : handleFocus}
           onBlur={handleBlur}
@@ -122,11 +115,12 @@ const Dropdown: React.FC<DropdownProps> = ({
           placeholder={placeholder}
           isDisabled={disabled || readOnly}
           isClearable={!readOnly}
-          isMulti={multiple}
+          isMulti={false}   // ✅ always single
           className="text-sm"
           classNamePrefix="react-select"
           aria-label={ariaLabel || placeholder}
           styles={customStyles}
+          onKeyDown={onKeyDown}
         />
       </div>
     </div>

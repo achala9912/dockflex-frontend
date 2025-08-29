@@ -70,3 +70,20 @@ export async function updateProduct(
     throw error;
   }
 }
+
+export async function getProductSuggestions(centerId: string): Promise<any[]> {
+  try {
+    if (!centerId) {
+      throw new Error("centerId is required to fetch product suggestions.");
+    }
+
+    const response = await axiosAuth.get<any[]>(`/products/suggestions`, {
+      params: { centerId },
+    });
+
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch product suggestions:", err);
+    throw err;
+  }
+}

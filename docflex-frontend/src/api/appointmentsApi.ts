@@ -81,3 +81,16 @@ export async function getActiveSessionPatientVisitedAppointment(
     throw err;
   }
 }
+
+export async function getAppointmentById(appointmentId: string): Promise<any> {
+  try {
+    const res = await axiosAuth.get<any>(`/appointments/${appointmentId}`);
+    return res;
+  } catch (error) {
+    console.error(
+      `Error fetching appointments with ID ${appointmentId}:`,
+      error
+    );
+    throw error;
+  }
+}

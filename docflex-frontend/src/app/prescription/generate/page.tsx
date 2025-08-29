@@ -9,7 +9,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import CenterDropdown from "@/components/Dropdown/CenterDropdown";
 import { toast } from "react-toastify";
 import { useDebounce } from "@/hooks/useDebounce";
-import { getActiveSessionPatientVisitedAppointment } from "@/api/appointmentsApi";
+import { getAllAppointments } from "@/api/appointmentsApi";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
 import Pagination from "@/components/Table/Pagination";
 import PresCard from "@/components/Cards/PresCard";
@@ -31,7 +31,7 @@ export default function Page() {
 
   const fetchAppointments = useCallback(async () => {
     try {
-      const res = await getActiveSessionPatientVisitedAppointment(
+      const res = await getAllAppointments(
         selectedDate,
         currentPage,
         itemsPerPage,
@@ -113,9 +113,6 @@ export default function Page() {
             tokenNo={app.tokenNo}
             age={app.patientId.age}
             gender={app.patientId.gender}
-            handleGenerate={() =>
-              console.log("Generate prescription for", app.appointmentId)
-            }
           />
         ))}
       </div>

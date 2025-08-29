@@ -7,16 +7,16 @@ import { FaUser, FaPhone, FaEnvelope, FaBirthdayCake } from "react-icons/fa";
 
 interface PrescriptionTemplateProps {
   centerId: {
-    centerName: string;
-    contactNo: string;
-    address: string;
-    town: string;
+    centerName?: string;
+    contactNo?: string;
+    address?: string;
+    town?: string;
     logo?: string;
     email?: string;
   };
-  prescriptionNo: string;
+  prescriptionNo?: string;
   createdAt: string;
-  prescriptionType: string;
+  prescriptionType?: string;
   patientId: {
     patientName: string;
     age: string;

@@ -1,6 +1,6 @@
 "use client";
 
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { FaEdit, FaEye, FaPlus, FaTrash } from "react-icons/fa";
 import React from "react";
 import { GiConfirmed } from "react-icons/gi";
 import { IoMdCloseCircleOutline } from "react-icons/io";
@@ -585,6 +585,47 @@ export const prescriptionsMgmtColumns: Column<PrescriptionMgmt>[] = [
           size={20}
           onClick={() => handlers?.edit?.(row)}
           aria-label="View Prescription"
+        />
+      </div>
+    ),
+  },
+];
+
+export interface treatmentMgmt {
+  route: string | React.ReactNode;
+  productName: string | React.ReactNode;
+  genericName: string | React.ReactNode;
+  dose: string | React.ReactNode;
+  frequency: string | React.ReactNode;
+  duration: string | React.ReactNode;
+  note?: string | React.ReactNode;
+  action?: string | React.ReactNode;
+}
+
+
+export const TreatmentMgmtColoums: Column<treatmentMgmt>[] = [
+  { header: "Route", accessor: "route" },
+  { header: "Product ID / Name", accessor: "productName" },
+  { header: "Generic Name", accessor: "genericName" },
+  { header: "Dose", accessor: "dose" },
+  { header: "Frequency", accessor: "frequency" },
+  { header: "Duration", accessor: "duration" },
+  { header: "Note", accessor: "note" },
+
+  {
+    header: "",
+    accessor: "action", 
+    render: (_value, row, handlers) => (
+      <div className="flex space-x-4">
+        <FaPlus
+          className="text-[#23A3DA] hover:text-blue-700 cursor-pointer"
+          onClick={() => handlers?.add?.(row)}
+          aria-label="Add Bill Row"
+        />
+        <FaTrash
+          className="text-[#EB1313]/70 hover:text-red-700 cursor-pointer"
+          onClick={() => handlers?.delete?.(row)}
+          aria-label="Delete Bill Row"
         />
       </div>
     ),
