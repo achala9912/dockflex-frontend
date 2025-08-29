@@ -39,7 +39,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const searchBarRef = useRef<HTMLDivElement | null>(null);
 
-  // Filter suggestions on suggestions change
   useEffect(() => {
     if (value) {
       setFilteredSuggestions(suggestions);
@@ -47,7 +46,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setIsLoading(false);
   }, [suggestions, value]);
 
-  // Handle outside click to close dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchBarRef.current && !searchBarRef.current.contains(e.target as Node)) {
@@ -58,7 +56,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle input change and start loading effect
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     onChange(e);
     setShowSuggestions(true);
@@ -66,7 +63,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setIsLoading(true);
   };
 
-  // Handle suggestion click
   const handleSuggestionClick = (suggestion: string) => {
     onSuggestionSelect(suggestion);
     setShowSuggestions(false);
@@ -86,7 +82,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  // Handle clearing input
+
   const handleClearInput = () => {
     onChange({ target: { value: "" } } as ChangeEvent<HTMLInputElement>);
     setShowSuggestions(false);
@@ -95,7 +91,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     if (handleClear) handleClear();
   };
 
-  // Highlight matched text
+
   const getHighlightedText = (text: string, highlight: string) => {
     const parts = text.split(new RegExp(`(${highlight})`, "gi"));
     return parts.map((part, index) =>
@@ -124,7 +120,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </label>
       )}
 
-      {/* Input with loading border effect */}
       <div
         className={`relative flex items-center h-10 border rounded-md transition-all duration-300 ${
           showSuggestions && value && isLoading

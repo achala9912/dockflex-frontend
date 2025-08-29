@@ -71,3 +71,13 @@ export async function sendPrescriptionsByEmail(
     throw err;
   }
 }
+
+export async function createPrescription(data: any): Promise<any> {
+  try {
+    const response = await axiosAuth.post("/prescriptions", data);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to create sprescriptions:", err);
+    throw err;
+  }
+}

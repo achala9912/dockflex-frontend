@@ -6,8 +6,6 @@ import { FaPlus, FaTrash } from "react-icons/fa6";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { LiaCloudscale } from "react-icons/lia";
 import { toast } from "react-toastify";
-
-import PrescriptionTemplate from "@/components/Canvas/PrescriptionTemplate";
 import Dropdown from "@/components/Dropdown/Dropdown";
 import MultiDropdown from "@/components/Dropdown/MultiDropdown";
 import FormField from "@/components/Fields/FormField";
@@ -21,6 +19,9 @@ import { getAppointmentById } from "@/api/appointmentsApi";
 import { getProductSuggestions } from "@/api/productApi";
 import { TreatmentMgmtColoums } from "@/components/Table/Coloumns";
 import SearchBar from "@/components/Searchbar/Searchbar";
+import { createPrescription } from "@/api/prescriptionsApi";
+import { useAuthStore } from "@/store/authStore";
+import LivePrescription from "@/components/Canvas/LivePrescription";
 
 interface RowData {
   route: string;
@@ -64,23 +65,14 @@ interface AppointmentData {
   centerId: CenterData;
   date: string;
   appointmentId: string;
-  // Add other fields as needed
-}
-
-interface PrescriberDetails {
-  name: string;
-  specialization: string;
-  slmcNo: string;
-  digitalSignature?: string;
-  title?: string;
-  remarks?: string;
 }
 
 const GeneratePrescriptionPage = () => {
   const router = useRouter();
   const params = useParams();
+  const user = useAuthStore((state) => state.user);
+
   const [products, setProducts] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [weight, setWeight] = useState<string>("");
   const [height, setHeight] = useState<string>("");
   const [reasonForVisit, setReasonForVisit] = useState<string>("");
@@ -94,17 +86,23 @@ const GeneratePrescriptionPage = () => {
     useState<AppointmentData | null>(null);
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [centerData, setCenterData] = useState<CenterData | null>(null);
-  const [prescriberDetails] = useState<PrescriberDetails>({
-    name: "",
-    specialization: "",
-    slmcNo: "",
-    title: "",
-  });
 
   // Ensure appointmentId is a string
   const appointmentId: string | undefined = Array.isArray(params?.appointmentId)
     ? params.appointmentId[0]
     : params?.appointmentId;
+
+  const [rowData, setRowData] = useState<RowData[]>([
+    {
+      route: "",
+      productName: "",
+      genericName: "",
+      dose: "",
+      frequency: "",
+      duration: "",
+      note: "",
+    },
+  ]);
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -132,14 +130,12 @@ const GeneratePrescriptionPage = () => {
     if (!centerData?._id) return;
 
     try {
-      setError(null);
       const res = await getProductSuggestions(centerData._id);
       console.log("ProdutSugg", res);
       setProducts(res || []);
     } catch (err: any) {
       console.error(err);
       setProducts([]);
-      setError("Failed to fetch products");
     }
   }, [centerData]);
 
@@ -149,23 +145,67 @@ const GeneratePrescriptionPage = () => {
     }
   }, [centerData, fetchProducts]);
 
-  const [rowData, setRowData] = useState<RowData[]>([
-    {
-      route: "",
-      productName: "",
-      genericName: "",
-      dose: "",
-      frequency: "",
-      duration: "",
-      note: "",
-    },
-  ]);
-
   // ✅ Handle form submission
-  const handleSubmit = () => {
-    // Add your form submission logic here
-    console.log("Form submitted", rowData);
-    toast.success("Prescription saved successfully!");
+  const handleSubmit = async () => {
+    if (!appointmentData || !patientData || !centerData) {
+      toast.error("Missing required data.");
+      return;
+    }
+
+    try {
+      const payload = {
+        centerId: centerData._id,
+        prescriptionType: "External",
+        appointmentId: appointmentData._id,
+        patientId: patientData._id,
+        reasonForVisit,
+        symptoms,
+        clinicalDetails,
+        advice,
+        remark: remarks,
+        vitalSigns: [
+          {
+            weight,
+            height,
+            bmi,
+            temperature,
+            pulseRate,
+          },
+        ],
+        medications: rowData.map((row) => ({
+          route: row.route,
+          productName: row.productName,
+          genericName: row.genericName,
+          dose: row.dose,
+          frequency: row.frequency,
+          duration: row.duration,
+          note: row.note,
+        })),
+        prescriberDetails: {
+          title: user?.title,
+          name: user?.name,
+          slmcNo: user?.slmcNo,
+          digitalSignature: user?.digitalSignature,
+          specialization: user?.specialization,
+          remarks: user?.remarks,
+        },
+      };
+
+      console.log("🚀 Final Payload:", payload);
+
+      // Call the API to create prescription
+      const result = await createPrescription(payload);
+
+      if (result.success) {
+        toast.success("Prescription saved successfully!");
+        router.push("/prescription");
+      } else {
+        toast.error(result.message || "Failed to save prescription");
+      }
+    } catch (error) {
+      console.error("❌ Error submitting prescription:", error);
+      toast.error("An error occurred while saving prescription.");
+    }
   };
 
   // ✅ Update a row field
@@ -232,10 +272,7 @@ const GeneratePrescriptionPage = () => {
   };
 
   // Calculate BMI when weight or height changes
-  const bmi =
-    weight && height
-      ? calculateBMI(parseFloat(weight), parseFloat(height))
-      : "";
+  const bmi = weight && height ? calculateBMI(weight, height) : "";
 
   // Prepare vital signs for the preview
   const vitalSigns = [
@@ -243,13 +280,13 @@ const GeneratePrescriptionPage = () => {
     { name: "Height", value: height, unit: "cm" },
     { name: "BMI", value: bmi.toString(), unit: "" },
     { name: "Temperature", value: temperature, unit: "°C" },
-    { name: "Pulse Rate", value: pulseRate, unit: "bpm" },
+    { name: "Pulse Rate", value: pulseRate, unit: "mm" },
   ];
 
   return (
     <div>
       {/* Header */}
-      <div className="flex flex-row justify-between items-center gap-4">
+      <div className="flex flex-row justify-between items-center gap-4 mb-6">
         <div className="flex items-center gap-2">
           <Tooltip content="Back" side="bottom">
             <button
@@ -260,20 +297,13 @@ const GeneratePrescriptionPage = () => {
               <IoChevronBackOutline size={18} />
             </button>
           </Tooltip>
-          <h3 className="flex items-center font-semibold font-inter">
+          <h3 className="flex items-center font-semibold font-inter text-lg">
             Generate Prescription
           </h3>
         </div>
 
-        <div className="flex flex-wrap justify-end gap-4 mt-6">
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => router.back()}
-            className="px-6 py-2 text-sm font-semibold text-white transition bg-black rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-w-[100px]"
-          >
-            Cancel
-          </Button>
+        <div>
+  
           <Button
             variant="outline"
             size="default"
@@ -291,7 +321,7 @@ const GeneratePrescriptionPage = () => {
         {/* Left Section */}
         <div className="space-y-4">
           <FormField label="Patient Details" labelClassName="mb-4">
-            <div className="flex flex-col md:flex-row gap-2 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 id="patientName"
                 type="text"
@@ -310,8 +340,6 @@ const GeneratePrescriptionPage = () => {
                 value={patientData?.age || "Loading..."}
                 readOnly
               />
-            </div>
-            <div className="flex flex-col md:flex-row gap-2 items-center mt-6">
               <InputField
                 id="email"
                 type="email"
@@ -349,7 +377,7 @@ const GeneratePrescriptionPage = () => {
               multiple
               value={symptoms}
               options={["Nausea", "Vomiting", "Runny Nose", "Dry Cough"]}
-              onChange={(selected) => setSymptoms(selected)}
+              onChange={(selected) => setSymptoms(selected as string[])}
             />
           </FormField>
 
@@ -369,7 +397,7 @@ const GeneratePrescriptionPage = () => {
                 type="text"
                 label
                 labelName="Height"
-                icon="CM"
+                icon="Cm"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
               />
@@ -397,7 +425,7 @@ const GeneratePrescriptionPage = () => {
                 label
                 value={pulseRate}
                 labelName="Pulse Rate"
-                icon="bpm"
+                icon="mm"
                 onChange={(e) => setPulseRate(e.target.value)}
               />
             </div>
@@ -434,7 +462,7 @@ const GeneratePrescriptionPage = () => {
         {/* Right Section */}
         <div>
           {/* Live Preview */}
-          <PrescriptionTemplate
+          <LivePrescription
             centerId={{
               centerName: centerData?.centerName || "",
               contactNo: centerData?.contactNo || "",
@@ -459,7 +487,7 @@ const GeneratePrescriptionPage = () => {
             clinicalDetails={clinicalDetails}
             advice={advice}
             medications={rowData}
-            prescriberDetails={prescriberDetails}
+            remark={remarks}
           />
         </div>
       </div>
@@ -485,7 +513,7 @@ const GeneratePrescriptionPage = () => {
               placeholder="Search Product"
               value={row.productName || ""}
               onChange={(e) => handleSearchChange(e.target.value, index)}
-              suggestions={products.map((p) => p.productName)} // ✅ array of strings
+              suggestions={products.map((p) => p.productName)}
               onSuggestionSelect={(suggestion) =>
                 handleProductSuggestionSelect(suggestion, index)
               }
