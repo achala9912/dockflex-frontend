@@ -75,9 +75,10 @@ export async function sendPrescriptionsByEmail(
 export async function createPrescription(data: any): Promise<any> {
   try {
     const response = await axiosAuth.post("/prescriptions", data);
+    console.log("🔵 Full Axios Response:", response); // <-- add this
     return response.data;
   } catch (err) {
-    console.error("Failed to create sprescriptions:", err);
+    console.error("Failed to create prescriptions:", err);
     throw err;
   }
 }
