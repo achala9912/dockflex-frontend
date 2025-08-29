@@ -320,13 +320,16 @@ const GeneratePrescriptionPage = () => {
         },
       };
 
-      const result = await createPrescription(payload);
+      console.log("🚀 Payload:", payload);
 
-      if (result) {
+      const result = await createPrescription(payload);
+      console.log("🚀 API Response:", result);
+
+      if (result && result.prescriptionNo) {
         toast.success("Prescription saved successfully!");
-        router.push("/prescription");
+  
       } else {
-        // Fallback: assume success if no error was thrown
+        // fallback if backend returns 204 or no prescriptionNo
         toast.success("Prescription saved successfully!");
         router.push("/prescription");
       }
@@ -335,7 +338,6 @@ const GeneratePrescriptionPage = () => {
       toast.error("An error occurred while saving prescription.");
     }
   };
-
   return (
     <div>
       {/* Header */}
