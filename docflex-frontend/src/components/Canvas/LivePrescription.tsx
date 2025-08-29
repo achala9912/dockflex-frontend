@@ -1,22 +1,10 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { LiaMedrt } from "react-icons/lia";
 import { FaUser, FaPhone, FaEnvelope, FaBirthdayCake } from "react-icons/fa";
-
+import { HiOutlineStatusOnline } from "react-icons/hi";
 interface LivePrescriptionProps {
-  centerId: {
-    centerName?: string;
-    contactNo?: string;
-    address?: string;
-    town?: string;
-    logo?: string;
-    email?: string;
-  };
-  prescriptionNo?: string;
-  createdAt: string;
-  prescriptionType?: string;
   patientId: {
     patientName: string;
     age: string;
@@ -45,7 +33,6 @@ interface LivePrescriptionProps {
     route: string;
     genericName: string;
   }[];
-
 }
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
@@ -72,9 +59,6 @@ const InfoRow = ({
 );
 
 const LivePrescription: React.FC<LivePrescriptionProps> = ({
-  centerId,
-  prescriptionNo,
-  createdAt,
   patientId,
   reasonForVisit,
   symptoms,
@@ -86,57 +70,18 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
 }) => {
   // Extract vital signs values
   const getVitalValue = (name: string) => {
-    const vital = vitalSigns.find(v => v.name.toLowerCase().includes(name.toLowerCase()));
-    return vital ? `${vital.value} ${vital.unit}` : 'N/A';
+    const vital = vitalSigns.find((v) =>
+      v.name.toLowerCase().includes(name.toLowerCase())
+    );
+    return vital ? `${vital.value} ${vital.unit}` : "N/A";
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-6 border border-gray-200 space-y-8">
-      {/* Header with Center Details */}
-      <div className="flex items-center justify-center border-b pb-6 gap-6">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          {centerId?.logo ? (
-            <Image
-              src={centerId.logo}
-              alt="Center Logo"
-              width={120}
-              height={60}
-              className="object-contain"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 font-bold text-lg">
-                {centerId?.centerName?.charAt(0) || 'C'}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Center Details */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-blue-700">
-            {centerId?.centerName || "Medical Center"}
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
-            {centerId?.address && `${centerId.address}, `}{centerId?.town}
-          </p>
-          <p className="text-sm text-gray-600 mt-1">
-            {centerId?.email && `${centerId.email} | `}{centerId?.contactNo}
-          </p>
-        </div>
+    <div className="max-w-4xl mx-auto bg-white p-6 border border-gray-200 space-y-6">
+      <div className="text-center flex gap-2 items-center justify-center text-lg text-red-400 font-semibold">
+        Live Preview <HiOutlineStatusOnline size={24} />
       </div>
-
-      <div className="flex justify-between items-center border-b pb-4">
-        <div className="text-base text-gray-700">
-          <span className="font-semibold text-blue-700">Prescription No:</span>{" "}
-          {prescriptionNo || "N/A"}
-        </div>
-        <div className="text-base text-gray-700">
-          <span className="font-semibold text-blue-700">Prescribed At:</span>{" "}
-          {new Date(createdAt).toLocaleDateString()}
-        </div>
-      </div>
+      <hr />
 
       {/* Patient + Vitals */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -147,7 +92,7 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
             <InfoRow
               icon={<FaUser />}
               label="Name"
-              value={`${patientId.title || ''} ${patientId.patientName}`.trim()}
+              value={`${patientId.title || ""} ${patientId.patientName}`.trim()}
             />
             <InfoRow
               icon={<FaBirthdayCake />}
@@ -216,7 +161,9 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
         <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
           <SectionTitle>Symptoms</SectionTitle>
           <p className="text-gray-700 text-sm">
-            {symptoms && symptoms.length > 0 ? symptoms.join(", ") : "None reported"}
+            {symptoms && symptoms.length > 0
+              ? symptoms.join(", ")
+              : "None reported"}
           </p>
         </div>
 
@@ -231,17 +178,16 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
           <SectionTitle>Advice</SectionTitle>
           <p className="text-sm">{advice || "Not specified"}</p>
         </div>
-          <div className="bg-gray-50 p-5 rounded-xl shadow-sm md:col-span-2">
-            <SectionTitle>Remarks</SectionTitle>
-            <p className="text-sm">{remark}</p>
-          </div>
+        <div className="bg-gray-50 p-5 rounded-xl shadow-sm md:col-span-2">
+          <SectionTitle>Remarks</SectionTitle>
+          <p className="text-sm">{remark}</p>
+        </div>
       </div>
 
       {/* Prescription Section */}
       <div>
         <div className="flex items-center mb-6">
           <span className="text-4xl font-bold text-blue-700 mr-3">℞</span>
-          <h2 className="text-xl font-semibold text-gray-800">Medications</h2>
         </div>
 
         {medications.length > 0 ? (
@@ -254,9 +200,14 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
                 <div className="flex items-center gap-2 mb-2">
                   <LiaMedrt className="w-6 h-6 text-blue-600" />
                   <h3 className="text-base font-semibold text-gray-800 uppercase">
-                    {med.productName} {med.genericName && `(${med.genericName})`}
+                    {med.productName
+                      ? `${med.productName}${
+                          med.genericName ? ` (${med.genericName})` : ""
+                        }`
+                      : "Drug Name"}
                   </h3>
                 </div>
+
                 <div className="grid grid-cols-2 gap-2">
                   <p className="text-sm text-gray-700">
                     <span className="font-semibold">Route: </span>
@@ -291,7 +242,6 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
           </div>
         )}
       </div>
-
 
       {/* Footer */}
       <div className="text-center border-t pt-6 text-sm text-gray-500">
