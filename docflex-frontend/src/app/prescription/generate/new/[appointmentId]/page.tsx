@@ -219,20 +219,60 @@ const GeneratePrescriptionPage = () => {
     setRowData(updatedRows);
   };
 
-  // ✅ Add a row
-  const handleAddRow = () => {
-    setRowData([
-      ...rowData,
-      {
-        route: "",
-        productName: "",
-        genericName: "",
-        dose: "",
-        frequency: "",
-        duration: "",
-        note: "",
-      },
-    ]);
+  const handleAddRow = (targetIndex?: number) => {
+    // Always validate the row being added after (or last row if adding at the end)
+    let rowToValidate;
+
+    if (targetIndex !== undefined) {
+      // If adding after a specific row, validate that row
+      rowToValidate = rowData[targetIndex];
+    } else {
+      // If no target index, validate the last row
+      rowToValidate = rowData[rowData.length - 1];
+    }
+
+    // Check if the row has all required fields filled
+    const requiredFields = [
+      "route",
+      "productName",
+      "genericName",
+      "dose",
+      "frequency",
+      "duration",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !rowToValidate[field as keyof RowData]
+    );
+
+    if (missingFields.length > 0) {
+      toast.error(
+        `Please fill all required fields in the current row: ${missingFields.join(
+          ", "
+        )}`
+      );
+      return;
+    }
+
+    // Create new empty row
+    const newRow = {
+      route: "",
+      productName: "",
+      genericName: "",
+      dose: "",
+      frequency: "",
+      duration: "",
+      note: "",
+    };
+
+    if (targetIndex === undefined) {
+      // Add at the end if no target index
+      setRowData([...rowData, newRow]);
+    } else {
+      // Add at specific position (after the clicked row)
+      const updatedRows = [...rowData];
+      updatedRows.splice(targetIndex + 1, 0, newRow);
+      setRowData(updatedRows);
+    }
   };
 
   // ✅ Delete a row
@@ -240,7 +280,6 @@ const GeneratePrescriptionPage = () => {
     if (rowData.length === 1) return; // keep at least 1 row
     setRowData(rowData.filter((_, i) => i !== index));
   };
-
   // ✅ Handle search change
   const handleSearchChange = (value: string, index: number) => {
     handleInputChange(index, "productName", value);
@@ -502,12 +541,11 @@ const GeneratePrescriptionPage = () => {
           />
         </div>
       </div>
-
-
       <CustomTable
         className="min-h-400 mt-6"
         columns={TreatmentMgmtColoums}
         data={rowData.map((row, index) => ({
+          index: index, // Add index to the data object
           route: (
             <Dropdown
               id={`route-${index}`}
@@ -530,7 +568,6 @@ const GeneratePrescriptionPage = () => {
               }
             />
           ),
-
           genericName: (
             <InputField
               id={`genericName-${index}`}
@@ -585,7 +622,7 @@ const GeneratePrescriptionPage = () => {
             <div className="flex space-x-4">
               <FaPlus
                 className="text-blue-600 cursor-pointer hover:text-blue-800"
-                onClick={handleAddRow}
+                onClick={() => handleAddRow(index)}
                 aria-label="Add Row"
               />
               <FaTrash
@@ -596,6 +633,10 @@ const GeneratePrescriptionPage = () => {
             </div>
           ),
         }))}
+        handlers={{
+          add: (row: any) => handleAddRow(row.index),
+          delete: (row: any) => handleDeleteRow(row.index),
+        }}
       />
     </div>
   );
