@@ -72,13 +72,27 @@ export async function sendPrescriptionsByEmail(
   }
 }
 
+
 export async function createPrescription(data: any): Promise<any> {
   try {
     const response = await axiosAuth.post("/prescriptions", data);
-    console.log("🔵 Full Axios Response:", response); // <-- add this
-    return response.data;
-  } catch (err) {
+    if (response.data !== undefined) {
+      return response.data;
+    } else {
+      console.log("🔵 Using response object directly");
+      return response;
+    }
+  } catch (err: any) {
     console.error("Failed to create prescriptions:", err);
-    throw err;
+
+    if (err.response) {
+      console.error("Error response:", err.response.data);
+      console.error("Error status:", err.response.status);
+      throw new Error(
+        err.response.data?.message || "Failed to create prescription"
+      );
+    }
+
+    throw new Error(err.message || "Network error occurred");
   }
 }
