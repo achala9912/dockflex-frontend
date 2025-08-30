@@ -236,7 +236,7 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
                   </p>
                   <p className="text-sm text-gray-700">
                     <span className="font-semibold">Duration: </span>
-                    {med.duration ? `For ${med.duration}` : ""}
+                    {med.duration ? `For ${med.duration}` : "N/A"}
                   </p>
                 </div>
 

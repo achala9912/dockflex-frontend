@@ -216,3 +216,24 @@ export const DurationOptions = [
   { label: "3 months", value: "3 months" },
   { label: "As needed", value: "as needed" },
 ];
+
+export const RouteOptions = [
+  { label: "Oral", value: "Oral" },
+  { label: "IM", value: "IM" },
+  { label: "IV", value: "IV" },
+  { label: "SC", value: "SC" },
+  { label: "Rectal", value: "Rectal" },
+  { label: "Sublingual", value: "Sublingual" },
+  { label: "Buccal", value: "Buccal" },
+  { label: "Topical", value: "Topical" },
+  { label: "Transdermal", value: "Transdermal" },
+  { label: "Inhalation", value: "Inhalation" },
+  { label: "Nasal", value: "Nasal" },
+  { label: "Ophthalmic (Eye)", value: "Ophthalmic" },
+  { label: "Otic (Ear)", value: "Otic" },
+  { label: "Intrathecal", value: "Intrathecal" },
+  { label: "Epidural", value: "Epidural" },
+  { label: "Vaginal", value: "Vaginal" },
+  { label: "Intraperitoneal (IP)", value: "IP" },
+  { label: "Intracardiac", value: "Intracardiac" },
+];

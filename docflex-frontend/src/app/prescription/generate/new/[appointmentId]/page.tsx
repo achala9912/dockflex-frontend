@@ -6,7 +6,6 @@ import { FaPlus, FaTrash } from "react-icons/fa6";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { LiaCloudscale } from "react-icons/lia";
 import { toast } from "react-toastify";
-import Dropdown from "@/components/Dropdown/Dropdown";
 import MultiDropdown from "@/components/Dropdown/MultiDropdown";
 import FormField from "@/components/Fields/FormField";
 import InputField from "@/components/InputField/InputField";
@@ -28,6 +27,7 @@ import {
   DurationOptions,
   FrequencyOptions,
   LabTestsOptions,
+  RouteOptions,
   SymptomsOptions,
 } from "@/constants/medical.constants";
 
@@ -661,12 +661,14 @@ const GeneratePrescriptionPage = () => {
         data={rowData.map((row, index) => ({
           index: index,
           route: (
-            <Dropdown
+            <MultiDropdown
               id={`route-${index}`}
               width="min-w-[200px]"
-              options={["Oral", "IV", "IM", "Rectal"]}
+              options={RouteOptions}
               value={row.route}
-              onChange={(val) => handleInputChange(index, "route", val)}
+              onChange={(val) =>
+                handleInputChange(index, "route", val as string)
+              }
             />
           ),
           productName: (
