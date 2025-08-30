@@ -82,7 +82,7 @@ const Page = () => {
             <IoChevronBackOutline size={18} />
           </button>
         </Tooltip>
-        <h3 className="flex items-center font-semibold font-inter">
+        <h3 className="flex items-center font-semibold font-inter text-lg">
           Prescription Info
         </h3>
       </div>
@@ -109,6 +109,7 @@ const Page = () => {
               reasonForVisit={prescriptionData.reasonForVisit}
               appointmentId={prescriptionData.appointmentId.appointmentId}
               symptoms={prescriptionData.symptoms}
+              labTests={prescriptionData.labTests}
             />
 
             {prescriptionData.vitalSigns?.length > 0 && (

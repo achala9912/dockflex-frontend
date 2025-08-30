@@ -28,12 +28,13 @@ interface PrescriptionTemplateProps {
   };
   reasonForVisit: string;
   symptoms: string[];
+  labTests: string[];
   vitalSigns: {
     weight: string;
     height: string;
     bmi: string;
     pulseRate: string;
-    temp?: string;
+    temperature: string;
   }[];
   clinicalDetails: string;
   advice: string;
@@ -87,6 +88,7 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
   patientId,
   reasonForVisit,
   symptoms,
+  labTests,
   vitalSigns,
   clinicalDetails,
   advice,
@@ -94,7 +96,7 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
   medications,
   prescriberDetails,
 }) => {
-  const vital = vitalSigns[0]; // API gives array, we show first set
+  const vital = vitalSigns[0];
 
   return (
     <div className="max-w-4xl mx-auto bg-white  p-10 border border-gray-200 space-y-8">
@@ -133,7 +135,15 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
         </div>
         <div className="text-base text-gray-700">
           <span className="font-semibold text-blue-700">Prescribed At:</span>{" "}
-          {new Date(createdAt).toLocaleDateString()}
+          {(() => {
+            const date = new Date(createdAt);
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0"); 
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, "0");
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+          })()}
         </div>
       </div>
 
@@ -173,13 +183,13 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">Weight</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vital?.weight}
+                {vital?.weight}kg
               </p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
               <p className="text-xs text-gray-500">Height</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vital?.height}
+                {vital?.height}cm
               </p>
             </div>
             <div className="bg-white rounded-lg shadow-sm p-3 text-center">
@@ -188,18 +198,18 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
                 {vital?.bmi}
               </p>
             </div>
-            {vital?.temp && (
+            {vital?.temperature && (
               <div className="bg-white rounded-lg shadow-sm p-3 text-center">
-                <p className="text-xs text-gray-500">Temp</p>
+                <p className="text-xs text-gray-500">Temperature</p>
                 <p className="font-semibold text-gray-800 text-sm">
-                  {vital?.temp}
+                  {vital?.temperature}°C
                 </p>
               </div>
             )}
-            <div className="col-span-2 bg-white rounded-lg shadow-sm p-3 text-center">
+            <div className="bg-white rounded-lg shadow-sm p-3 text-center col-span-2">
               <p className="text-xs text-gray-500">Pulse Rate</p>
               <p className="font-semibold text-gray-800 text-sm">
-                {vital?.pulseRate}
+                {vital?.pulseRate}mm
               </p>
             </div>
           </div>
@@ -226,7 +236,14 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
           <SectionTitle>Clinical Details</SectionTitle>
           <p className="text-sm">{clinicalDetails}</p>
         </div>
-
+        <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+          <SectionTitle>Lab Tests</SectionTitle>
+          <p className="text-gray-700 text-sm">
+            {labTests && labTests.length > 0
+              ? labTests.join(", ")
+              : "Not specified"}
+          </p>
+        </div>
         {/* Advice */}
         <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
           <SectionTitle>Advice</SectionTitle>
