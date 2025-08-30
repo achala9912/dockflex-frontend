@@ -16,6 +16,7 @@ interface LivePrescriptionProps {
   };
   reasonForVisit: string;
   symptoms: string[];
+  labTests: string[];
   vitalSigns: Array<{
     name: string;
     value: string;
@@ -62,6 +63,7 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
   patientId,
   reasonForVisit,
   symptoms,
+  labTests,
   vitalSigns,
   clinicalDetails,
   advice,
@@ -178,7 +180,16 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
           <SectionTitle>Advice</SectionTitle>
           <p className="text-sm">{advice || "Not specified"}</p>
         </div>
-        <div className="bg-gray-50 p-5 rounded-xl shadow-sm md:col-span-2">
+        {/* Symptoms inline */}
+        <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
+          <SectionTitle>Lab Tests</SectionTitle>
+          <p className="text-gray-700 text-sm">
+            {labTests && labTests.length > 0
+              ? labTests.join(", ")
+              : "Not specified"}
+          </p>
+        </div>
+        <div className="bg-gray-50 p-5 rounded-xl shadow-sm ">
           <SectionTitle>Remarks</SectionTitle>
           <p className="text-sm">{remark || "Not specified"}</p>
         </div>

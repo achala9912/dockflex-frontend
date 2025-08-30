@@ -78,6 +78,7 @@ const GeneratePrescriptionPage = () => {
   const [height, setHeight] = useState<string>("");
   const [reasonForVisit, setReasonForVisit] = useState<string>("");
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [labTests, setLabTests] = useState<string[]>([]);
   const [temperature, setTemperature] = useState<string>("");
   const [pulseRate, setPulseRate] = useState<string>("");
   const [clinicalDetails, setClinicalDetails] = useState<string>("");
@@ -274,7 +275,6 @@ const GeneratePrescriptionPage = () => {
     { name: "Pulse Rate", value: pulseRate, unit: "mm" },
   ];
 
-  // ✅ Handle form submission
   const handleSubmit = async () => {
     if (!appointmentData || !patientData || !centerData) {
       toast.error("Missing required data.");
@@ -289,6 +289,7 @@ const GeneratePrescriptionPage = () => {
         patientId: patientData._id,
         reasonForVisit,
         symptoms,
+        labTests,
         clinicalDetails,
         advice,
         remark: remarks,
@@ -323,21 +324,23 @@ const GeneratePrescriptionPage = () => {
       console.log("🚀 Payload:", payload);
 
       const result = await createPrescription(payload);
-      console.log("🚀 API Response:", result);
+      console.log("🚀 API Response in page:", result);
 
-      if (result && result.prescriptionNo) {
-        toast.success("Prescription saved successfully!");
-  
-      } else {
-        // fallback if backend returns 204 or no prescriptionNo
-        toast.success("Prescription saved successfully!");
-        router.push("/prescription");
+      if (result?.prescriptionNo) {
+        router.push(`/prescription/${result.prescriptionNo}`);
       }
-    } catch (error) {
-      console.error("❌ Error submitting prescription:", error);
-      toast.error("An error occurred while saving prescription.");
+    } catch (error: any) {
+      if (error.errors) {
+        // backend sent validation errors
+        error.errors.forEach((e: any) => {
+          toast.error(`${e.path}: ${e.message}`);
+        });
+      } else {
+        toast.error(error.message || "Failed to save prescription");
+      }
     }
   };
+
   return (
     <div>
       {/* Header */}
@@ -513,7 +516,19 @@ const GeneratePrescriptionPage = () => {
               onChange={(e) => setClinicalDetails(e.target.value)}
             />
           </FormField>
-
+          <FormField
+            label="Lab Test (Optional):"
+            labelClassName="font-semibold !text-blue-700"
+          >
+            <MultiDropdown
+              id="labTest"
+              placeholder="Select Lab Test"
+              multiple
+              value={labTests}
+              options={["FBC", "ESR", "CRP", "Vitamin D"]}
+              onChange={(selected) => setLabTests(selected as string[])}
+            />
+          </FormField>
           <FormField
             label="Advice (Optional):"
             labelClassName="font-semibold !text-blue-700"
@@ -554,6 +569,7 @@ const GeneratePrescriptionPage = () => {
             }}
             reasonForVisit={reasonForVisit}
             symptoms={symptoms}
+            labTests={labTests}
             vitalSigns={vitalSigns}
             clinicalDetails={clinicalDetails}
             advice={advice}
