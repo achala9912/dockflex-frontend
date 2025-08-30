@@ -23,6 +23,7 @@ import { createPrescription } from "@/api/prescriptionsApi";
 import { useAuthStore } from "@/store/authStore";
 import LivePrescription from "@/components/Canvas/LivePrescription";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
+import { LabTestsOptions, SymptomsOptions } from "@/constants/medical.constants";
 
 interface RowData {
   route: string;
@@ -505,7 +506,7 @@ const GeneratePrescriptionPage = () => {
               placeholder="Select Symptoms"
               multiple
               value={symptoms}
-              options={["Nausea", "Vomiting", "Runny Nose", "Dry Cough"]}
+              options={SymptomsOptions}
               onChange={(selected) => setSymptoms(selected as string[])}
             />
           </FormField>
@@ -588,7 +589,7 @@ const GeneratePrescriptionPage = () => {
               placeholder="Select Lab Test"
               multiple
               value={labTests}
-              options={["FBC", "ESR", "CRP", "Vitamin D"]}
+              options={LabTestsOptions}
               onChange={(selected) => setLabTests(selected as string[])}
             />
           </FormField>
