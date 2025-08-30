@@ -277,6 +277,25 @@ const GeneratePrescriptionPage = () => {
     }
   };
 
+  const handleClearRow = (index: number) => {
+    setRowData((prevRows) =>
+      prevRows.map((row, i) =>
+        i === index
+          ? {
+              route: "",
+              productName: "",
+              genericName: "",
+              dose: "",
+              doseUnit: "",
+              frequency: "",
+              duration: "",
+              note: "",
+            }
+          : row
+      )
+    );
+  };
+
   const bmi = weight && height ? calculateBMI(height, weight) : "";
 
   const vitalSigns = [
@@ -682,6 +701,7 @@ const GeneratePrescriptionPage = () => {
               onSuggestionSelect={(suggestion) =>
                 handleProductSuggestionSelect(suggestion, index)
               }
+              handleClear={() => handleClearRow(index)}
             />
           ),
           genericName: (
