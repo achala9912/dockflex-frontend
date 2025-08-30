@@ -281,6 +281,44 @@ const GeneratePrescriptionPage = () => {
       return;
     }
 
+    // 🔹 Validate required fields before sending to backend
+    if (!reasonForVisit.trim()) {
+      toast.error("Reason for visit is required.");
+      return;
+    }
+
+    if (symptoms.length === 0) {
+      toast.error("Please select at least one symptom.");
+      return;
+    }
+
+    if (!weight || !height || !temperature || !pulseRate) {
+      toast.error(
+        "All vital signs (Weight, Height, Temperature, Pulse Rate) must be filled."
+      );
+      return;
+    }
+
+    if (!clinicalDetails.trim()) {
+      toast.error("Clinical details are required.");
+      return;
+    }
+
+    // Check medications (at least one complete row)
+    const hasValidMedication = rowData.some(
+      (row) =>
+        row.route &&
+        row.productName &&
+        row.genericName &&
+        row.dose &&
+        row.frequency &&
+        row.duration
+    );
+    if (!hasValidMedication) {
+      toast.error("At least one medication is required.");
+      return;
+    }
+
     try {
       const payload = {
         centerId: centerData._id,
@@ -293,15 +331,13 @@ const GeneratePrescriptionPage = () => {
         clinicalDetails,
         advice,
         remark: remarks,
-        vitalSigns: [
-          {
-            weight,
-            height,
-            bmi,
-            temperature,
-            pulseRate,
-          },
-        ],
+        vitalSigns: {
+          weight,
+          height,
+          bmi,
+          temperature,
+          pulseRate,
+        },
         medications: rowData.map((row) => ({
           route: row.route,
           productName: row.productName,
@@ -324,14 +360,42 @@ const GeneratePrescriptionPage = () => {
       console.log("🚀 Payload:", payload);
 
       const result = await createPrescription(payload);
-      console.log("🚀 API Response in page:", result);
+      console.log("🚀 Full API Response:", result);
+      console.log("🚀 Response type:", typeof result);
+      console.log(
+        "🚀 Response keys:",
+        result ? Object.keys(result) : "No keys"
+      );
 
-      if (result?.prescriptionNo) {
+      // Check different possible response structures
+      if (result?.data?.prescriptionNo) {
+        console.log("✅ Found prescriptionNo in result.data");
+        router.push(`/prescription/${result.data.prescriptionNo}`);
+      } else if (result?.prescriptionNo) {
+        console.log("✅ Found prescriptionNo in result");
         router.push(`/prescription/${result.prescriptionNo}`);
+      } else if (result?._id) {
+        console.log("✅ Using _id as prescriptionNo");
+        router.push(`/prescription/${result._id}`);
+      } else {
+        console.error("❌ No prescriptionNo found in response");
+        console.error(
+          "Available fields:",
+          result ? Object.keys(result) : "None"
+        );
+        toast.success("Prescription created successfully!");
+        // You might want to navigate to a different page or stay on current page
       }
     } catch (error: any) {
-      if (error.errors) {
-        // backend sent validation errors
+      console.error("❌ Error in handleSubmit:", error);
+
+      if (error.response?.data?.errors) {
+        // Backend validation errors
+        error.response.data.errors.forEach((e: any) => {
+          toast.error(`${e.path}: ${e.message}`);
+        });
+      } else if (error.errors) {
+        // Direct error format
         error.errors.forEach((e: any) => {
           toast.error(`${e.path}: ${e.message}`);
         });
@@ -340,7 +404,6 @@ const GeneratePrescriptionPage = () => {
       }
     }
   };
-
   return (
     <div>
       {/* Header */}
