@@ -697,7 +697,7 @@ const GeneratePrescriptionPage = () => {
                 id={`dose-${index}`}
                 width="max-w-[120px]"
                 className="text-center"
-                type="text"
+                type="number"
                 value={row.dose}
                 onChange={(e) =>
                   handleInputChange(index, "dose", e.target.value)
