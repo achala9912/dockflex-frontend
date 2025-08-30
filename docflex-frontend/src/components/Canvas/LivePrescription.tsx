@@ -28,6 +28,7 @@ interface LivePrescriptionProps {
   medications: {
     productName: string;
     dose: string;
+    doseUnit: string;
     frequency: string;
     duration: string;
     note?: string;
@@ -180,7 +181,7 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
           <SectionTitle>Advice</SectionTitle>
           <p className="text-sm">{advice || "Not specified"}</p>
         </div>
- 
+
         <div className="bg-gray-50 p-5 rounded-xl shadow-sm">
           <SectionTitle>Lab Tests</SectionTitle>
           <p className="text-gray-700 text-sm">
@@ -226,15 +227,16 @@ const LivePrescription: React.FC<LivePrescriptionProps> = ({
                   </p>
                   <p className="text-sm text-gray-700">
                     <span className="font-semibold">Dose: </span>
-                    {med.dose || "N/A"}
+                    {med.dose ? med.dose + " " + med.doseUnit : "N/A"}
                   </p>
+
                   <p className="text-sm text-gray-700">
                     <span className="font-semibold">Frequency: </span>
                     {med.frequency || "N/A"}
                   </p>
                   <p className="text-sm text-gray-700">
                     <span className="font-semibold">Duration: </span>
-                    {med.duration ? `For ${med.duration}` : "N/A"}
+                    {med.duration ? `For ${med.duration}` : ""}
                   </p>
                 </div>
 

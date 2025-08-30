@@ -23,13 +23,20 @@ import { createPrescription } from "@/api/prescriptionsApi";
 import { useAuthStore } from "@/store/authStore";
 import LivePrescription from "@/components/Canvas/LivePrescription";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
-import { LabTestsOptions, SymptomsOptions } from "@/constants/medical.constants";
+import {
+  DoseUnitOptions,
+  DurationOptions,
+  FrequencyOptions,
+  LabTestsOptions,
+  SymptomsOptions,
+} from "@/constants/medical.constants";
 
 interface RowData {
   route: string;
   productName: string;
   genericName: string;
   dose: string;
+  doseUnit: string;
   frequency: string;
   duration: string;
   note: string;
@@ -102,6 +109,7 @@ const GeneratePrescriptionPage = () => {
       productName: "",
       genericName: "",
       dose: "",
+      doseUnit: "",
       frequency: "",
       duration: "",
       note: "",
@@ -168,6 +176,7 @@ const GeneratePrescriptionPage = () => {
       "productName",
       "genericName",
       "dose",
+      "doseUnit",
       "frequency",
       "duration",
     ];
@@ -189,6 +198,7 @@ const GeneratePrescriptionPage = () => {
       productName: "",
       genericName: "",
       dose: "",
+      doseUnit: "",
       frequency: "",
       duration: "",
       note: "",
@@ -212,6 +222,7 @@ const GeneratePrescriptionPage = () => {
               productName: "",
               genericName: "",
               dose: "",
+              doseUnit: "",
               frequency: "",
               duration: "",
               note: "",
@@ -312,6 +323,7 @@ const GeneratePrescriptionPage = () => {
         row.productName &&
         row.genericName &&
         row.dose &&
+        row.doseUnit &&
         row.frequency &&
         row.duration
     );
@@ -344,6 +356,7 @@ const GeneratePrescriptionPage = () => {
           productName: row.productName,
           genericName: row.genericName,
           dose: row.dose,
+          doseUnit: row.doseUnit,
           frequency: row.frequency,
           duration: row.duration,
           note: row.note,
@@ -646,7 +659,7 @@ const GeneratePrescriptionPage = () => {
         className="min-h-400 mt-6"
         columns={TreatmentMgmtColoums}
         data={rowData.map((row, index) => ({
-          index: index, // Add index to the data object
+          index: index,
           route: (
             <Dropdown
               id={`route-${index}`}
@@ -673,39 +686,56 @@ const GeneratePrescriptionPage = () => {
             <InputField
               id={`genericName-${index}`}
               width="max-w-[280px]"
-              className="text-center"
               type="text"
               value={row.genericName}
               readOnly
             />
           ),
           dose: (
-            <InputField
-              id={`dose-${index}`}
-              width="max-w-[120px]"
-              className="text-center"
-              type="text"
-              value={row.dose}
-              onChange={(e) => handleInputChange(index, "dose", e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, index)}
-            />
+            <div className="flex flex-row gap-2 items-center">
+              <InputField
+                id={`dose-${index}`}
+                width="max-w-[120px]"
+                className="text-center"
+                type="text"
+                value={row.dose}
+                onChange={(e) =>
+                  handleInputChange(index, "dose", e.target.value)
+                }
+                onKeyDown={(e) => handleKeyDown(e, index)}
+              />
+              <MultiDropdown
+                id={`doseUnit-${index}`}
+                width="min-w-[140px]"
+                options={DoseUnitOptions}
+                placeholder="Unit"
+                value={row.doseUnit}
+                onChange={(val) =>
+                  handleInputChange(index, "doseUnit", val as string)
+                }
+              />
+            </div>
           ),
           frequency: (
-            <Dropdown
+            <MultiDropdown
               id={`frequency-${index}`}
               width="min-w-[200px]"
-              options={["Once Daily", "Twice Daily", "Thrice Daily"]}
+              options={FrequencyOptions}
               value={row.frequency}
-              onChange={(val) => handleInputChange(index, "frequency", val)}
+              onChange={(val) =>
+                handleInputChange(index, "frequency", val as string)
+              }
             />
           ),
           duration: (
-            <Dropdown
+            <MultiDropdown
               id={`duration-${index}`}
               width="min-w-[200px]"
-              options={["3 Days", "5 Days", "7 Days", "10 Days"]}
+              options={DurationOptions}
               value={row.duration}
-              onChange={(val) => handleInputChange(index, "duration", val)}
+              onChange={(val) =>
+                handleInputChange(index, "duration", val as string)
+              }
             />
           ),
           note: (

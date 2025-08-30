@@ -6,6 +6,7 @@ interface Medication {
   route?: string;
   dose?: string;
   frequency?: string;
+  doseUnit: string;
   duration?: string;
   note?: string;
 }
@@ -16,7 +17,7 @@ interface MedicationsProps {
 
 const Medications: React.FC<MedicationsProps> = ({ medications }) => {
   if (!medications || medications.length === 0) {
-    return null; 
+    return null;
   }
 
   return (
@@ -63,7 +64,7 @@ const Medications: React.FC<MedicationsProps> = ({ medications }) => {
               {med.dose && (
                 <div className="bg-white p-3 rounded-lg shadow-sm">
                   <p className="text-xs text-gray-500">Dosage</p>
-                  <p className="font-medium">{med.dose}</p>
+                  {med.dose ? med.dose + " " + med.doseUnit : ""}
                 </div>
               )}
               {med.frequency && (

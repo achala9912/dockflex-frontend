@@ -43,6 +43,7 @@ interface PrescriptionTemplateProps {
     productName: string;
     dose: string;
     frequency: string;
+    doseUnit: string;
     duration: string;
     note?: string;
     route: string;
@@ -138,7 +139,7 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
           {(() => {
             const date = new Date(createdAt);
             const day = String(date.getDate()).padStart(2, "0");
-            const month = String(date.getMonth() + 1).padStart(2, "0"); 
+            const month = String(date.getMonth() + 1).padStart(2, "0");
             const year = date.getFullYear();
             const hours = String(date.getHours()).padStart(2, "0");
             const minutes = String(date.getMinutes()).padStart(2, "0");
@@ -283,7 +284,7 @@ const PrescriptionTemplate: React.FC<PrescriptionTemplateProps> = ({
               </p>
               <p className="text-base text-gray-700 mb-1">
                 <span className="font-semibold">Dose: </span>
-                {med.dose}
+                {med.dose ? med.dose + " " + med.doseUnit : "N/A"}
               </p>
               <p className="text-base text-gray-700 mb-1">
                 <span className="font-semibold">Frequency: </span>
