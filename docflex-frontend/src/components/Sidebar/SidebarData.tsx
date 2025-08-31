@@ -74,6 +74,6 @@ export const sidebarItems: SidebarItem[] = [
   {
     title: "Ask Me",
     icon: RiChatVoiceAiFill,
-    path: "/askme",
+    path: "/ask-me",
   },
 ];
