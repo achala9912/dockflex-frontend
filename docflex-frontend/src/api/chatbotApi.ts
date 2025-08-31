@@ -22,12 +22,12 @@ interface ChatResponse {
 
 export async function sendChatMessage(question: any): Promise<ChatResponse> {
   try {
-    const response = await axiosAuth.post("/chatbot/chat", question);
+    // 👇 Tell Axios to expect ChatResponse directly
+    const payload: ChatResponse = await axiosAuth.post(
+      "/chatbot/chat",
+      question
+    );
 
-    // ✅ In your case, response IS the payload (not response.data)
-    console.log("Raw response object:", response);
-
-    const payload = response; // instead of response.data
     console.log("Normalized payload:", payload);
 
     if (payload && payload.answer) {
