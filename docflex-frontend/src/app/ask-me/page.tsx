@@ -2,7 +2,7 @@
 
 import React, { useState, FormEvent, useEffect, useRef } from "react";
 import { IoSend } from "react-icons/io5";
-import { FaTrash, FaRobot, FaUser } from "react-icons/fa";
+import { FaRobot, FaUser } from "react-icons/fa";
 import {
   getChatHistory,
   sendChatMessage,
@@ -10,7 +10,10 @@ import {
 } from "@/api/chatbotApi";
 import { toast } from "react-toastify";
 import ConfirmationPopup from "@/components/Popups/ConfirmationPopup";
-
+import { RiChatVoiceAiFill } from "react-icons/ri";
+import RoundButton from "@/components/Buttons/RoundButton";
+import { MdOutlineAutoDelete } from "react-icons/md";
+import { Tooltip } from "@/components/ui/tooltip";
 interface ChatHistoryMessage {
   role: "user" | "assistant";
   content: string;
@@ -112,20 +115,20 @@ export default function ChatPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-500 to-blue_sp p-4 text-white flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <FaRobot className="text-2xl" />
+          <RiChatVoiceAiFill className="text-2xl" />
           <div>
             <h2 className="text-xl font-bold">Ask Me Chatbot</h2>
             <p className="text-sm opacity-90">Your Medical Assistant</p>
           </div>
         </div>
-        <button
-          onClick={() => setIsPopupOpen(true)}
-          className="flex items-center space-x-1 bg-white hover:text-red-700 text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
-          title="Clear conversation"
-        >
-          <FaTrash className="text-sm" />
-          <span>Clear Chat</span>
-        </button>
+
+        <Tooltip content="Clear chat" side="top">
+          <RoundButton
+            icon={MdOutlineAutoDelete}
+            className="hover:bg-blue-100 bg-white text-red-500 hover:text-gray-800"
+            onClick={() => setIsPopupOpen(true)}
+          />
+        </Tooltip>
       </div>
 
       {/* Messages */}
