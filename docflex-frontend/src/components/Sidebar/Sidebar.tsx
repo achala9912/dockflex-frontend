@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { AiFillCaretDown } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
 import { sidebarItems } from "./SidebarData";
+import { useAuthStore } from "@/store/authStore";
 
 interface SubItem {
   title: string;
@@ -36,25 +37,25 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const pathname = usePathname();
   const lastScrollY = useRef(0);
 
+  const userPermissions = useAuthStore(
+    (state) => state.user?.role?.permissions || []
+  );
+
   // Set active tab based on current pathname
   useEffect(() => {
-    // Check sub items first
     for (const item of sidebarItems) {
       if (item.subItems) {
-        const activeSubItem = item.subItems.find(subItem => subItem.path === pathname);
+        const activeSubItem = item.subItems.find(
+          (subItem) => subItem.path === pathname
+        );
         if (activeSubItem) {
           setActiveTab(activeSubItem.title);
-          // Don't open the parent dropdown automatically
           return;
         }
       }
     }
-
-    // Check main items
-    const activeMainItem = sidebarItems.find(item => item.path === pathname);
-    if (activeMainItem) {
-      setActiveTab(activeMainItem.title);
-    }
+    const activeMainItem = sidebarItems.find((item) => item.path === pathname);
+    if (activeMainItem) setActiveTab(activeMainItem.title);
   }, [pathname]);
 
   const controlSidebarVisibility = () => {
@@ -74,113 +75,104 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
 
   const handleSubItemClick = (subItemTitle: string) => {
     setActiveTab(subItemTitle);
-    if (window.innerWidth < 1024) {
-      setIsCollapsed(true);
-    }
+    if (window.innerWidth < 1024) setIsCollapsed(true);
   };
 
   const toggleSidebarCollapse = () => {
     const newCollapsedState = !isCollapsed;
     setIsCollapsed(newCollapsedState);
-    if (window.innerWidth > 1024) {
-      onCollapseChange(newCollapsedState);
-    }
+    if (window.innerWidth > 1024) onCollapseChange(newCollapsedState);
   };
 
   useEffect(() => {
     window.addEventListener("scroll", controlSidebarVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlSidebarVisibility);
-    };
+    return () => window.removeEventListener("scroll", controlSidebarVisibility);
   }, []);
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setIsCollapsed(true);
-      } else {
-        setIsCollapsed(false);
-      }
+      setIsCollapsed(window.innerWidth < 1024);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const sidebarContainerClasses = `m-2 rounded-2xl fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
     isSidebarVisible ? "translate-x-0" : "-translate-x-full"
   } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
-  // Check if a tab or sub-tab is active
-  const isItemActive = (item: SidebarItem | SubItem) => {
-    return activeTab === item.title;
+  const isItemActive = (item: SidebarItem | SubItem) => activeTab === item.title;
+
+  // Check if a parent dropdown should be visible
+  const hasVisibleSubItems = (item: SidebarItem) =>
+    !item.subItems ||
+    item.subItems.some(
+      (subItem) =>
+        !subItem.permission || userPermissions.includes(subItem.permission)
+    );
+
+  const renderSidebarItem = (item: SidebarItem) => {
+    if ((item.permission && !userPermissions.includes(item.permission)) || !hasVisibleSubItems(item)) return null;
+
+    return (
+      <li
+        key={item.title}
+        onMouseEnter={() =>
+          isCollapsed && item.dropdown && setHoveredItem(item.title)
+        }
+        onMouseLeave={() => isCollapsed && setHoveredItem(null)}
+      >
+        {item.dropdown ? (
+          <div>
+            <button
+              className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${
+                isItemActive(item)
+                  ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                  : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+              onClick={() => toggleDropdown(item.title)}
+            >
+              {item.icon && <item.icon className="text-lg" />}
+              {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
+              {!isCollapsed && (
+                <AiFillCaretDown
+                  className={`ml-auto transition-transform ${
+                    openDropdown === item.title ? "rotate-180" : ""
+                  }`}
+                />
+              )}
+            </button>
+
+            {hoveredItem === item.title && isCollapsed && renderHoverMenu(item)}
+            {openDropdown === item.title && !isCollapsed && renderSubMenu(item)}
+          </div>
+        ) : (
+          item.path && (
+            <Link
+              href={item.path}
+              className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${
+                isItemActive(item)
+                  ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                  : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+              onClick={() => handleTabClick(item.title)}
+            >
+              {item.icon && <item.icon className="text-lg" />}
+              {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
+            </Link>
+          )
+        )}
+      </li>
+    );
   };
 
-  //parent menu
-  const renderSidebarItem = (item: SidebarItem) => (
-    <li
-      key={item.title}
-      onMouseEnter={() =>
-        isCollapsed && item.dropdown && setHoveredItem(item.title)
-      }
-      onMouseLeave={() => isCollapsed && setHoveredItem(null)}
-    >
-      {item.dropdown ? (
-        <div>
-          <button
-            className={`flex items-center w-full py-3 px-4 text-center transition-colors duration-300 ease-in-out ${
-              // Only highlight parent if it's directly active (not when sub-item is active)
-              isItemActive(item)
-                ? 'bg-gradient-to-r from-blue_dark to-blue_dark_2'
-                : 'hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2'
-            } focus:outline-none ${
-              isCollapsed ? "justify-center" : "justify-start"
-            }`}
-            onClick={() => toggleDropdown(item.title)}
-          >
-            {item.icon && <item.icon className="text-lg" />}
-            {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
-            {!isCollapsed && (
-              <AiFillCaretDown
-                className={`ml-auto transition-transform ${
-                  openDropdown === item.title ? "rotate-180" : ""
-                }`}
-              />
-            )}
-          </button>
-
-          {hoveredItem === item.title && isCollapsed && renderHoverMenu(item)}
-          {openDropdown === item.title && !isCollapsed && renderSubMenu(item)}
-        </div>
-      ) : (
-        item.path && (
-          <Link
-            href={item.path}
-            className={`flex items-center w-full py-3 px-4 transition-colors duration-300 ${
-              isItemActive(item)
-                ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
-                : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-            } focus:outline-none ${
-              isCollapsed ? "justify-center" : "justify-start"
-            }`}
-            onClick={() => handleTabClick(item.title)}
-          >
-            {item.icon && <item.icon className="text-lg" />}
-            {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
-          </Link>
-        )
-      )}
-    </li>
-  );
-
-  //submenu
   const renderSubMenu = (item: SidebarItem) => (
     <ul className="overflow-hidden transition-all duration-500 text-md">
       {item.subItems?.map(
         (subItem) =>
-          subItem.path && (
+          subItem.path &&
+          (!subItem.permission || userPermissions.includes(subItem.permission)) && (
             <li key={subItem.title}>
               <Link
                 href={subItem.path}
@@ -199,14 +191,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     </ul>
   );
 
-  //collapse mode hover menu
   const renderHoverMenu = (item: SidebarItem) => (
     <div className="fixed left-[80px] z-50 w-48 p-1">
       <div className="relative bottom-12 w-48 p-1 bg-blue-900 rounded-md shadow-lg text-md">
         <ul>
           {item.subItems?.map(
             (subItem) =>
-              subItem.path && (
+              subItem.path &&
+              (!subItem.permission || userPermissions.includes(subItem.permission)) && (
                 <li key={subItem.title}>
                   <Link
                     href={subItem.path}
@@ -243,7 +235,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
             width={100}
             height={20}
             priority
-            className=""
           />
         </div>
       ) : (
