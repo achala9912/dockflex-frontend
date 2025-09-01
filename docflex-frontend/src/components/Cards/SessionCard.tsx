@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  Pencil,
-  Trash2,
-  CheckCircle,
-  CircleOff,
-  Activity,
-} from "lucide-react";
+import { Pencil, Trash2, CheckCircle, CircleOff, Activity } from "lucide-react";
 import React from "react";
 import { Tooltip } from "../ui/tooltip";
+import { toast } from "react-toastify";
 
 interface SessionCardProps {
   sessionId: string;
@@ -52,7 +47,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
         </div>
 
         <div className="mt-2 flex justify-center">
-          <Activity  strokeWidth={1} size={56} className="text-gray-600" />
+          <Activity strokeWidth={1} size={56} className="text-gray-600" />
         </div>
         <h2 className="text-blue-600 text-md font-semibold mt-2 text-center font-inter">
           {sessionName}
@@ -80,9 +75,70 @@ const SessionCard: React.FC<SessionCardProps> = ({
           content={isActive ? "Deactivate Session" : "Activate Session"}
           side="bottom"
         >
-          <button
+          {/* <button
             className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
             onClick={handleActive}
+          >
+            {isActive ? (
+              <CircleOff size={18} className="text-orange-600" />
+            ) : (
+              <CheckCircle size={18} className="text-green-500" />
+            )}
+          </button> */}
+
+          <button
+            className="bg-white p-2 rounded-full shadow-md hover:bg-gray-200"
+            onClick={() => {
+              const now = new Date();
+
+              // Extract hours & minutes only
+              const [startHour, startMinute] = new Date(startTime)
+                .toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })
+                .split(":")
+                .map(Number);
+
+              const [endHour, endMinute] = new Date(endTime)
+                .toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                })
+                .split(":")
+                .map(Number);
+
+              // Build today's start and end times
+              const todayStart = new Date(now);
+              todayStart.setHours(startHour, startMinute, 0, 0);
+
+              const todayEnd = new Date(now);
+              todayEnd.setHours(endHour, endMinute, 0, 0);
+
+              // Allow activation 15 minutes before start
+              const allowedStart = new Date(
+                todayStart.getTime() - 15 * 60 * 1000
+              );
+
+              if (now >= allowedStart && now <= todayEnd) {
+                handleActive();
+              } else {
+                toast.error(
+                  `You can only activate this session between ${allowedStart.toLocaleTimeString(
+                    [],
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }
+                  )} and ${todayEnd.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}.`
+                );
+              }
+            }}
           >
             {isActive ? (
               <CircleOff size={18} className="text-orange-600" />
