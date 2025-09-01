@@ -59,15 +59,18 @@ const AppointmentForm: React.FC = () => {
   const patientId = watch("patientId");
   const email = watch("email");
   const remarks = watch("remarks");
-  const date =
-    watch("date") ||
-    (() => {
+
+  useEffect(() => {
+    if (!watch("date")) {
       const today = new Date();
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, "0");
       const dd = String(today.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    })();
+      setValue("date", `${yyyy}-${mm}-${dd}`);
+    }
+  }, [watch, setValue]);
+
+  const date = watch("date");
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [sessionOptions, setSessionOptions] = useState<Suggestion[]>([]);
@@ -78,7 +81,6 @@ const AppointmentForm: React.FC = () => {
 
   const [isNewPatientPopupOpen, setIsNewPatientPopupOpen] = useState(false);
 
-  /** Fetch patients by contact */
   const fetchPatientSuggestions = useCallback(
     async (value: string) => {
       if (!value.trim() || !centerId) {
@@ -98,8 +100,7 @@ const AppointmentForm: React.FC = () => {
     [centerId]
   );
 
-  /** Fetch sessions only when center changes */
-  useEffect(() => {
+  /** Fetch sessions only when center changes */ useEffect(() => {
     if (!centerId || lastCenterId.current === centerId) return;
 
     lastCenterId.current = centerId;
@@ -133,7 +134,6 @@ const AppointmentForm: React.FC = () => {
     setPatients([]);
   }, [centerId, setValue]);
 
-  /** Handle input changes for regular fields */
   const handleInputChange = useCallback(
     (field: keyof AppointmentFormData, value: string) => {
       setValue(field, value);
@@ -142,7 +142,6 @@ const AppointmentForm: React.FC = () => {
     [setValue, clearErrors]
   );
 
-  /** Debounced patient search */
   const handleContactChange = useCallback(
     (value: string) => {
       setValue("contactNo", value);
@@ -179,7 +178,6 @@ const AppointmentForm: React.FC = () => {
     [patients, setValue, clearErrors]
   );
 
-  /** Session dropdown change */
   const handleSessionChange = useCallback(
     (value: string | string[]) => {
       handleInputChange("sessionId", Array.isArray(value) ? value[0] : value);
@@ -187,7 +185,6 @@ const AppointmentForm: React.FC = () => {
     [handleInputChange]
   );
 
-  /** Memoized patient suggestions */
   const patientSuggestions = useMemo(
     () =>
       patients.map((p) => ({
