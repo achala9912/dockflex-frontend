@@ -36,8 +36,10 @@ export default function Page() {
         currentPage,
         itemsPerPage,
         debouncedSearchTerm,
-        centerId
+        centerId,
+        true
       );
+      console.log("Visited Patient", res);
       setAppointments(res.data || []);
       setTotalPages(res.totalPages || 1);
       setTotalItems(res.total || 0);
@@ -103,30 +105,49 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
-        {appointments.map((app) => (
-          <PresCard
-            key={app.appointmentId}
-            appointmentId={app.appointmentId}
-            patientName={app.patientId.patientName}
-            title={app.patientId.title}
-            tokenNo={app.tokenNo}
-            age={app.patientId.age}
-            gender={app.patientId.gender}
-          />
-        ))}
-      </div>
+      <>
+        <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
+          {appointments.length > 0 ? (
+            appointments.map((app) => (
+              // <PresCard
+              //   key={app.appointmentId}
+              //   appointmentId={app.appointmentId}
+              //   patientName={app.patientId.patientName}
+              //   title={app.patientId.title}
+              //   tokenNo={app.tokenNo}
+              //   age={app.patientId.age}
+              //   gender={app.patientId.gender}
+              // />
+              <PresCard
+                key={app.appointmentId}
+                appointmentId={app.appointmentId}
+                patientName={app.patient.patientName}
+                title={app.patient.title}
+                tokenNo={app.tokenNo}
+                age={app.patient.age}
+                gender={app.patient.gender}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">
+              Patients have not yet checked in.
+            </p>
+          )}
+        </div>
 
-      {/* Pagination */}
-      <div className="mt-6">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          limit={itemsPerPage}
-          onPageChange={(newPage) => setCurrentPage(newPage)}
-        />
-      </div>
+        {/* Pagination */}
+        {appointments.length > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              limit={itemsPerPage}
+              onPageChange={(newPage) => setCurrentPage(newPage)}
+            />
+          </div>
+        )}
+      </>
     </>
   );
 }
