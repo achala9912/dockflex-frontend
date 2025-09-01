@@ -87,3 +87,23 @@ export async function getChatById(
     throw err;
   }
 }
+
+export async function deleteChatById(chatId: string): Promise<any> {
+  try {
+    const response = await axiosAuth.delete(`/chatbot/chats/${chatId}`);
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch delte chat:", err);
+    throw err;
+  }
+}
+
+export async function deleteAllChats(): Promise<any> {
+  try {
+    const { data } = await axiosAuth.delete(`/chatbot/chats`);
+    return data;
+  } catch (err) {
+    console.error("Failed to delete all chats:", err);
+    throw err;
+  }
+}

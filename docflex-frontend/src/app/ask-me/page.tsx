@@ -2,7 +2,14 @@
 
 import React, { useState, FormEvent, useEffect, useRef } from "react";
 import { IoSend } from "react-icons/io5";
-import { getChatHistory, sendChatMessage } from "@/api/chatbotApi";
+import { FaTrash, FaRobot, FaUser } from "react-icons/fa";
+import {
+  getChatHistory,
+  sendChatMessage,
+  deleteAllChats,
+} from "@/api/chatbotApi";
+import { toast } from "react-toastify";
+import ConfirmationPopup from "@/components/Popups/ConfirmationPopup";
 
 interface ChatHistoryMessage {
   role: "user" | "assistant";
@@ -16,8 +23,8 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const formatTimestamp = (timestamp) => {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleString("en-GB", {
       hour: "2-digit",
@@ -87,50 +94,47 @@ export default function ChatPage() {
     }
   };
 
-  const handleNewChat = () => {
-    setMessages([]);
-    console.log("Starting a new chat.");
-  };
-
-  const handleLoadHistory = async () => {
-    setIsLoading(true);
+  const handleClearChat = async () => {
     try {
-      const history = await getChatHistory();
-      console.log("History button API response:", history);
-      setMessages(history);
+      await deleteAllChats();
+      toast.success("Chat cleared successfully!");
+      setMessages([]);
     } catch (error) {
-      console.error("Failed to load history:", error);
+      console.error("Failed to clear chat:", error);
+      toast.error("Failed to clear chat. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsPopupOpen(false);
     }
   };
 
   return (
-    <div className="flex flex-col  ">
-      {/* Buttons */}
-      <div className="flex justify-center p-4">
-        <div className="inline-flex rounded-full bg-gray-300 p-1">
-          <button
-            onClick={handleNewChat}
-            className="px-4 py-2 text-sm rounded-full bg-white text-black shadow"
-          >
-            New Chat
-          </button>
-          <button
-            onClick={handleLoadHistory}
-            className="px-4 py-2 text-sm rounded-full text-gray-700"
-          >
-            History
-          </button>
+    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <FaRobot className="text-2xl" />
+          <div>
+            <h2 className="text-xl font-bold">Ask Me Chatbot</h2>
+            <p className="text-sm opacity-90">Your Medical Assistant</p>
+          </div>
         </div>
+        <button
+          onClick={() => setIsPopupOpen(true)} 
+          className="flex items-center space-x-1 bg-white text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
+          title="Clear conversation"
+        >
+          <FaTrash className="text-sm" />
+          <span>Clear Chat</span>
+        </button>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.length === 0 && !isLoading ? (
           <div className="flex justify-center items-center h-full">
-            <div className="text-gray-500 text-center">
-              <p className="text-lg font-medium">Start a conversation</p>
+            <div className="text-center text-gray-500 p-6 bg-white rounded-lg shadow-sm max-w-md">
+              <FaRobot className="text-4xl mx-auto mb-3 text-blue-400" />
+              <p className="text-lg font-medium mb-1">Start a conversation</p>
               <p className="text-sm">
                 Ask me anything about medications or health
               </p>
@@ -145,29 +149,41 @@ export default function ChatPage() {
               }`}
             >
               <div
-                className={`max-w-[75%] p-3 rounded-lg text-sm whitespace-pre-line  ${
+                className={`flex max-w-[85%] p-3 rounded-2xl text-sm whitespace-pre-line ${
                   msg.role === "user"
-                    ? "bg-blue-100 text-gray-800"
-                    : "bg-gray-200 text-gray-800"
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-800 shadow-sm border border-gray-100"
                 }`}
               >
-                <p>{msg.content}</p>
-                <p className="text-xs text-gray-500 mt-1 text-right">
-                  {formatTimestamp(msg.timestamp)}
-                </p>
-                {msg.role === "assistant" && (
-                  <p className="text-[11px] text-gray-400 italic mt-1 text-right">
-                    Based on BNF
-                  </p>
-                )}
+                <div className="mr-2 mt-1">
+                  {msg.role === "user" ? (
+                    <FaUser className="text-white opacity-80" />
+                  ) : (
+                    <FaRobot className="text-blue-500" />
+                  )}
+                </div>
+                <div>
+                  <p className="leading-relaxed">{msg.content}</p>
+                  <div className="mt-2 flex justify-between items-center">
+                    <p className="text-xs opacity-70">
+                      {formatTimestamp(msg.timestamp)}
+                    </p>
+                    {msg.role === "assistant" && (
+                      <p className="text-[11px] opacity-70 italic ml-2">
+                        Based on BNF
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))
         )}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="p-3 rounded-lg bg-gray-200 text-gray-800">
-              <div className="flex space-x-2">
+            <div className="flex items-center p-3 rounded-2xl bg-white text-gray-800 shadow-sm border border-gray-100">
+              <FaRobot className="text-blue-500 mr-2" />
+              <div className="flex space-x-1">
                 <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
                 <div
                   className="w-2 h-2 rounded-full bg-gray-400 animate-bounce"
@@ -185,17 +201,17 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="p-3 border-t bg-gray-50">
+      <div className="p-4 border-t bg-white">
         <form onSubmit={handleSend}>
-          <div className="flex items-center bg-white border rounded-full px-4">
+          <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
             <input
               type="text"
-              placeholder="Ask Anything............"
-              className="flex-1 py-2 px-2 text-sm outline-none"
+              placeholder="Ask anything about medications or health..."
+              className="flex-1 py-2 px-2 text-sm outline-none bg-transparent"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSend(e);
                 }
@@ -204,14 +220,30 @@ export default function ChatPage() {
             />
             <button
               type="submit"
-              className="p-2 text-blue-600 hover:text-blue-800 disabled:text-gray-400"
+              className={`p-2 rounded-full ${
+                isLoading || !input.trim()
+                  ? "text-gray-400"
+                  : "text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+              } transition-colors`}
               disabled={isLoading || !input.trim()}
             >
               <IoSend size={20} />
             </button>
           </div>
         </form>
+        <p className="text-xs text-center text-gray-500 mt-2">
+          Press Enter to send. Shift+Enter for a new line.
+        </p>
       </div>
+
+      {isPopupOpen && (
+        <ConfirmationPopup
+          element="clear the chat"
+          handleYes={handleClearChat}
+          handleNo={() => setIsPopupOpen(false)}
+          isOpen={isPopupOpen}
+        />
+      )}
     </div>
   );
 }
