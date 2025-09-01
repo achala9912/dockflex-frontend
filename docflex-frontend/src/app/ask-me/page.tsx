@@ -106,7 +106,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col  ">
       {/* Buttons */}
       <div className="flex justify-center p-4">
         <div className="inline-flex rounded-full bg-gray-300 p-1">
