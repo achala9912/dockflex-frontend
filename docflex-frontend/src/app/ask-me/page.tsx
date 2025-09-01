@@ -17,6 +17,17 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -134,13 +145,21 @@ export default function ChatPage() {
               }`}
             >
               <div
-                className={`max-w-[75%] p-3 rounded-lg text-sm whitespace-pre-line ${
+                className={`max-w-[75%] p-3 rounded-lg text-sm whitespace-pre-line  ${
                   msg.role === "user"
                     ? "bg-blue-100 text-gray-800"
                     : "bg-gray-200 text-gray-800"
                 }`}
               >
-                {msg.content}
+                <p>{msg.content}</p>
+                <p className="text-xs text-gray-500 mt-1 text-right">
+                  {formatTimestamp(msg.timestamp)}
+                </p>
+                {msg.role === "assistant" && (
+                  <p className="text-[11px] text-gray-400 italic mt-1 text-right">
+                    Based on BNF
+                  </p>
+                )}
               </div>
             </div>
           ))
