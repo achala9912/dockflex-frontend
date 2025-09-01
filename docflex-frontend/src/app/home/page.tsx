@@ -88,21 +88,21 @@ function Home() {
           <OverviewCard
             title="Total Medicines"
             subtitle="Registered"
-            value={"234"}
+            value={"5"}
             className="h-full bg-white border-l-8 border-blue-500"
             icon={<Pill className="w-8 h-8 text-blue-500" />}
           />
           <OverviewCard
             title="Patients in Waiting"
             subtitle="Today"
-            value={"32"}
+            value={"0"}
             className="h-full bg-white border-l-8 border-yellow-500"
             icon={<Users className="w-8 h-8 text-yellow-500" />}
           />
           <OverviewCard
-            title="Total Income (Rs)"
+            title="Total Prescritions"
             subtitle="Today"
-            value={"11,280.00"}
+            value={"0"}
             className="h-full bg-white border-l-8 border-green-500"
             icon={<HandCoins className="w-8 h-8 text-green-500" />}
           />
