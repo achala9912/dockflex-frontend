@@ -29,7 +29,7 @@ export default function ClientLayout({
 
   return (
     <div className="flex w-full justify-center bg-blue-50">
-      <div className="flex h-screen max-w-[2000px] w-full">
+      <div className="flex h-screen max-w-[3840px] w-full">
         {showLayout && <Sidebar onCollapseChange={setIsCollapsed} />}
         <div className="flex flex-col items-end flex-1 w-full min-w-0">
           {showLayout && <TopNavbar isCollapsed={isCollapsed} />}
