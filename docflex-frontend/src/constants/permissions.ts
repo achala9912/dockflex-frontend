@@ -50,4 +50,10 @@ export const DEFAULT_ROLES = [
   },
 ];
 
+export const isPermitted = (
+  userPermissions: string[],
+  requiredPermission?: string
+) => !requiredPermission || userPermissions.includes(requiredPermission);
+
+
 export default PERMISSIONS;
