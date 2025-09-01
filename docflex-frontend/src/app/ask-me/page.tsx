@@ -108,9 +108,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="flex flex-col h-screen max-w-7xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white flex justify-between items-center">
+      <div className="bg-gradient-to-r from-blue-500 to-blue_sp p-4 text-white flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <FaRobot className="text-2xl" />
           <div>
@@ -119,8 +119,8 @@ export default function ChatPage() {
           </div>
         </div>
         <button
-          onClick={() => setIsPopupOpen(true)} 
-          className="flex items-center space-x-1 bg-white text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
+          onClick={() => setIsPopupOpen(true)}
+          className="flex items-center space-x-1 bg-white hover:text-red-700 text-blue-600 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors text-sm font-medium"
           title="Clear conversation"
         >
           <FaTrash className="text-sm" />
