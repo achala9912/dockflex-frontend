@@ -42,11 +42,11 @@ function Home() {
     } else {
       setIsSpecialDay(false);
       // General Time-Based Greetings
-      if (currentHour >= 5 && currentHour < 12) {
+      if (currentHour >= 3 && currentHour < 12) {
         setGreeting("Good Morning");
       } else if (currentHour >= 12 && currentHour < 17) {
         setGreeting("Good Afternoon");
-      } else if (currentHour >= 0 && currentHour < 5) {
+      } else if (currentHour >= 0 && currentHour < 3) {
         setGreeting("Good Night");
       } else {
         setGreeting("Good Evening");
