@@ -4,18 +4,65 @@ import RoundButton from "@/components/Buttons/RoundButton";
 import CentreCard from "@/components/Cards/CentreCard";
 import InputField from "@/components/InputField/InputField";
 import { Tooltip } from "@/components/ui/tooltip";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { IoMdAdd } from "react-icons/io";
-import jsonData from "@/data/data.json";
+import {
+  getAllMedicalCenters,
+  deleteMedicalCenters,
+} from "@/api/medicalCentersApi";
 import { useRouter } from "next/navigation";
 import DeleteConfirm from "@/components/Popups/DeleteConfirm";
+import { toast } from "react-toastify";
+
+interface Centre {
+  id: string;
+  name: string;
+  town: string;
+  phone: string;
+  email: string;
+}
 
 function Page() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCentre, setSelectedCentre] = useState<{ id: string; name: string } | null>(null);
+  const [selectedCentre, setSelectedCentre] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [centres, setCentres] = useState<Centre[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCentres = async () => {
+      try {
+        setError(null);
+
+        const res = await getAllMedicalCenters();
+        console.log("Fetched centres response:", res);
+
+        if (Array.isArray(res)) {
+          const mapped = res.map((c) => ({
+            id: c.centerId || c._id,
+            name: c.centerName,
+            town: c.town,
+            phone: c.contactNo,
+            email: c.email,
+          }));
+          setCentres(mapped);
+        } else {
+          setCentres([]);
+        }
+      } catch (err: unknown) {
+        console.error(err);
+        setError("Failed to load medical centres.");
+      }
+    };
+
+    fetchCentres();
+  }, []);
 
   const addNewCentre = () => {
     router.push(`/medical-centres/new`);
@@ -30,17 +77,28 @@ function Page() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedCentre) {
-      console.log("Deleted Centre:", selectedCentre.id);
-      // API call to delete the centre goes here
+      try {
+        console.log("Deleting Centre:", selectedCentre.id);
+        await deleteMedicalCenters(selectedCentre.id);
+        toast.success("Medical Center successfully deleted!");
+        setCentres((prev) =>
+          prev.filter((centre) => centre.id !== selectedCentre.id)
+        );
+      } catch (error) {
+        console.error("Failed to delete medical center:", error);
+        toast.error("Failed to delete medical center.");
+      }
     }
     setIsDeleteModalOpen(false);
     setSelectedCentre(null);
   };
 
-  const filteredCentres = jsonData.centreData.filter((centre) =>
-    `${centre.id} ${centre.name}`.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCentres = centres.filter((centre) =>
+    `${centre.id} ${centre.name}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -76,24 +134,28 @@ function Page() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-6">
-        {filteredCentres.length > 0 ? (
-          filteredCentres.map((centre) => (
-            <CentreCard
-              key={centre.id}
-              topName={centre.id}
-              middleName={centre.name}
-              bottomName1={centre.town}
-              bottomName2={centre.phone}
-              bottomName3={centre.email}
-              handleEdit={() => handleEdit(centre)}
-              handleDelete={() => handleDeleteConfirm(centre)}
-            />
-          ))
-        ) : (
-          <p className="text-gray-500 text-sm">No matching centres found.</p>
-        )}
-      </div>
+      {error ? (
+        <p className="text-red-500 text-sm font-medium">{error}</p>
+      ) : (
+        <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
+          {filteredCentres.length > 0 ? (
+            filteredCentres.map((centre) => (
+              <CentreCard
+                key={centre.id}
+                topName={centre.id}
+                middleName={centre.name}
+                bottomName1={centre.town}
+                bottomName2={centre.phone}
+                bottomName3={centre.email}
+                handleEdit={() => handleEdit(centre)}
+                handleDelete={() => handleDeleteConfirm(centre)}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No matching centres found.</p>
+          )}
+        </div>
+      )}
 
       <DeleteConfirm
         element={selectedCentre?.name || ""}

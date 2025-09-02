@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import TopNavbar from "@/components/Navbar/TopNavbar";
 import { usePathname } from "next/navigation";
 import ConnectionWarning from "@/components/Alerts/ConnectionWarnning";
+import Loader from "@/components/Loader/Loader";
 
 export default function ClientLayout({
   children,
@@ -12,7 +13,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const excludedPaths = ["/", "/forgotPassword", "/resetPassword"];
+  const excludedPaths = ["/", "/forgotPassword", "/verifyPassword"];
   const showLayout = !excludedPaths.includes(pathname);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -28,7 +29,7 @@ export default function ClientLayout({
 
   return (
     <div className="flex w-full justify-center bg-blue-50">
-      <div className="flex h-screen max-w-[2000px] w-full">
+      <div className="flex h-screen max-w-[3840px] w-full">
         {showLayout && <Sidebar onCollapseChange={setIsCollapsed} />}
         <div className="flex flex-col items-end flex-1 w-full min-w-0">
           {showLayout && <TopNavbar isCollapsed={isCollapsed} />}
@@ -53,6 +54,7 @@ export default function ClientLayout({
   `}
           >
             <ConnectionWarning />
+               <Loader />
             {children}
           </div>
         </div>

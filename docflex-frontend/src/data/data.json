@@ -18,5 +18,69 @@
       "phone": "011-1234567",
       "email": "chapa@gmail.com"
     }
+  ],
+  "roleData": [
+    {
+      "id": "R001",
+      "name": "Admin Doctor"
+    },
+    {
+      "id": "R002",
+      "name": "Doctor"
+    },
+    {
+      "id": "R003",
+      "name": "Medical Assistant"
+    }
+  ],
+  "userData": [
+    {
+      "userId": "E001",
+      "title": "Dr",
+      "name": "Amila Fernando",
+      "userName": "amila.fern99",
+      "gender": "male",
+      "role": "Admin Doctor",
+      "slmcNo": "78560",
+      "specialization": "Physician",
+      "email": "amila.fer@gmail.com",
+      "contactNo": "071-1234567"
+    },
+    {
+      "userId": "E002",
+      "title": "Dr",
+      "name": "Nimali Perera",
+      "userName": "n.perera88",
+      "gender": "female",
+      "role": "Doctor",
+      "slmcNo": "79342",
+      "specialization": "Pediatrician",
+      "email": "nimali.perera88@gmail.com",
+      "contactNo": "077-6543210"
+    },
+    {
+      "userId": "E003",
+      "title": "Mr",
+      "name": "Sunil Jayasuriya",
+      "userName": "sunil.jaya",
+      "gender": "male",
+      "role": "Receptionist",
+      "slmcNo": "",
+      "specialization": "",
+      "email": "sunil.jaya@hospital.lk",
+      "contactNo": "070-2345678"
+    },
+    {
+      "userId": "E004",
+      "title": "Dr",
+      "name": "Tharushi Silva",
+      "userName": "tharushi.silva",
+      "gender": "female",
+      "role": "Doctor",
+      "slmcNo": "81234",
+      "specialization": "Dermatologist",
+      "email": "tharushi.s@gmail.com",
+      "contactNo": "075-9876543"
+    }
   ]
 }

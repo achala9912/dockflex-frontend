@@ -2,16 +2,19 @@
 
 import React from "react";
 import { Button } from "../ui/button";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
 import alertLottie from "@/Lottie/alertLottie.json";
+
+// Dynamically import Lottie to avoid SSR issues
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 interface CancelConfirmationProps {
   element?: string;
-  handleYes: () => void; 
-  handleNo: () => void; 
-  isOpen: boolean; 
-  yesButtonColor?: string; 
-  yesButtonText?: string; 
+  handleYes: () => void;
+  handleNo: () => void;
+  isOpen: boolean;
+  yesButtonColor?: string;
+  yesButtonText?: string;
 }
 
 const ConfirmationPopup: React.FC<CancelConfirmationProps> = ({
@@ -37,7 +40,12 @@ const ConfirmationPopup: React.FC<CancelConfirmationProps> = ({
       <div className="w-full max-w-sm p-6 bg-white shadow-xl rounded-xl">
         {/* Lottie Animation */}
         <div className="flex justify-center mb-4">
-          <Lottie animationData={alertLottie} loop autoplay className="w-36 h-36" />
+          <Lottie
+            animationData={alertLottie}
+            loop
+            autoplay
+            className="w-36 h-36"
+          />
         </div>
 
         {/* Confirmation Message */}
@@ -55,7 +63,7 @@ const ConfirmationPopup: React.FC<CancelConfirmationProps> = ({
           </Button>
           <Button
             onClick={handleYes}
-            className={buttonColors[yesButtonColor] || buttonColors.red} 
+            className={buttonColors[yesButtonColor] || buttonColors.red}
           >
             {yesButtonText}
           </Button>

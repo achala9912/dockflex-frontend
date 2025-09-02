@@ -10,7 +10,8 @@ export const CentreSchema = z.object({
     .min(10, "Contact No must be at least 10 digits")
     .max(15, "Contact No cannot exceed 15 digits"),
   email: z.string().email("Invalid email format"),
-  image: z.array(z.object({ url: z.string().url() })).optional(),
+  logo: z.string(z.object({ url: z.string().url() })).optional(),
+  // logo: z.string().url().optional(),
 });
 
 export type CentreFormData = z.infer<typeof CentreSchema>;

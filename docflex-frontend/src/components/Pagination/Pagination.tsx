@@ -14,7 +14,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   totalItems: number;
   limit: number;
-  pagiLabel?: string; 
+  pagiLabel?: string;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -40,7 +40,7 @@ const Pagination: React.FC<PaginationProps> = ({
     const startPage = Math.max(currentPage - 1, 1);
     const endPage = Math.min(startPage + maxVisibleButtons - 1, totalPages);
 
-    const pageNumbers = [];
+    const pageNumbers: number[] = []; 
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(i);
     }
@@ -60,7 +60,8 @@ const Pagination: React.FC<PaginationProps> = ({
           variant="outline"
           className={cn(
             "px-2 py-1 bg-slate-200",
-            currentPage === 1 && "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
+            currentPage === 1 &&
+              "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
           )}
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1}
@@ -72,7 +73,8 @@ const Pagination: React.FC<PaginationProps> = ({
           variant="outline"
           className={cn(
             "px-2 py-1 bg-slate-200",
-            currentPage <= 1 && "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
+            currentPage <= 1 &&
+              "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
           )}
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage <= 1}
@@ -104,7 +106,8 @@ const Pagination: React.FC<PaginationProps> = ({
           variant="outline"
           className={cn(
             "px-2 py-1 bg-slate-200",
-            currentPage >= totalPages && "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
+            currentPage >= totalPages &&
+              "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
           )}
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
@@ -116,7 +119,8 @@ const Pagination: React.FC<PaginationProps> = ({
           variant="outline"
           className={cn(
             "px-2 py-1 bg-slate-200",
-            currentPage == totalPages && "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
+            currentPage == totalPages &&
+              "cursor-not-allowed opacity-50 h-8 sm:h-10 sm:w-10"
           )}
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage == totalPages}

@@ -12,6 +12,8 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IoChevronBackOutline } from "react-icons/io5";
+import { createMedicalCenter } from "@/api/medicalCentersApi";
+import { toast } from "react-toastify";
 
 function Page() {
   const router = useRouter();
@@ -25,17 +27,38 @@ function Page() {
       city: "",
       contactNo: "",
       email: "",
-      image: [],
+      logo: "",
     },
   });
 
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = (data: CentreFormData) => {
-    console.log("Form Data Submitted:", data);
-    // API call logic here
-    reset(); // Clear form after submission
-    router.push("/medical-centres"); // Redirect after successful save
+  const onSubmit = async (data: CentreFormData) => {
+    try {
+      console.log("Form Data Submitted:", data);
+      const response = await createMedicalCenter({
+        centerName: data.centreName,
+        regNo: data.regNo,
+        address: data.address,
+        town: data.city,
+        contactNo: data.contactNo,
+        email: data.email,
+        logo: data.logo,
+      });
+      console.log("Medical Center Created:", response);
+      toast.success("Medical Center successfully created!");
+
+      reset();
+      router.push("/medical-centres");
+    } catch (error: unknown) {
+      console.error("Failed to create medical center:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to create medical center";
+      toast.error(message);
+    }
   };
 
   return (
