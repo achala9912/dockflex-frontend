@@ -397,7 +397,7 @@ const GeneratePrescriptionPage = () => {
           <Tooltip content="Back" side="bottom">
             <button
               id="backButton"
-              onClick={() => router.push("/prescription/generate")}
+              onClick={() => router.push(`/prescription/${prescriptionNo}`)}
               className="flex items-center gap-1 hover:text-blue-700 hover:font-bold"
             >
               <IoChevronBackOutline size={18} />
