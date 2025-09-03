@@ -40,16 +40,6 @@ export async function getPrescriptionDataById(
   }
 }
 
-export async function createPrescriptions(data: any): Promise<any> {
-  try {
-    const response = await axiosAuth.post("/prescriptions", data);
-    return response.data;
-  } catch (err) {
-    console.error("Failed to create prescriptions:", err);
-    throw err;
-  }
-}
-
 export async function sendPrescriptionsByEmail(
   prescriptionNo: string
 ): Promise<any> {
@@ -72,7 +62,6 @@ export async function sendPrescriptionsByEmail(
   }
 }
 
-
 export async function createPrescription(data: any): Promise<any> {
   try {
     const response = await axiosAuth.post("/prescriptions", data);
@@ -94,5 +83,24 @@ export async function createPrescription(data: any): Promise<any> {
     }
 
     throw new Error(err.message || "Network error occurred");
+  }
+}
+
+export async function updatePrescription(
+  prescriptionNo: string,
+  updateData: Partial<any>
+): Promise<any> {
+  try {
+    const res = await axiosAuth.put<any>(
+      `/prescriptions/${prescriptionNo}`,
+      updateData
+    );
+    return res.data;
+  } catch (error) {
+    console.error(
+      `Error updating prescriptions with ID ${prescriptionNo}:`,
+      error
+    );
+    throw error;
   }
 }
