@@ -52,12 +52,28 @@ export const useAuthStore = create<AuthStore>()(
         set({ isAuthenticated: false, user: null });
       },
     }),
+    // {
+    //   name: "auth-store",
+    //   storage: createJSONStorage(() => {
+    //     // Always use sessionStorage to isolate sessions per tab
+    //     return sessionStorage;
+    //   }),
+    // }
     {
       name: "auth-store",
       storage: createJSONStorage(() => {
-        // Always use sessionStorage to isolate sessions per tab
-        return sessionStorage;
+        if (typeof window !== "undefined") {
+          return sessionStorage;
+        }
+        // Fallback to empty storage on SSR
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
       }),
+      // Key fix: Avoid double rehydration
+      skipHydration: true,
     }
   )
 );

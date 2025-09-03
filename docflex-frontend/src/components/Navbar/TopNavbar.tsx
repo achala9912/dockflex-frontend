@@ -22,10 +22,14 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
   };
   const handleYes = () => {
     const { logout } = useAuthStore.getState();
-    logout();
+    logout(); // Clear Zustand + sessionStorage state
 
-    router.push("/");
     setLogoutPopupOpen(false);
+
+    // Use replace so the back button won't go back to the old page
+    setTimeout(() => {
+      router.replace("/");
+    }, 0);
   };
 
   const handleNo = () => {
