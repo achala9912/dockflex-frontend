@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -33,96 +33,105 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const pathname = usePathname();
   const lastScrollY = useRef(0);
 
-  const userPermissions = useAuthStore(
-    (state) => state.user?.role?.permissions || []
+  const userRole = useAuthStore((state) => state.user?.role);
+  const userPermissions = useMemo(
+    () => userRole?.permissions ?? [],
+    [userRole]
   );
 
-  // Set active tab based on current pathname
+  useEffect(() => setHydrated(true), []);
+
   useEffect(() => {
+    if (!hydrated) return;
+
     for (const item of sidebarItems) {
-      if (item.subItems) {
-        const activeSubItem = item.subItems.find(
-          (subItem) => subItem.path === pathname
-        );
-        if (activeSubItem) {
-          setActiveTab(activeSubItem.title);
-          return;
-        }
+      const activeSub = item.subItems?.find((sub) => sub.path === pathname);
+      if (activeSub) {
+        setActiveTab(activeSub.title);
+        return;
       }
     }
+
     const activeMainItem = sidebarItems.find((item) => item.path === pathname);
     if (activeMainItem) setActiveTab(activeMainItem.title);
-  }, [pathname]);
-
-  const controlSidebarVisibility = () => {
-    const currentScrollY = window.scrollY;
-    setIsSidebarVisible(currentScrollY <= lastScrollY.current);
-    lastScrollY.current = currentScrollY;
-  };
-
-  const toggleDropdown = (itemTitle: string) => {
-    setOpenDropdown(openDropdown === itemTitle ? null : itemTitle);
-  };
-
-  const handleTabClick = (itemTitle: string) => {
-    setActiveTab(itemTitle);
-    toggleDropdown(itemTitle);
-  };
-
-  const handleSubItemClick = (subItemTitle: string) => {
-    setActiveTab(subItemTitle);
-    if (window.innerWidth < 1024) setIsCollapsed(true);
-  };
-
-  const toggleSidebarCollapse = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    if (window.innerWidth > 1024) onCollapseChange(newCollapsedState);
-  };
+  }, [pathname, hydrated]);
 
   useEffect(() => {
-    window.addEventListener("scroll", controlSidebarVisibility);
-    return () => window.removeEventListener("scroll", controlSidebarVisibility);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setIsSidebarVisible(currentScrollY <= lastScrollY.current);
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsCollapsed(window.innerWidth < 1024);
-    };
+    const handleResize = () => setIsCollapsed(window.innerWidth < 1024);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const sidebarContainerClasses = `m-2 rounded-2xl fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
-    isSidebarVisible ? "translate-x-0" : "-translate-x-full"
-  } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
-
-  const isItemActive = (item: SidebarItem | SubItem) => activeTab === item.title;
-
-  // Check if a parent dropdown should be visible
+  const toggleDropdown = (title: string) =>
+    setOpenDropdown(openDropdown === title ? null : title);
+  const handleSubItemClick = (title: string) => {
+    setActiveTab(title);
+    if (window.innerWidth < 1024) setIsCollapsed(true);
+  };
+  const toggleSidebarCollapse = () => {
+    const newCollapsed = !isCollapsed;
+    setIsCollapsed(newCollapsed);
+    if (window.innerWidth > 1024) onCollapseChange(newCollapsed);
+  };
+  const isItemActive = (item: SidebarItem | SubItem) =>
+    activeTab === item.title;
   const hasVisibleSubItems = (item: SidebarItem) =>
     !item.subItems ||
     item.subItems.some(
-      (subItem) =>
-        !subItem.permission || userPermissions.includes(subItem.permission)
+      (sub) => !sub.permission || userPermissions.includes(sub.permission)
     );
 
+  //  Conditional render after hydration
+  if (!hydrated) return null;
+
+  const renderSubMenu = (item: SidebarItem) => (
+    <ul className="overflow-hidden transition-all duration-500 text-md">
+      {item.subItems?.map(
+        (sub) =>
+          sub.path &&
+          (!sub.permission || userPermissions.includes(sub.permission)) && (
+            <li key={sub.title}>
+              <Link
+                href={sub.path}
+                className={`block pl-20 mb-1 p-3 transition-colors ${
+                  isItemActive(sub)
+                    ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
+                    : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
+                }`}
+                onClick={() => handleSubItemClick(sub.title)}
+              >
+                {sub.title}
+              </Link>
+            </li>
+          )
+      )}
+    </ul>
+  );
+
   const renderSidebarItem = (item: SidebarItem) => {
-    if ((item.permission && !userPermissions.includes(item.permission)) || !hasVisibleSubItems(item)) return null;
+    if (
+      (item.permission && !userPermissions.includes(item.permission)) ||
+      !hasVisibleSubItems(item)
+    )
+      return null;
 
     return (
-      <li
-        key={item.title}
-        onMouseEnter={() =>
-          isCollapsed && item.dropdown && setHoveredItem(item.title)
-        }
-        onMouseLeave={() => isCollapsed && setHoveredItem(null)}
-      >
+      <li key={item.title}>
         {item.dropdown ? (
           <div>
             <button
@@ -130,11 +139,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 isItemActive(item)
                   ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
                   : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
+              } ${isCollapsed ? "justify-center" : "justify-start"}`}
               onClick={() => toggleDropdown(item.title)}
             >
               {item.icon && <item.icon className="text-lg" />}
-              {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
+              {!isCollapsed && (
+                <span className="ml-4 text-md">{item.title}</span>
+              )}
               {!isCollapsed && (
                 <AiFillCaretDown
                   className={`ml-auto transition-transform ${
@@ -143,8 +154,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 />
               )}
             </button>
-
-            {hoveredItem === item.title && isCollapsed && renderHoverMenu(item)}
             {openDropdown === item.title && !isCollapsed && renderSubMenu(item)}
           </div>
         ) : (
@@ -155,11 +164,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 isItemActive(item)
                   ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
                   : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-              } focus:outline-none ${isCollapsed ? "justify-center" : "justify-start"}`}
-              onClick={() => handleTabClick(item.title)}
+              } ${isCollapsed ? "justify-center" : "justify-start"}`}
+              onClick={() => setActiveTab(item.title)}
             >
               {item.icon && <item.icon className="text-lg" />}
-              {!isCollapsed && <span className="ml-4 text-md">{item.title}</span>}
+              {!isCollapsed && (
+                <span className="ml-4 text-md">{item.title}</span>
+              )}
             </Link>
           )
         )}
@@ -167,66 +178,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     );
   };
 
-  const renderSubMenu = (item: SidebarItem) => (
-    <ul className="overflow-hidden transition-all duration-500 text-md">
-      {item.subItems?.map(
-        (subItem) =>
-          subItem.path &&
-          (!subItem.permission || userPermissions.includes(subItem.permission)) && (
-            <li key={subItem.title}>
-              <Link
-                href={subItem.path}
-                className={`block pl-20 mb-1 p-3 transition-colors ${
-                  isItemActive(subItem)
-                    ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
-                    : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-                }`}
-                onClick={() => handleSubItemClick(subItem.title)}
-              >
-                {subItem.title}
-              </Link>
-            </li>
-          )
-      )}
-    </ul>
-  );
-
-  const renderHoverMenu = (item: SidebarItem) => (
-    <div className="fixed left-[80px] z-50 w-48 p-1">
-      <div className="relative bottom-12 w-48 p-1 bg-blue-900 rounded-md shadow-lg text-md">
-        <ul>
-          {item.subItems?.map(
-            (subItem) =>
-              subItem.path &&
-              (!subItem.permission || userPermissions.includes(subItem.permission)) && (
-                <li key={subItem.title}>
-                  <Link
-                    href={subItem.path}
-                    className={`block p-2 ${
-                      isItemActive(subItem)
-                        ? "bg-gradient-to-r from-blue_dark to-blue_dark_2"
-                        : "hover:bg-gradient-to-r hover:from-blue_dark_hover_1 hover:to-blue_dark_hover_2"
-                    }`}
-                    onClick={() => {
-                      setHoveredItem(null);
-                      handleSubItemClick(subItem.title);
-                    }}
-                  >
-                    {subItem.title}
-                  </Link>
-                </li>
-              )
-          )}
-        </ul>
-      </div>
-    </div>
-  );
+  const sidebarContainerClasses = `m-2 rounded-2xl fixed h-screen z-10 text-white bg-gradient-to-b from-[#0D4C73] to-[#000000] transition-all duration-500 ease-in-out ${
+    isSidebarVisible ? "translate-x-0" : "-translate-x-full"
+  } ${isCollapsed ? "w-0 sm:w-20" : "w-[256px]"}`;
 
   return (
     <div className="z-50">
       {isCollapsed ? (
         <div
-          className="absolute z-50 flex items-center justify-center w-16 h-16 p-3 ml-3  sm:p-2 sm:ml-3 shadow-lg sm:shadow-none cursor-pointer bg-[#0d4c73] sm:bg-transparent rounded-full sm:rounded-none mt-2"
+          className="absolute z-50 flex items-center justify-center w-16 h-16 p-3 ml-3 shadow-lg cursor-pointer bg-[#0d4c73] rounded-full mt-2"
           onClick={toggleSidebarCollapse}
         >
           <Image
@@ -258,7 +218,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
             />
           )}
         </div>
-
         <div className="flex flex-col h-[calc(100vh-80px)] overflow-auto scrollbar-thin scrollbar-thumb-scroll_blue scrollbar-track-transparent">
           <ul className="space-y-1">{sidebarItems.map(renderSidebarItem)}</ul>
         </div>
