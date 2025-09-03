@@ -10,7 +10,7 @@ export const specializationOptions = [
   { label: "Emergency Medicine", value: "Emergency Medicine" },
   { label: "Endocrinology", value: "Endocrinology" },
   { label: "ENT (Otolaryngology)", value: "ENT (Otolaryngology)" },
-  { label: "Family Medicine", value: "Family Medicine" },
+  { label: "OPD M.O", value: "OPD M.O" },
   { label: "Gastroenterology", value: "Gastroenterology" },
   { label: "General Practice", value: "General Practice" },
   { label: "General Physician", value: "General Physician" },
