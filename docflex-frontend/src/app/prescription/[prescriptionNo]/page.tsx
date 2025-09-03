@@ -25,7 +25,9 @@ const Page = () => {
   const [prescriptionData, setPrescriptionData] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const prescriptionNo: string | undefined = Array.isArray(params?.prescriptionNo)
+  const prescriptionNo: string | undefined = Array.isArray(
+    params?.prescriptionNo
+  )
     ? params.prescriptionNo[0]
     : params?.prescriptionNo;
 
@@ -67,8 +69,14 @@ const Page = () => {
   };
 
   if (!prescriptionData) {
-    return <p className="mt-4 text-lg text-gray-600">Loading prescription...</p>;
+    return (
+      <p className="mt-4 text-lg text-gray-600">Loading prescription...</p>
+    );
   }
+
+  const handleEdit = () => {
+    router.push(`/prescription/edit/${prescriptionData.prescriptionNo}`);
+  };
 
   return (
     <div>
@@ -94,13 +102,16 @@ const Page = () => {
           prescriptionType={prescriptionData.prescriptionType}
           onSendMail={handleSendMail}
           onPrint={handlePrint}
+          onEdit={handleEdit}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
             <PatientInfo patientData={prescriptionData.patientId} />
-            <PrescriberInfo prescriberData={prescriptionData.prescriberDetails} />
+            <PrescriberInfo
+              prescriberData={prescriptionData.prescriberDetails}
+            />
           </div>
 
           {/* Right Column */}
@@ -116,9 +127,14 @@ const Page = () => {
               <VitalSigns vitalSigns={prescriptionData.vitalSigns[0]} />
             )}
 
-            <ClinicalDetails clinicalDetails={prescriptionData.clinicalDetails} />
+            <ClinicalDetails
+              clinicalDetails={prescriptionData.clinicalDetails}
+            />
             <Medications medications={prescriptionData.medications} />
-            <AdviceRemarks advice={prescriptionData.advice} remark={prescriptionData.remark} />
+            <AdviceRemarks
+              advice={prescriptionData.advice}
+              remark={prescriptionData.remark}
+            />
           </div>
         </div>
       </div>
