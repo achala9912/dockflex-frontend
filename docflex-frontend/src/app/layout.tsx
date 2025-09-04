@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
 import { ToastContainer } from "react-toastify";
+import HydrationProvider from "@/components/providers/HydrationProvider";
 
 export const metadata: Metadata = {
   title: "DocFlex Pro",
@@ -19,19 +20,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          pauseOnHover
-          theme="light"
-        />
+        <HydrationProvider>
+          <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            pauseOnHover
+            theme="light"
+          />
 
-        <ClientLayout>{children}</ClientLayout>
+          <ClientLayout>{children}</ClientLayout>
+        </HydrationProvider>
       </body>
     </html>
   );
