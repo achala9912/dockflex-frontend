@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { GoHome, GoScreenFull } from "react-icons/go";
 import ConfirmationPopup from "../Popups/ConfirmationPopup";
 import { useAuthStore } from "@/store/authStore";
+import ProfilePopup from "@/sections/ProfileSection/ProfilePopup";
 
 interface TopNavProps {
   isCollapsed: boolean;
@@ -15,6 +16,7 @@ interface TopNavProps {
 const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
   const user = useAuthStore((state) => state.user);
   const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
+  const [profilePopupOpen, setProfilePopupOpen] = useState(false);
   const router = useRouter();
 
   const handleLogoutClick = () => {
@@ -45,7 +47,9 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
       }
     }
   };
-
+  const handleProfileClick = () => {
+    setProfilePopupOpen(true);
+  };
   return (
     <div
       className={`rounded-2xl bg-white shadow-sm border border-gary-50 px-6 py-3 flex items-center justify-between m-2 mb-0 ml-0 h-14 ${
@@ -67,7 +71,10 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
 
       {/* Right Side - User Profile */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={handleProfileClick}
+        >
           <Avatar>
             <AvatarImage src={user?.profilePicture} alt={user?.name} />
             <AvatarFallback>
@@ -96,6 +103,11 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
           element="Logout"
           handleYes={handleYes}
           handleNo={handleNo}
+        />
+
+        <ProfilePopup
+          isOpen={profilePopupOpen}
+          onClose={() => setProfilePopupOpen(false)}
         />
       </div>
     </div>
