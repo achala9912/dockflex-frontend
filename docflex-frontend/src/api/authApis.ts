@@ -96,3 +96,26 @@ export async function firstLoginResetPassword(
     throw err;
   }
 }
+
+export async function changePassword(
+  userName: string,
+  oldPassword: string,
+  newPassword: string
+) {
+  try {
+    const res = await axiosAuth.post<any>("/auth/change-password", {
+      userName,
+      oldPassword,
+      newPassword,
+    });
+    return res.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(
+        err.response?.data?.message || "Failed to change password."
+      );
+    }
+    throw err;
+  }
+}
+
