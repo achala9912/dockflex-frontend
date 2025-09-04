@@ -22,18 +22,29 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
   const handleLogoutClick = () => {
     setLogoutPopupOpen(true);
   };
+  // const handleYes = () => {
+  //   const { logout } = useAuthStore.getState();
+  //   logout();
+
+  //   router.push("/");
+  //   setLogoutPopupOpen(false);
+  // };
+
   const handleYes = () => {
     const { logout } = useAuthStore.getState();
     logout();
 
-    router.push("/");
     setLogoutPopupOpen(false);
+
+    setTimeout(() => {
+      router.replace("/");
+    }, 0);
   };
 
   const handleNo = () => {
     setLogoutPopupOpen(false);
   };
-  // Function to toggle full screen
+
   const handleFullScreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch((err) => {
