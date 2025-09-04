@@ -164,9 +164,9 @@ function MyProfileSection() {
       setIsSaving(true);
       setPasswordError("");
       await changePassword(
+        userData.userName,
         passwordData.oldPassword,
-        passwordData.newPassword,
-        userData.userName
+        passwordData.newPassword
       );
       toast.success("Password changed successfully!");
       setPasswordData({
@@ -190,12 +190,12 @@ function MyProfileSection() {
 
   const handleEditProfileClick = () => {
     setIsEditing(true);
-    setShowPasswordForm(false); 
+    setShowPasswordForm(false);
   };
 
   const handleChangePasswordClick = () => {
     setShowPasswordForm(true);
-    setIsEditing(false); 
+    setIsEditing(false);
   };
 
   const handleCancelEdit = () => {
@@ -289,14 +289,12 @@ function MyProfileSection() {
             </p>
           </div>
 
-
           <div className="mt-4 px-4 py-2 bg-gray-100 rounded-full">
             <span className="text-sm font-medium text-gray-700">
               User ID: {userData?.userId}
             </span>
           </div>
 
-  
           {!isEditing && !showPasswordForm && (
             <Button
               onClick={handleEditProfileClick}
@@ -305,7 +303,6 @@ function MyProfileSection() {
               Edit Profile
             </Button>
           )}
-
 
           {isEditing && (
             <div className="flex space-x-2 mt-6">
@@ -326,7 +323,6 @@ function MyProfileSection() {
             </div>
           )}
 
-   
           {!showPasswordForm && !isEditing && (
             <Button
               onClick={handleChangePasswordClick}
@@ -337,7 +333,6 @@ function MyProfileSection() {
             </Button>
           )}
 
- 
           {showPasswordForm && (
             <Button
               onClick={handleCancelPassword}
@@ -349,9 +344,7 @@ function MyProfileSection() {
           )}
         </div>
 
-
         <div className="md:col-span-2">
-  
           {showPasswordForm && (
             <div className="bg-blue-50 p-6 rounded-lg mb-6 border border-blue-200">
               <h3 className="text-lg font-medium text-gray-800 mb-4">
@@ -373,7 +366,7 @@ function MyProfileSection() {
               <div className="grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Old Password
+                    Current Password
                   </label>
                   <PasswordField
                     id="oldPassword"
