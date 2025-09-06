@@ -70,7 +70,6 @@ export default function Page() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Navigate to add new appointment
   const addNewPatient = () => {
     router.push(`/appointments/new`);
   };
@@ -81,13 +80,13 @@ export default function Page() {
     setIsCancelPopupOpen(true);
   };
 
-  // Open patient visit confirmation popup
+
   const confirmPatientVisited = (row: AppointmentMgmt) => {
     setSelectedAppointmentId(row.appointmentId);
     setIsVisitPopupOpen(true);
   };
 
-  // Handle Yes in cancellation popup
+
   const handleCancelYes = async () => {
     if (!selectedAppointmentId) return;
     try {
@@ -118,13 +117,13 @@ export default function Page() {
     }
   };
 
-  // Handle No in cancellation popup
+
   const handleCancelNo = () => {
     setIsCancelPopupOpen(false);
     setSelectedAppointmentId(null);
   };
 
-  // Handle No in visit popup
+
   const handleVisitNo = () => {
     setIsVisitPopupOpen(false);
     setSelectedAppointmentId(null);

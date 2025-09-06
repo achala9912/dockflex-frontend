@@ -51,7 +51,6 @@ function Page() {
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<Session | null>(null);
-
   const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
   const [sessionToToggle, setSessionToToggle] = useState<Session | null>(null);
 
@@ -78,7 +77,7 @@ function Page() {
           isActive: session.isSessionActive,
         })) || [];
 
-      setSessions(transformedSessions || []);
+      setSessions(transformedSessions);
       setTotalItems(transformedSessions.length);
       setTotalPages(Math.ceil(transformedSessions.length / limit));
     } catch (err: any) {
@@ -87,10 +86,10 @@ function Page() {
   }, [page, limit, debouncedSearchTerm, centerId, isActive]);
 
   useEffect(() => {
-    fetchSessions();
-  }, [fetchSessions]);
+    if (centerId) fetchSessions();
+  }, [fetchSessions, centerId]);
 
-  const handleEdit = (session: { sessionId: string }) => {
+  const handleEdit = (session: Session) => {
     setSelectedSessionId(session.sessionId);
     setIsEditPopupOpen(true);
   };
@@ -102,12 +101,9 @@ function Page() {
 
   const confirmDelete = async () => {
     if (!sessionToDelete) return;
-
     try {
       await deleteSession(sessionToDelete.sessionId);
-      toast.success(
-        `Session "${sessionToDelete.name}" from "${sessionToDelete.centerName}" deleted successfully`
-      );
+      toast.success(`Session "${sessionToDelete.name}" deleted successfully`);
       fetchSessions();
     } catch (err: any) {
       toast.error(err.message || "Failed to delete session");
@@ -124,7 +120,6 @@ function Page() {
 
   const confirmToggleActive = async () => {
     if (!sessionToToggle) return;
-
     try {
       await doActiveSession(
         sessionToToggle.sessionId,
@@ -137,25 +132,17 @@ function Page() {
       );
       fetchSessions();
     } catch (err: any) {
-      toast.error(err.response?.data?.message);
+      toast.error(err.response?.data?.message || "Action failed");
     } finally {
       setIsToggleConfirmOpen(false);
       setSessionToToggle(null);
     }
   };
 
-  useEffect(() => {
-    if (centerId !== undefined) {
-      fetchSessions();
-    }
-  }, [fetchSessions, centerId]);
-
   return (
     <>
       <div className="flex justify-between mb-3">
-        <h3 className="flex items-center font-semibold font-inter text-md">
-          Sessions
-        </h3>
+        <h3 className="font-semibold text-md">Sessions</h3>
       </div>
 
       <div className="flex flex-col">
@@ -181,7 +168,6 @@ function Page() {
               label={true}
               labelName="Session ID / Name"
             />
-
             <Dropdown
               id="isActive"
               value={isActive?.toString() ?? ""}
@@ -211,12 +197,16 @@ function Page() {
         </div>
       </div>
 
-      {error ? (
-        <p className="text-red-500 text-sm font-medium">{error}</p>
-      ) : (
-        <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
-          {sessions.length > 0 ? (
-            sessions.map((session) => (
+      {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
+
+      {!centerId ? (
+        <p className="text-gray-500 text-sm mt-2">
+          Please select a center to view sessions.
+        </p>
+      ) : sessions.length > 0 ? (
+        <>
+          <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
+            {sessions.map((session) => (
               <SessionCard
                 key={session.id}
                 sessionId={session.sessionId}
@@ -229,23 +219,27 @@ function Page() {
                 handleDelete={() => handleDeleteClick(session)}
                 handleActive={() => handleToggleActive(session)}
               />
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm">No matching sessions found.</p>
+            ))}
+          </div>
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                limit={limit}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </div>
           )}
-        </div>
+        </>
+      ) : (
+        <p className="text-gray-500 text-sm mt-2">
+          No matching sessions found.
+        </p>
       )}
 
-      <div className="mt-6">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          limit={limit}
-          onPageChange={(newPage: number) => setPage(newPage)}
-        />
-      </div>
-
+      {/* Popups */}
       {isNewPopupOpen && (
         <AddNewSessionPopup
           isOpen={isNewPopupOpen}
@@ -269,11 +263,7 @@ function Page() {
       )}
 
       <DeleteConfirm
-        element={
-          sessionToDelete
-            ? `session "${sessionToDelete.name}" from "${sessionToDelete.centerName}"`
-            : ""
-        }
+        element={sessionToDelete ? `session "${sessionToDelete.name}"` : ""}
         onDelete={confirmDelete}
         onCancel={() => setIsDeleteModalOpen(false)}
         isOpen={isDeleteModalOpen}
