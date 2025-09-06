@@ -48,6 +48,7 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const fetchAppointments = useCallback(async () => {
+    if (!centerId) return;
     try {
       const res = await getAllAppointments(
         selectedDate,
@@ -64,7 +65,6 @@ export default function Page() {
       toast.error("Failed to fetch appointments");
     }
   }, [selectedDate, currentPage, itemsPerPage, debouncedSearchTerm, centerId]);
-
 
   useEffect(() => {
     fetchAppointments();
@@ -103,7 +103,6 @@ export default function Page() {
     }
   };
 
-
   const handleVisitYes = async () => {
     if (!selectedAppointmentId) return;
     try {
@@ -115,7 +114,7 @@ export default function Page() {
     } finally {
       setIsVisitPopupOpen(false);
       setSelectedAppointmentId(null);
-      fetchAppointments(); 
+      fetchAppointments();
     }
   };
 
@@ -182,17 +181,23 @@ export default function Page() {
       </div>
 
       <div>
-        <TableWithPagi
-          columns={appointmentMgmtColumns}
-          data={appointment || []}
-          itemsPerPage={itemsPerPage}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setPage={setCurrentPage}
-          totalItems={totalItems}
-          handleDelete={confirmCancel}
-          handleEdit={confirmPatientVisited}
-        />
+        {!centerId ? (
+          <p className="text-gray-500 text-sm mt-4">
+            Please select a center to view appointments.
+          </p>
+        ) : (
+          <TableWithPagi
+            columns={appointmentMgmtColumns}
+            data={appointment || []}
+            itemsPerPage={itemsPerPage}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setPage={setCurrentPage}
+            totalItems={totalItems}
+            handleDelete={confirmCancel}
+            handleEdit={confirmPatientVisited}
+          />
+        )}
       </div>
 
       {/* Cancellation Popup */}
