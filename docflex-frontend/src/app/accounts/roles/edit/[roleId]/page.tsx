@@ -15,7 +15,7 @@ function Page() {
   const params = useParams();
   const [error, setError] = useState<string | null>(null);
 
-  // Ensure roleId is a string
+
   const roleId: string = Array.isArray(params?.roleId)
     ? params.roleId[0]
     : params?.roleId || "";

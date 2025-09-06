@@ -22,7 +22,6 @@ function Page() {
   const router = useRouter();
   const params = useParams();
 
-  // Ensure centreId is a string
   const centreId: string | undefined = Array.isArray(params?.centreId)
     ? params.centreId[0]
     : params?.centreId;
@@ -42,7 +41,7 @@ function Page() {
 
   const { handleSubmit } = methods;
 
-  // Fetch centre details and populate form
+
   useEffect(() => {
     const fetchCentre = async () => {
       if (!centreId) return;

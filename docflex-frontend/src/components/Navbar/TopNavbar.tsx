@@ -98,7 +98,7 @@ const TopNavbar: React.FC<TopNavProps> = ({ isCollapsed }) => {
             <p className="text-sm font-semibold text-gray-900 capitalize">
               {user?.name}
             </p>
-            <p className="text-xs text-gray-500 text-left">{user?.userName}</p>
+            <p className="text-xs text-gray-500 text-left">@{user?.userName}</p>
           </div>
         </div>
 

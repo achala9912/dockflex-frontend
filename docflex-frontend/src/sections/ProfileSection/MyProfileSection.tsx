@@ -283,7 +283,7 @@ function MyProfileSection() {
             <h2 className="text-xl font-semibold text-gray-800">
               {userData?.name}
             </h2>
-            <p className="text-gray-600">{userData?.role?.roleName}</p>
+            <p className="text-gray-600 capitalize">{userData?.role?.roleName}</p>
             <p className="text-gray-500 text-sm mt-1">
               {userData?.centerId?.centerName}
             </p>

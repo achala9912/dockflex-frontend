@@ -32,7 +32,7 @@ export default function Page() {
 
   const router = useRouter();
 
-  // Fetch role suggestions
+
   useEffect(() => {
     const fetchRoleSuggestions = async () => {
       try {

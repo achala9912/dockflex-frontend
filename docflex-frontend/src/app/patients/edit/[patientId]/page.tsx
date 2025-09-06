@@ -7,7 +7,6 @@ import { FormProvider, useForm } from "react-hook-form";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { useParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { toast } from "react-toastify";
 import PatientForm from "@/sections/PatientSection/PatientForm";
 import {
@@ -52,7 +51,6 @@ function Page() {
           return;
         }
 
-        // Map nested values for form
         const mappedData: PatientFormData = {
           ...data,
           centerId: data.centerId?._id || "",
