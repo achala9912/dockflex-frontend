@@ -44,14 +44,14 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const fetchPrescriptions = useCallback(async () => {
+    if (!centerId) return;
     try {
-      // Only send centerId if it exists
       const res = await getAllPrescriptions(
         selectedDate,
         currentPage,
         itemsPerPage,
         debouncedSearchTerm,
-        centerId || undefined, // avoid empty string
+        centerId || undefined,
         selectedStatus || undefined
       );
 
@@ -145,16 +145,22 @@ export default function Page() {
       </div>
 
       <div>
-        <TableWithPagi
-          columns={prescriptionsMgmtColumns}
-          data={prescriptions}
-          itemsPerPage={itemsPerPage}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setPage={setCurrentPage}
-          totalItems={totalItems}
-          handleEdit={handleView}
-        />
+        {!centerId ? (
+          <p className="text-gray-500 text-sm mt-4">
+            Please select a center to view Prescriptions.
+          </p>
+        ) : (
+          <TableWithPagi
+            columns={prescriptionsMgmtColumns}
+            data={prescriptions}
+            itemsPerPage={itemsPerPage}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setPage={setCurrentPage}
+            totalItems={totalItems}
+            handleEdit={handleView}
+          />
+        )}
       </div>
     </>
   );
