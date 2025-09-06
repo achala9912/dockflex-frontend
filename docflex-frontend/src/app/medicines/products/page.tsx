@@ -60,7 +60,10 @@ function Page() {
     null
   );
 
+
   const fetchProducts = useCallback(async () => {
+    if (!centerId) return;
+
     try {
       setError(null);
       const res = await getAllProducts({
@@ -86,7 +89,9 @@ function Page() {
     fetchProducts();
   }, [fetchProducts]);
 
+
   const fetchGenericNames = useCallback(async () => {
+    if (!centerId) return; 
     try {
       const res = await getAllGenericNames({ centerId });
       if (res?.data) setGenericNameSuggestions(res.data);
@@ -213,37 +218,41 @@ function Page() {
         <p className="text-red-500 text-sm font-medium">{error}</p>
       ) : (
         <div className="flex flex-wrap gap-6 items-center justify-center sm:justify-start">
-          {products.length > 0 ? (
-            products.map((product) => (
-              <ProductCard
-                key={product.productId}
-                productId={product.productId}
-                productName={product.productName}
-                genericName={product.genericId.genericName}
-                centerName={product.centerId.centerName}
-                handleDelete={() => handleDeleteClick(product)}
-                handleEdit={() => {
-                  setSelectedProductId(product.productId);
-                  setIsEditPopupOpen(true);
-                }}
-              />
-            ))
-          ) : (
-            <p className="text-gray-500 text-sm">No matching products found.</p>
-          )}
+          {products.length > 0
+            ? products.map((product) => (
+                <ProductCard
+                  key={product.productId}
+                  productId={product.productId}
+                  productName={product.productName}
+                  genericName={product.genericId.genericName}
+                  centerName={product.centerId.centerName}
+                  handleDelete={() => handleDeleteClick(product)}
+                  handleEdit={() => {
+                    setSelectedProductId(product.productId);
+                    setIsEditPopupOpen(true);
+                  }}
+                />
+              ))
+            : centerId && (
+                <p className="text-gray-500 text-sm">
+                  No matching products found.
+                </p>
+              )}
         </div>
       )}
 
-      {/* 🔹 Pagination */}
-      <div className="mt-6">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          limit={limit}
-          onPageChange={setPage}
-        />
-      </div>
+
+      {products.length > 0 && totalPages > 1 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            limit={limit}
+            onPageChange={setPage}
+          />
+        </div>
+      )}
 
       {isNewPopupOpen && (
         <AddNewProductPopup
@@ -267,7 +276,6 @@ function Page() {
         />
       )}
 
-      {/* 🔹 Delete Confirmation */}
       {isDeleteModalOpen && (
         <DeleteConfirm
           element={productToDelete ? `"${productToDelete.productName}"` : ""}

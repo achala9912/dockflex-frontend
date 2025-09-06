@@ -2,19 +2,19 @@ import axios from "axios";
 import axiosAuth from "@/lib/axiosAuth";
 
 export async function getAllGenericNames({
+  centerId,
   page,
   limit,
   search,
-  centerId,
 }: {
+  centerId: string;
   page?: number;
   limit?: number;
   search?: string;
-  centerId?: string;
 }): Promise<any> {
   try {
     const res = await axiosAuth.get<any>("/generic", {
-      params: { page, limit, search, centerId },
+      params: { centerId, page, limit, search },
       skipLoading: true,
     });
     return res;

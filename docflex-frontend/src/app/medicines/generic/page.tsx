@@ -45,14 +45,17 @@ function Page() {
   const [genericNameToDelete, setGenericNameToDelete] =
     useState<IGenericName | null>(null);
 
+
   const fetchGenericNames = useCallback(async () => {
+    if (!centerId) return;
+
     try {
       setError(null);
       const res = await getAllGenericNames({
+        centerId,
         page,
         limit,
         search: debouncedSearchTerm.trim() || undefined,
-        centerId,
       });
       setGenericNames(res.data || []);
       setTotalItems(res.total || 0);
@@ -62,7 +65,8 @@ function Page() {
       setError(err?.message || "Failed to fetch generic names");
       setGenericNames([]);
     }
-  }, [page, limit, debouncedSearchTerm, centerId]);
+  }, [centerId, page, limit, debouncedSearchTerm]);
+
 
   useEffect(() => {
     fetchGenericNames();
@@ -108,7 +112,6 @@ function Page() {
           Generic Names
         </h3>
       </div>
-
 
       <div className="flex flex-col">
         <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
@@ -172,22 +175,24 @@ function Page() {
         </div>
       )}
 
-      <div className="mt-6">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          limit={limit}
-          onPageChange={(newPage: number) => setPage(newPage)}
-        />
-      </div>
+      {genericNames.length > 0 && totalPages > 1 && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            limit={limit}
+            onPageChange={(newPage: number) => setPage(newPage)}
+          />
+        </div>
+      )}
 
       {isNewPopupOpen && (
         <AddNewGenericPopup
           isOpen={isNewPopupOpen}
           onClose={() => {
             setIsNewPopupOpen(false);
-            fetchGenericNames();
+            fetchGenericNames(); 
           }}
         />
       )}
@@ -205,7 +210,7 @@ function Page() {
       {isDeleteModalOpen && (
         <DeleteConfirm
           element={
-            genericNameToDelete ? `"${genericNameToDelete.genericName}""` : ""
+            genericNameToDelete ? `"${genericNameToDelete.genericName}"` : ""
           }
           onDelete={confirmDelete}
           onCancel={() => setIsDeleteModalOpen(false)}
