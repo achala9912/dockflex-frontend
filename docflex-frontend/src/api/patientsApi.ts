@@ -2,10 +2,10 @@ import axios from "axios";
 import axiosAuth from "@/lib/axiosAuth";
 
 export async function getAllPatients(
+  centerId: string, 
   page?: number,
   limit?: number,
-  search?: string,
-  centerId?: string
+  search?: string
 ): Promise<any> {
   try {
     const res = await axiosAuth.get<any>("/patients", {
@@ -15,7 +15,7 @@ export async function getAllPatients(
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       throw new Error(
-        err.response?.data?.message || "Failed to fetch patients."
+        err.response?.data?.message || "Failed to fetch patients"
       );
     }
     throw err;

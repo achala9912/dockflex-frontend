@@ -32,17 +32,18 @@ export default function Page() {
 
   useEffect(() => {
     const fetchPatients = async () => {
+      if (!centerId) return;
       try {
         const res = await getAllPatients(
+          centerId,
           currentPage,
           itemsPerPage,
-          debouncedSearchTerm,
-          centerId
+          debouncedSearchTerm
         );
         console.log("Fetched patients response:", res);
         setPatients(res.data || []);
         setTotalPages(res.totalPages || 1);
-        setTotalItems(res.total || 0); 
+        setTotalItems(res.total || 0);
       } catch {
         toast.error("Failed to fetch patients");
       }
