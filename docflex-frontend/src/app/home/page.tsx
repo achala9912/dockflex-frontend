@@ -2,22 +2,47 @@
 
 import { useState, useEffect } from "react";
 import Lottie from "lottie-react";
-import { Pill, Users, HandCoins } from "lucide-react";
+import { Clock, FileText, Users } from "lucide-react";
 import systhesisLottie from "@/Lottie/prescriptionLottie.json";
 import OverviewCard from "@/components/Cards/OverviewCard";
 import { useAuthStore } from "@/store/authStore";
+import { getDashboardData } from "@/api/dashboardApi";
 
 function Home() {
   const [greeting, setGreeting] = useState("");
   const [isSpecialDay, setIsSpecialDay] = useState(false);
+  const [dashboardData, setDashboardData] = useState({
+    totalPatients: 0,
+    currentDateTotalAppointments: 0,
+    currentDateTotalPrescriptions: 0,
+  });
+
   const user = useAuthStore((state) => state.user);
   const userName = user?.name;
+  const centerId = user?.centerId;
 
+  const isSingleCenter = typeof centerId === "string"; 
+  const hasValidCenter = isSingleCenter && centerId !== null; 
+
+  useEffect(() => {
+    if (hasValidCenter) {
+      getDashboardData({ centerId })
+        .then((res) => {
+          if (res.success) {
+            setDashboardData(res.data);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch dashboard data", err);
+        });
+    }
+  }, [centerId, hasValidCenter]);
+
+  // Greeting Logic
   useEffect(() => {
     const now = new Date();
     const currentHour = now.getHours();
 
-    // Function to get special day greetings
     const getSpecialDayGreeting = (date: Date) => {
       const month = date.getMonth();
       const day = date.getDate();
@@ -33,7 +58,6 @@ function Home() {
       return null;
     };
 
-    // Check for special day greetings
     const specialDayGreeting = getSpecialDayGreeting(now);
 
     if (specialDayGreeting) {
@@ -41,7 +65,6 @@ function Home() {
       setIsSpecialDay(true);
     } else {
       setIsSpecialDay(false);
-      // General Time-Based Greetings
       if (currentHour >= 3 && currentHour < 12) {
         setGreeting("Good Morning");
       } else if (currentHour >= 12 && currentHour < 17) {
@@ -77,36 +100,36 @@ function Home() {
           autoplay
           className="w-48 h-48"
         />
-
-        {/* Background Decoration */}
         <div className="absolute w-32 h-32 bg-blue-100 rounded-full opacity-50 -top-10 -right-10 blur-2xl"></div>
         <div className="absolute w-48 h-48 bg-blue-200 rounded-full opacity-50 -bottom-8 -left-12 blur-2xl"></div>
       </header>
 
       <main className="flex-grow">
-        <section className="grid grid-cols-1 gap-6 mb-2 md:grid-cols-3">
-          <OverviewCard
-            title="Total Medicines"
-            subtitle="Registered"
-            value={"5"}
-            className="h-full bg-white border-l-8 border-blue-500"
-            icon={<Pill className="w-8 h-8 text-blue-500" />}
-          />
-          <OverviewCard
-            title="Patients in Waiting"
-            subtitle="Today"
-            value={"0"}
-            className="h-full bg-white border-l-8 border-yellow-500"
-            icon={<Users className="w-8 h-8 text-yellow-500" />}
-          />
-          <OverviewCard
-            title="Total Prescritions"
-            subtitle="Today"
-            value={"0"}
-            className="h-full bg-white border-l-8 border-green-500"
-            icon={<HandCoins className="w-8 h-8 text-green-500" />}
-          />
-        </section>
+        {hasValidCenter && (
+          <section className="grid grid-cols-1 gap-6 mb-2 md:grid-cols-3">
+            <OverviewCard
+              title="Total Patients"
+              subtitle="Registered"
+              value={dashboardData.totalPatients.toString()}
+              className="h-full bg-white border-l-8 border-blue-500"
+              icon={<Users className="w-8 h-8 text-blue-500" />}
+            />
+            <OverviewCard
+              title="Total Appointments"
+              subtitle="Today"
+              value={dashboardData.currentDateTotalAppointments.toString()}
+              className="h-full bg-white border-l-8 border-yellow-500"
+              icon={<Clock className="w-8 h-8 text-yellow-500" />}
+            />
+            <OverviewCard
+              title="Total Prescriptions"
+              subtitle="Today"
+              value={dashboardData.currentDateTotalPrescriptions.toString()}
+              className="h-full bg-white border-l-8 border-green-500"
+              icon={<FileText className="w-8 h-8 text-green-500" />}
+            />
+          </section>
+        )}
       </main>
     </div>
   );
