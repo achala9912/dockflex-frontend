@@ -182,7 +182,7 @@ export default function Page() {
 
       <div>
         {!centerId ? (
-          <p className="text-gray-500 text-sm mt-4">
+          <p className="text-gray-500 text-sm mt-2">
             Please select a center to view appointments.
           </p>
         ) : (

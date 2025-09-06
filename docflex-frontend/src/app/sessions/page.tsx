@@ -56,6 +56,7 @@ function Page() {
   const [sessionToToggle, setSessionToToggle] = useState<Session | null>(null);
 
   const fetchSessions = useCallback(async () => {
+    if (!centerId) return;
     try {
       setError(null);
       const res = await getAllSessions(

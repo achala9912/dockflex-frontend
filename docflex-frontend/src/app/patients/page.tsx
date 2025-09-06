@@ -56,7 +56,7 @@ export default function Page() {
     router.push(`/patients/new`);
   };
 
-  // Navigate to edit patient page
+
   const handleEdit = (patient: PatientMgmt) => {
     router.push(`/patients/edit/${patient.patientId}`);
   };
@@ -126,17 +126,23 @@ export default function Page() {
       </div>
 
       <div>
-        <TableWithPagi
-          columns={patientMgmtColumns}
-          data={patients || []}
-          itemsPerPage={itemsPerPage}
-          totalPages={totalPages}
-          currentPage={currentPage}
-          setPage={setCurrentPage}
-          totalItems={totalItems}
-          handleEdit={handleEdit}
-          handleDelete={handleDeleteConfirm}
-        />
+        {!centerId ? (
+          <p className="text-gray-500 text-sm mt-2">
+            Please select a center to view Patients.
+          </p>
+        ) : (
+          <TableWithPagi
+            columns={patientMgmtColumns}
+            data={patients || []}
+            itemsPerPage={itemsPerPage}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            setPage={setCurrentPage}
+            totalItems={totalItems}
+            handleEdit={handleEdit}
+            handleDelete={handleDeleteConfirm}
+          />
+        )}
       </div>
 
       <DeleteConfirm
